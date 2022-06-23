@@ -2,7 +2,7 @@
   <v-row justify="center" align="center">
     <v-col cols="12" sm="8" md="6">
       <span class="text-center text-h4 d-flex justify-center pa-5">
-        Transfer to Metamask
+        Deposit to Metamask
       </span>
       <span
         class="
@@ -17,8 +17,7 @@
         "
       >
         <span>
-          Complete <nuxt-link to="/register"> Step 1 </nuxt-link> Before this
-          step!
+          Complete <nuxt-link to="/register"> Register </nuxt-link> Before deposit!
         </span>
       </span>
       <span

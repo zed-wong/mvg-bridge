@@ -51,7 +51,9 @@
             filled
             v-model="recipientid"
           />
-          <span class="text-subtile-1 pa-5 pl-10 d-flex"> Enter extra: </span>
+          <span class="text-subtile-1 pa-5 pl-10 d-flex">
+            Enter extra: (string)</span
+          >
           <v-text-field
             class="px-10"
             placeholder="Enter Extra"
@@ -75,16 +77,18 @@
             v-model="recipientid"
           />
           <span class="text-subtitle-1 pa-2 pt-0 pl-10 d-flex">
-            Enter threhold:
+            Enter threshold:
           </span>
           <v-text-field
             type="number"
             class="px-10"
-            placeholder="Enter Threhold"
+            placeholder="Enter Threshold"
             filled
-            v-model="threhold"
+            v-model="threshold"
           />
-          <span class="text-subtile-1 pa-5 pl-10 d-flex"> Enter extra: </span>
+          <span class="text-subtile-1 pa-5 pl-10 d-flex">
+            Enter extra: (string)</span
+          >
           <v-text-field
             class="px-10"
             placeholder="Enter Extra"
@@ -127,13 +131,16 @@
           </v-btn>
         </div>
         <div class="d-flex justify-center text-center pa-5" v-if="connected">
-          <v-btn rounded large :loading="withdrawLoading" @click="withdraw"> Withdraw </v-btn>
+          <v-btn rounded large :loading="withdrawLoading" @click="withdraw">
+            Withdraw
+          </v-btn>
         </div>
+        <v-snackbar v-model="snackbar"> {{ popupMessage }} </v-snackbar>
         <span
           class="text-center d-flex justify-center text-subtile-1 pa-5"
           v-if="withdrawResult"
         >
-          Withdraw result: <br />{{ withdrawResult }}
+          result: <br /> <a :href=withdrawResult> {{withdrawResult}} </a>
         </span>
       </v-card>
     </v-col>
@@ -141,17 +148,26 @@
 </template>
 
 <script>
-import { multiply } from "mathjs";
+import { cos, multiply } from "mathjs";
 import { ethers } from "ethers";
 import MixinClient from "@/helpers/mixin";
 import assets from "../assets/assets.json";
+import {
+  getContractByAssetID,
+  registryAddress,
+  execContract,
+} from "@/helpers/registry";
+
 const DECIMAL = 100000000;
 
 let payload = {
-  receiver: [],
-  threhold: 1,
+  receivers: [],
+  threshold: 1,
   extra: "",
 };
+
+const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+const signer = provider.getSigner();
 
 export default {
   data() {
@@ -159,10 +175,12 @@ export default {
       memo: "",
       amount: "",
       address: "",
+      snackbar: false,
+      popupMessage: "",
       allAssets: assets.assets,
       connected: false,
       multisig: false,
-      threhold: 1,
+      threshold: 1,
       recipientid: "",
       singlerules: (value) => value.length >= 4 || "Min 4 characters",
       connectLoading: false,
@@ -197,38 +215,52 @@ export default {
     };
   },
   methods: {
-    fmtAmount(amount){
-      return multiply(amount, DECIMAL)
+    fmtAmount(amount) {
+      return multiply(amount, DECIMAL);
     },
     async getExtra() {
-      if (!isNaN(this.recipientid)) {
-        const user = await MixinClient.readUser(this.recipientid.trim())
-        payload.receiver = [user.userid];
-      }
       if (this.multisig) {
-        payload.receiver = this.recipientid.trim().split(',');
+        payload.receivers = this.recipientid.trim().split(",");
       } else {
-        payload.receiver = [this.recipientid.trim()];
+        payload.receivers = [this.recipientid.trim()];
+      }
+      if (!isNaN(this.recipientid)) {
+        const user = await MixinClient.readUser(this.recipientid.trim());
+        payload.receivers = [user.user_id];
       }
       payload.extra = this.memo;
-      let extra = await this.$axios.post("https://bridge.mvm.dev/extra", {
-        payload
-      });
-      return extra.data.extra
+      let payloads = JSON.stringify(payload);
+      let extra = await this.$axios.post("https://bridge.mvm.dev/extra", payloads);
+      console.log(payloads);
+      console.log(extra.data.extra);
+      return extra.data.extra;
     },
-    async getProxyContract(){
+    async getProxyContract() {
       const result = await this.$axios.post("https://bridge.mvm.dev/users", {
         public_key: ethers.utils.getAddress(this.address),
       });
-      return result.data.user.contract ? result.data.user.contract : ''
+      return result.data.user.contract ? result.data.user.contract : "";
     },
-    async withdraw(){
-      // get the asset contract address by selected asset
+    async withdraw() {
+      this.withdrawLoading=true;
       let to = await this.getProxyContract();
       let value = this.fmtAmount(this.amount);
       let extra = await this.getExtra();
-      console.log(to, value, extra);
-      // call contract
+      extra = "0x" + extra;
+      let address = await getContractByAssetID(
+        this.select.asset_id,
+        registryAddress
+      );
+      // console.log("address:", address,"\nto:", to,"\nvalue:", value,"\nextra:", extra, );
+      try {
+        let result = await execContract(address, "transferWithExtra", [ to, value, extra ]);
+        console.log(result.hash);
+        this.withdrawResult = "https://scan.mvm.dev/tx/" + result.hash;
+      } catch (error) {
+        this.popupMessage = error;
+        this.snackbar =true;
+      }
+      this.withdrawLoading=false;
     },
 
     async connectWallet() {
@@ -246,7 +278,7 @@ export default {
             params: [{ chainId: "0x120c7" }],
           });
         } catch (error) {
-          console.log(error)
+          console.log(error);
           if (error.code === 4902) {
             await window.ethereum.request({
               method: "wallet_addEthereumChain",
@@ -257,6 +289,11 @@ export default {
       }
       this.connectLoading = false;
       this.connected = true;
+    },
+
+    async getAssetAddress(asset_id) {
+      let result = await getContractByAssetID(asset_id, registryAddress);
+      console.log(result);
     },
   },
   mounted() {
@@ -284,6 +321,6 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 .v-btn {
-  text-transform:none !important;
+  text-transform: none !important;
 }
 </style>

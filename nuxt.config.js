@@ -6,6 +6,9 @@ export default {
 
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
+  router: {
+    base: 'https://zed-wong.github.io/'
+  },
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
@@ -58,8 +61,6 @@ export default {
     credentials: false,
     proxy: false,
   },
-  
-
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
     customVariables: ['~/assets/variables.scss'],

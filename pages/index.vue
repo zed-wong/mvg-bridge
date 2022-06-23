@@ -19,6 +19,13 @@
 
 <script>
 export default {
-  name: 'IndexPage'
+  name: 'IndexPage',
+  mounted() {
+    if (typeof window.ethereum !== "undefined") {
+      console.log("MetaMask is installed!");
+    } else{
+      window.location.href = "https://metamask.io/download/"
+    }
+  }
 }
 </script>

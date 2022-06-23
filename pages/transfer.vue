@@ -53,6 +53,20 @@
       <div class="d-flex justify-center text-center pa-5">
         <v-btn @click="payment" rounded large> Payment </v-btn>
       </div>
+      <v-divider class="py-10 pt-10" />
+      <span
+        class="
+          text-center
+          font-weight-light
+          text-subtitle-2
+          d-flex
+          justify-center
+          pa-5
+          pt-0
+        "
+      >
+        Transfer Any Asset
+      </span>
       <div class="d-flex justify-center text-center pa-5">
         <v-btn @click="transfer" rounded large> Transfer </v-btn>
       </div>

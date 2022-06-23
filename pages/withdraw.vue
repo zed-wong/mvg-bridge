@@ -148,7 +148,7 @@
 </template>
 
 <script>
-import { cos, multiply } from "mathjs";
+import { multiply,round } from "mathjs";
 import { ethers } from "ethers";
 import MixinClient from "@/helpers/mixin";
 import assets from "../assets/assets.json";
@@ -165,9 +165,6 @@ let payload = {
   threshold: 1,
   extra: "",
 };
-
-const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
-const signer = provider.getSigner();
 
 export default {
   data() {
@@ -216,7 +213,7 @@ export default {
   },
   methods: {
     fmtAmount(amount) {
-      return multiply(amount, DECIMAL);
+      return round(multiply(amount, DECIMAL));
     },
     async getExtra() {
       if (this.multisig) {

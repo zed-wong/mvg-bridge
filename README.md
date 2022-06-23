@@ -1,9 +1,11 @@
 # mvm-bridge
 
 ## For node v18
+```
 $ export NODE_OPTIONS=--openssl-legacy-provider
-$ yarn dev
 
+$ yarn dev
+```
 ## Build Setup
 
 ```bash

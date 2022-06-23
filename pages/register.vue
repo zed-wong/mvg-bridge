@@ -52,7 +52,7 @@
         </span>
         <div class="d-flex justify-center text-center pa-5" v-if="nextVisble">
           <v-btn rounded large :disabled="disabled" @click="nextStep">
-            Transfer to Metamask
+            Deposit to Metamask
           </v-btn>
         </div>
       </v-card>
@@ -145,7 +145,7 @@ export default {
       this.nextVisble = true;
     },
     nextStep() {
-      window.location.href = "/transfer";
+      window.location.href = "/deposit";
     },
   },
 };

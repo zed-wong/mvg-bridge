@@ -135,12 +135,18 @@
             Withdraw
           </v-btn>
         </div>
-        <v-snackbar v-model="snackbar"> {{ popupMessage }} </v-snackbar>
+        <v-snackbar v-model="snackbar">
+          {{ popupMessage }}
+          <v-btn text color="pink" elevation="0" @click="snackbar = false">
+            Off
+          </v-btn></v-snackbar
+        >
         <span
           class="text-center d-flex justify-center text-subtile-1 pa-5"
           v-if="withdrawResult"
         >
-          result: <br /> <a :href=withdrawResult> {{withdrawResult}} </a>
+          result: <br />
+          <a :href="withdrawResult"> {{ withdrawResult }} </a>
         </span>
       </v-card>
     </v-col>
@@ -148,7 +154,7 @@
 </template>
 
 <script>
-import { multiply,round } from "mathjs";
+import { multiply, round } from "mathjs";
 import { ethers } from "ethers";
 import MixinClient from "@/helpers/mixin";
 import assets from "../assets/assets.json";
@@ -227,7 +233,10 @@ export default {
       }
       payload.extra = this.memo;
       let payloads = JSON.stringify(payload);
-      let extra = await this.$axios.post("https://bridge.mvm.dev/extra", payloads);
+      let extra = await this.$axios.post(
+        "https://bridge.mvm.dev/extra",
+        payloads
+      );
       console.log(payloads);
       console.log(extra.data.extra);
       return extra.data.extra;
@@ -239,7 +248,7 @@ export default {
       return result.data.user.contract ? result.data.user.contract : "";
     },
     async withdraw() {
-      this.withdrawLoading=true;
+      this.withdrawLoading = true;
       let to = await this.getProxyContract();
       let value = this.fmtAmount(this.amount);
       let extra = await this.getExtra();
@@ -250,14 +259,18 @@ export default {
       );
       // console.log("address:", address,"\nto:", to,"\nvalue:", value,"\nextra:", extra, );
       try {
-        let result = await execContract(address, "transferWithExtra", [ to, value, extra ]);
+        let result = await execContract(address, "transferWithExtra", [
+          to,
+          value,
+          extra,
+        ]);
         console.log(result.hash);
         this.withdrawResult = "https://scan.mvm.dev/tx/" + result.hash;
       } catch (error) {
         this.popupMessage = error;
-        this.snackbar =true;
+        this.snackbar = true;
       }
-      this.withdrawLoading=false;
+      this.withdrawLoading = false;
     },
 
     async connectWallet() {

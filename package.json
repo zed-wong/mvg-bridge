@@ -16,6 +16,8 @@
     "@nuxtjs/proxy": "^2.1.0",
     "core-js": "^3.19.3",
     "ethers": "^5.6.9",
+    "mathjs": "^10.6.1",
+    "mixin-node-sdk": "^3.0.33",
     "nuxt": "^2.15.8",
     "qrcode": "^1.5.0",
     "uuid": "^8.3.2",

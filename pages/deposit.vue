@@ -53,7 +53,7 @@
       <div class="d-flex justify-center text-center pa-5">
         <v-btn @click="payment" rounded large> Payment </v-btn>
       </div>
-      <v-divider class="py-10 pt-10" />
+      <v-divider class="py-10 pt-10 mt-10" />
       <span
         class="
           text-center
@@ -67,7 +67,7 @@
       >
         Transfer Any Asset
       </span>
-      <div class="d-flex justify-center text-center pa-5">
+      <div class="d-flex justify-center text-center pa-5 pt-2">
         <v-btn @click="transfer" rounded large> Transfer </v-btn>
       </div>
 
@@ -90,9 +90,6 @@ import VueQrcode from "@chenfengyuan/vue-qrcode";
 
 const botconfig = JSON.parse(localStorage.getItem("user"));
 
-// const bridge = new Bridge({
-//   client_id: botconfig.client_id,
-// });
 export default {
   data() {
     return {

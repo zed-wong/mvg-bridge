@@ -29,7 +29,7 @@
           class="d-flex justify-center text-center pa-5"
           v-if="connectVisble"
         >
-          <v-btn rounded large @click="connectWallet"> Connect Wallet </v-btn>
+          <v-btn rounded large @click="connectWallet" :disabled="connectLoading"> Connect Wallet </v-btn>
         </div>
         <div
           class="d-flex justify-center text-center pa-5"
@@ -80,18 +80,12 @@ const chain = [
   },
 ];
 
-const config = {
-  headers: {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Max-Age": "600",
-    "Content-Type": "plain/text",
-  },
-};
 export default {
   data() {
     return {
       address: "",
       disabled: true,
+      connectLoading: false,
       registerLoading: false,
       connectVisble: true,
       registerVisble: false,
@@ -109,6 +103,7 @@ export default {
   },
   methods: {
     async connectWallet() {
+      this.connectLoading = true;
       const accounts = await window.ethereum.request({
         method: "eth_requestAccounts",
       });
@@ -155,3 +150,9 @@ export default {
   },
 };
 </script>
+
+<style>
+.v-btn {
+  text-transform:none !important;
+}
+</style>

@@ -108,7 +108,8 @@
       "reserve": "0",
       "confirmations": 16,
       "capitalization": 97337004.38645542,
-      "liquidity": "624794.633325414"
+      "liquidity": "624794.633325414",
+      "contract": ""
     },
     {
       "type": "asset",
@@ -592,7 +593,8 @@
       "reserve": "0",
       "confirmations": 16,
       "capitalization": 318119.2941165373,
-      "liquidity": "99999318959201.52"
+      "liquidity": "99999318959201.52",
+      "contract":"0x910Fb1751B946C7D691905349eC5dD250EFBF40a"
     },
     {
       "type": "asset",

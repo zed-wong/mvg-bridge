@@ -124,8 +124,6 @@ export default {
             });
           }
         }
-      } else {
-        console.log(chainId);
       }
       this.connectVisble = false;
       this.registerVisble = true;

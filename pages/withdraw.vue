@@ -159,9 +159,11 @@ import { ethers } from "ethers";
 import MixinClient from "@/helpers/mixin";
 import assets from "../assets/assets.json";
 import {
+  bridgeAddress,
   getContractByAssetID,
   registryAddress,
-  execContract,
+  execAssetContract,
+  execBridgeContract
 } from "@/helpers/registry";
 
 const DECIMAL = 100000000;
@@ -218,7 +220,10 @@ export default {
     };
   },
   methods: {
-    fmtAmount(amount) {
+    fmtAmount(amount, symbol) {
+      if (symbol == "XIN"){
+        return Number(amount).toFixed(8);
+      }
       return round(multiply(amount, DECIMAL));
     },
     async getExtra() {
@@ -241,7 +246,7 @@ export default {
       console.log(extra.data.extra);
       return extra.data.extra;
     },
-    async getProxyContract() {
+    async getUserProxyContract() {
       const result = await this.$axios.post("https://bridge.mvm.dev/users", {
         public_key: ethers.utils.getAddress(this.address),
       });
@@ -249,22 +254,26 @@ export default {
     },
     async withdraw() {
       this.withdrawLoading = true;
-      let to = await this.getProxyContract();
-      let value = this.fmtAmount(this.amount);
+      let to = await this.getUserProxyContract();
+      let value = this.fmtAmount(this.amount, this.select.symbol);
       let extra = await this.getExtra();
       extra = "0x" + extra;
       let address = await getContractByAssetID(
         this.select.asset_id,
         registryAddress
       );
-      // console.log("address:", address,"\nto:", to,"\nvalue:", value,"\nextra:", extra, );
       try {
-        let result = await execContract(address, "transferWithExtra", [
-          to,
-          value,
-          extra,
-        ]);
-        console.log(result.hash);
+        let result;
+        if (this.select.symbol == "XIN") {
+          let overrideValue = ethers.utils.parseEther(value)
+          result = await execBridgeContract(bridgeAddress, "release", [to,extra], overrideValue)
+        } else {
+          result = await execAssetContract(address, "transferWithExtra", [
+            to,
+            value,
+            extra,
+          ]);
+        }
         this.withdrawResult = "https://scan.mvm.dev/tx/" + result.hash;
       } catch (error) {
         this.popupMessage = error;
@@ -302,8 +311,7 @@ export default {
     },
 
     async getAssetAddress(asset_id) {
-      let result = await getContractByAssetID(asset_id, registryAddress);
-      console.log(result);
+      return await getContractByAssetID(asset_id, registryAddress);
     },
   },
   mounted() {

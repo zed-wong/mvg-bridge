@@ -1,7 +1,7 @@
 <template>
   <v-row justify="center" align="center">
     <v-col cols="12" sm="8" md="6">
-      <v-card>
+      <v-card elevation="0">
         <span class="text-center text-h4 d-flex justify-center pa-5">
           Register
         </span>
@@ -81,6 +81,7 @@ const chain = [
 ];
 
 export default {
+  layout:"links",
   data() {
     return {
       address: "",

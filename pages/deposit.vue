@@ -145,6 +145,7 @@ export default {
   components: {
     VueQrcode,
   },
+  layout:"links",
 };
 </script>
 

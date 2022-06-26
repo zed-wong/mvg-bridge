@@ -9,8 +9,8 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: 'mvm-bridge',
-    title: 'mvm-bridge',
+    titleTemplate: 'MVM-Bridge',
+    title: 'MVM-Bridge',
     htmlAttrs: {
       lang: 'en'
     },

@@ -1,12 +1,6 @@
 <template>
   <v-row justify="center" align="center">
-    <div class="my-3">
-      <v-img
-        src="https://scan.mvm.dev/images/mvm-logo-df43b7ab7c6a8fdcef3cefb89e854f9b.svg?vsn=d"
-        max-width="329px"
-      />
-    </div>
-    <v-col cols="12" class="d-flex justify-center">
+    <v-col cols="6" class="d-flex justify-center">
       <v-card elevation="1" width="360px">
         <v-card-title> Register </v-card-title>
         <v-card-text>
@@ -21,7 +15,7 @@
       </v-card>
     </v-col>
 
-    <v-col cols="12" class="d-flex justify-center">
+    <v-col cols="6" class="d-flex justify-center">
       <v-card elevation="1" width="360px">
         <v-card-title> Deposit </v-card-title>
         <v-card-text>
@@ -37,7 +31,7 @@
       </v-card>
     </v-col>
 
-    <v-col cols="12" class="d-flex justify-center">
+    <v-col cols="6" class="d-flex justify-center">
       <v-card elevation="1" width="360px">
         <v-card-title> Withdraw </v-card-title>
         <v-card-text>
@@ -51,12 +45,45 @@
         </v-card-actions>
       </v-card>
     </v-col>
+
+    <v-col cols="6" class="d-flex justify-center">
+      <v-card elevation="1" width="360px">
+        <v-card-title> Query </v-card-title>
+        <v-card-text>
+          Query Asset Address or User Address from Registry contract.
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <nuxt-link to="query" class="pl-2">
+            <v-btn elevation="0" color="transparent"> Query </v-btn>
+          </nuxt-link>
+        </v-card-actions>
+      </v-card>
+    </v-col>
+
+    <v-col cols="6" class="d-flex justify-center">
+      <v-card elevation="1" width="360px">
+        <v-card-title> Add Token </v-card-title>
+        <v-card-text>
+          Add a Mixin Network asset token into your Metamask.
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <nuxt-link to="addtoken" class="pl-2">
+            <v-btn elevation="0" color="transparent"> Add </v-btn>
+          </nuxt-link>
+        </v-card-actions>
+      </v-card>
+    </v-col>
+    <v-col cols="6">
+    </v-col>
   </v-row>
 </template>
 
 <script>
 export default {
   name: "IndexPage",
+  layout:"links",
   mounted() {
     if (typeof window.ethereum !== "undefined") {
       console.log("MetaMask is installed!");

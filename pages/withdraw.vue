@@ -321,6 +321,7 @@ export default {
       window.location.href = "https://metamask.io/download/";
     }
   },
+  layout:"links",
 };
 </script>
 

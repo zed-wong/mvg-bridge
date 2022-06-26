@@ -1,6 +1,6 @@
 <template>
   <v-row justify="center" align="center">
-    <v-col cols="12" sm="8" md="6">
+    <v-col cols="12">
       <span class="text-center text-h4 d-flex justify-center pa-5">
         Deposit to Metamask
       </span>
@@ -17,7 +17,8 @@
         "
       >
         <span>
-          Complete <nuxt-link to="/register"> Register </nuxt-link> Before deposit!
+          Complete <nuxt-link to="/register"> Register </nuxt-link> before
+          deposit!
         </span>
       </span>
       <span
@@ -33,6 +34,11 @@
       >
         Transfer crypto to your Metamask (MVM Mainnet)
       </span>
+    </v-col>
+    <v-col cols="12" class="d-flex justify-center">
+      <v-switch v-model="specific" :label="`Specific asset: ${specific}`" />
+    </v-col>
+    <v-col cols="6" v-if="specific">
       <v-select
         filled
         :items="allAssets"
@@ -52,24 +58,14 @@
       <div class="d-flex justify-center text-center pa-5">
         <v-btn @click="payment" rounded large> Payment </v-btn>
       </div>
-      <v-divider class="py-10 pt-10 mt-10" />
-      <span
-        class="
-          text-center
-          font-weight-light
-          text-subtitle-2
-          d-flex
-          justify-center
-          pa-5
-          pt-0
-        "
-      >
-        Transfer Any Asset
-      </span>
-      <div class="d-flex justify-center text-center pa-5 pt-2">
-        <v-btn @click="transfer" rounded large> Transfer </v-btn>
-      </div>
+    </v-col>
 
+    <v-col cols="12" v-if="!specific">
+      <div class="d-flex justify-center text-center pa-5 pt-2">
+        <v-btn @click="transfer" rounded large> Transfer Any Asset </v-btn>
+      </div>
+    </v-col>
+    <v-col cols="12" class="d-flex justify-center">
       <v-card
         v-if="URL.length != 0"
         style="width: 600px"
@@ -119,6 +115,7 @@ export default {
       allAssets: assets.assets,
       asset: "",
       amount: "",
+      specific: false,
       placeHolder: "Enter Amount",
       URL: "",
     };
@@ -145,7 +142,7 @@ export default {
   components: {
     VueQrcode,
   },
-  layout:"links",
+  layout: "links",
 };
 </script>
 

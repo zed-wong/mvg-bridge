@@ -83,7 +83,7 @@
   </v-row>
 </template>
 
-<script lang="ts">
+<script>
 // This page is totally a copy of https://github.com/liuzemei/mvm-mvm/blob/master/src/components/mvm/brige/index.vue
 import assets from "../assets/assets.json";
 import { getContractByAssetID } from "../helpers/registry";
@@ -137,7 +137,7 @@ export default {
   },
   methods: {
     // getAssetIDBySearch,
-    async addToken(assetID: string, type: string) {
+    async addToken(assetID, type) {
       if (type === "enter") {
         this.loader = "addTokenLoading";
       } else {

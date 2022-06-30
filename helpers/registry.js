@@ -33,14 +33,14 @@ export const getContract = async (addr, abi) => {
 export async function execAssetContract(address, method, args){
   const t = await getContract(address, AssetABI)
   return t[method](...args, {
-    gasLimit: 500000
+    gasLimit: 350000
   })
 }
 
 export async function execBridgeContract(address, method, args, value){
   const t = await getContract(address, BridgeABI)
   return t[method](...args, {
-    gasLimit: 500000,
+    gasLimit: 350000,
     value: value,
   })
 }

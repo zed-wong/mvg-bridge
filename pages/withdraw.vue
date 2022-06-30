@@ -19,19 +19,6 @@
           Withdraw from MVM Mainnet to any Mixin user
         </span>
 
-        <span
-          class="
-            text-center
-            font-weight-light
-            text-subtitle-2
-            d-flex
-            justify-center
-            pb-2
-          "
-          v-if="connected"
-        >
-          Your Metamask Address: {{ address }}
-        </span>
         <v-divider v-if="connected" />
         <div class="pl-10 pt-10" v-if="connected">
           <span class="text-subtile-1 d-flex"> Multisig? </span>
@@ -98,9 +85,7 @@
         </div>
 
         <div v-if="connected">
-          <span class="d-flex text-subtile-1 pa-5 pl-10">
-            Select the asset you want to withdraw:
-          </span>
+          <span class="d-flex text-subtile-1 pa-5 pl-10"> Select asset: </span>
           <v-select
             filled
             class="px-10"
@@ -114,9 +99,7 @@
         </div>
 
         <div v-if="connected">
-          <span class="d-flex text-subtile-1 pa-5 pl-10">
-            Input the amount you want to withdraw:
-          </span>
+          <span class="d-flex text-subtile-1 pa-5 pl-10"> Input amount: </span>
           <v-text-field type="number" class="px-10" filled v-model="amount" />
         </div>
 
@@ -163,7 +146,7 @@ import {
   getContractByAssetID,
   registryAddress,
   execAssetContract,
-  execBridgeContract
+  execBridgeContract,
 } from "@/helpers/registry";
 
 const DECIMAL = 100000000;
@@ -175,6 +158,11 @@ let payload = {
 };
 
 export default {
+  computed: {
+    connected() {
+      return this.$store.state.connected;
+    },
+  },
   data() {
     return {
       memo: "",
@@ -183,7 +171,6 @@ export default {
       snackbar: false,
       popupMessage: "",
       allAssets: assets.assets,
-      connected: false,
       multisig: false,
       threshold: 1,
       recipientid: "",
@@ -221,7 +208,7 @@ export default {
   },
   methods: {
     fmtAmount(amount, symbol) {
-      if (symbol == "XIN"){
+      if (symbol == "XIN") {
         return Number(amount).toFixed(8);
       }
       return round(multiply(amount, DECIMAL));
@@ -265,8 +252,13 @@ export default {
       try {
         let result;
         if (this.select.symbol == "XIN") {
-          let overrideValue = ethers.utils.parseEther(value)
-          result = await execBridgeContract(bridgeAddress, "release", [to,extra], overrideValue)
+          let overrideValue = ethers.utils.parseEther(value);
+          result = await execBridgeContract(
+            bridgeAddress,
+            "release",
+            [to, extra],
+            overrideValue
+          );
         } else {
           result = await execAssetContract(address, "transferWithExtra", [
             to,
@@ -317,11 +309,9 @@ export default {
   mounted() {
     if (typeof window.ethereum !== "undefined") {
       console.log("MetaMask is installed!");
-    } else {
-      window.location.href = "https://metamask.io/download/";
     }
   },
-  layout:"links",
+  layout: "links",
 };
 </script>
 

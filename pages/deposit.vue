@@ -17,8 +17,7 @@
         "
       >
         <span>
-          Complete <nuxt-link to="/register"> Register </nuxt-link> before
-          deposit!
+          Connect Wallet before deposit!
         </span>
       </span>
       <span

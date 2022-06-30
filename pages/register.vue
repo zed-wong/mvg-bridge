@@ -95,13 +95,6 @@ export default {
       registerResult: "",
     };
   },
-  mounted() {
-    if (typeof window.ethereum !== "undefined") {
-      console.log("MetaMask is installed!");
-    } else {
-      window.location.href = "https://metamask.io/download/";
-    }
-  },
   methods: {
     async connectWallet() {
       this.connectLoading = true;
@@ -137,6 +130,7 @@ export default {
         public_key: checked,
       });
       localStorage.setItem("user", JSON.stringify(result.data.user.key));
+      console.log(result.data)
       this.registerResult = result.data.user.key;
       this.disabled = false;
       this.registerVisble = false;

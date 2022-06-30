@@ -19,7 +19,7 @@
           pt-2
         "
       >
-        Enter Mixin Network Asset ID To Query Asset Contract Address ( WIP )
+        Enter Mixin Network Asset ID To Query Asset Contract Address
       </span>
       <v-text-field
         filled

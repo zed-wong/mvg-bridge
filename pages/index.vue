@@ -81,6 +81,12 @@ export default {
           to: "anywithdraw",
           btntext: "Withdraw",
         },
+        {
+          name: "Verify User",
+          intro: "Verify user before claim faucet, a useless sample for building faucet.",
+          to: "verify",
+          btntext: "Verify",
+        }
         // { name: "Query", intro:"Query Asset Address or User Address from Registry contract.", to: "query", btntext:"Query"},
         // { name: "", intro:"", to: "", btntext:""},
       ],

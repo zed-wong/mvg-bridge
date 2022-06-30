@@ -90,7 +90,7 @@ export default {
         method: "eth_requestAccounts",
       });
       this.register(accounts[0])
-      console.log(accounts[0]);
+      // console.log(accounts[0]);
 
       this.$store.commit('connect', accounts[0])
 

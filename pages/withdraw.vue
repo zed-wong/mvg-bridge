@@ -159,15 +159,17 @@ let payload = {
 
 export default {
   computed: {
-    connected() {
-      return this.$store.state.connected;
+    connected(){
+      return this.$store.state.connected
     },
+    address(){
+      return this.$store.state.address
+    }
   },
   data() {
     return {
       memo: "",
       amount: "",
-      address: "",
       snackbar: false,
       popupMessage: "",
       allAssets: assets.assets,

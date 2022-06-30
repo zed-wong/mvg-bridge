@@ -120,10 +120,18 @@
         </div>
         <v-snackbar v-model="snackbar">
           {{ popupMessage }}
-          <v-btn text color="pink" elevation="0" @click="snackbar = false">
-            Off
-          </v-btn></v-snackbar
-        >
+          <template v-slot:action="{ attrs }">
+            <v-btn
+              text
+              color="pink"
+              v-bind="attrs"
+              elevation="0"
+              @click="snackbar = false"
+            >
+              Off
+            </v-btn>
+          </template>
+        </v-snackbar>
         <span
           class="text-center d-flex justify-center text-subtile-1 pa-5"
           v-if="withdrawResult"
@@ -159,12 +167,12 @@ let payload = {
 
 export default {
   computed: {
-    connected(){
-      return this.$store.state.connected
+    connected() {
+      return this.$store.state.connected;
     },
-    address(){
-      return this.$store.state.address
-    }
+    address() {
+      return this.$store.state.address;
+    },
   },
   data() {
     return {

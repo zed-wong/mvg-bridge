@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+import { ethers,Contract } from "ethers";
 import { parse } from 'uuid';
 import Web3Modal from "web3modal"
 
@@ -20,6 +20,23 @@ export const getSigner = async () => {
 export const getRegistryContract = (address = registryAddress) => new ethers.Contract(address, RegistryABI, new ethers.providers.JsonRpcProvider(RPCURL));
 export const getContractByAssetID = (id, processAddress = registryAddress) => getRegistryContract(processAddress).contracts('0x' + Buffer.from(parse(id)).toString('hex'));
 
+export const fetchAssetContract = (assetId) => {
+  const id = assetId.replaceAll('-', '');
+  return getRegistryContract().contracts(`0x${id}`);
+}
+export const fetchUsersContract = (userIds) => {
+  const bufLen = Buffer.alloc(2);
+  bufLen.writeUInt16BE(userIds.length);
+  const bufThres = Buffer.alloc(2);
+  bufThres.writeUInt16BE(1);
+  const ids = userIds.join('').replaceAll('-', '');
+  const identity = `0x${bufLen.toString('hex')}${ids}${bufThres.toString('hex')}`;
+  return getRegistryContract().contracts(ethers.utils.keccak256(identity));
+}
+export const fetchUserContract = (userId) => {
+  return fetchUsersContract([userId]);
+}
+
 export const provider = new ethers.providers.Web3Provider(window.ethereum).getSigner();
 export const assetContract = (assetAddress) => new ethers.Contract(assetAddress, AssetABI, provider);
 export const bridgeContract = (bridgeAddress = bridgeAddress, bridgeABI = BridgeABI) => new ethers.Contract(bridgeAddress, bridgeABI, provider);
@@ -30,14 +47,14 @@ export const getContract = async (addr, abi) => {
   return new ethers.Contract(addr, abi, signer)
 }
 
-export async function execAssetContract(address, method, args){
+export async function execAssetContract(address, method, args) {
   const t = await getContract(address, AssetABI)
   return t[method](...args, {
     gasLimit: 350000
   })
 }
 
-export async function execBridgeContract(address, method, args, value){
+export async function execBridgeContract(address, method, args, value) {
   const t = await getContract(address, BridgeABI)
   return t[method](...args, {
     gasLimit: 350000,

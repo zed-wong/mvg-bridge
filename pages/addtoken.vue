@@ -13,6 +13,7 @@
           text-subtitle-2
           d-flex
           justify-center
+          text-no-wrap
           pa-5
           pb-2
           pt-2

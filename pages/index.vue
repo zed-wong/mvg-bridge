@@ -86,8 +86,13 @@ export default {
           intro: "Verify user before claim faucet, a useless sample for building faucet.",
           to: "verify",
           btntext: "Verify",
-        }
-        // { name: "Query", intro:"Query Asset Address or User Address from Registry contract.", to: "query", btntext:"Query"},
+        },
+        { 
+          name: "Query",
+          intro:"Query Asset Address or User Address from Registry contract.",
+          to: "query",
+          btntext:"Query"
+        },
         // { name: "", intro:"", to: "", btntext:""},
       ],
     };

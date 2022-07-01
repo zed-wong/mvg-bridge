@@ -13,6 +13,7 @@
           MVM-Bridge
         </span>
         <v-spacer />
+        <v-img :src="githublogo" max-height="22px" max-width="22px" class="mr-3" @click="toGithub"/>
         <v-menu offset-y open-on-hover>
           <template v-slot:activator="{ on, attrs }">
             <v-btn
@@ -30,18 +31,43 @@
             </v-btn>
           </template>
           <v-list>
-            <v-list-item v-for="(link, i) in links" :key="i" @click="redirect(link.to)">
+            <v-list-item
+              v-for="(link, i) in links"
+              :key="i"
+              @click="redirect(link.to)"
+            >
               <v-list-item-title>
                 {{ link.name }}
               </v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
-        <v-btn depressed rounded outlined elevation="0" class="ml-3" color="primary" @click="connectWallet" v-if="!connected">
+        <v-btn
+          depressed
+          rounded
+          outlined
+          elevation="0"
+          class="ml-3"
+          color="primary"
+          @click="connectWallet"
+          v-if="!connected"
+        >
           Connect Wallet
         </v-btn>
-        <v-btn depressed rounded outlined elevation="0" class="ml-3" color="primary" v-if="connected" text :max-width="150">
-          <span class="text-truncate" style="max-width:120px">{{ address }}</span>
+        <v-btn
+          depressed
+          rounded
+          outlined
+          elevation="0"
+          class="ml-3"
+          color="primary"
+          v-if="connected"
+          text
+          :max-width="150"
+        >
+          <span class="text-truncate" style="max-width: 120px">{{
+            address
+          }}</span>
         </v-btn>
       </v-app-bar>
       <v-container>
@@ -52,34 +78,36 @@
 </template>
 
 <script>
+import githublogo from "../static/github.png";
 import bridge from "../static/bridge.png";
 import { ethers } from "ethers";
 export default {
   data() {
     return {
       bridge,
+      githublogo,
       links: [
         { name: "Register", to: "/register" },
         { name: "Deposit", to: "/deposit" },
         { name: "Withdraw", to: "/withdraw" },
         // { name: "Query", to: "/query" },
         { name: "Add Token", to: "/addtoken" },
-        { name: "Deposit By Address", to: "/anydeposit"},
-        { name: "Withdraw To Address(WIP)", to: "/anywithdraw"},
+        { name: "Deposit By Address", to: "/anydeposit" },
+        { name: "Withdraw To Address(WIP)", to: "/anywithdraw" },
         // {name: "", to: ""},
       ],
     };
   },
   computed: {
-    connected(){
-      return this.$store.state.connected
+    connected() {
+      return this.$store.state.connected;
     },
-    address(){
-      return this.$store.state.address
-    }
+    address() {
+      return this.$store.state.address;
+    },
   },
   mounted() {
-    this.connectWallet()
+    this.connectWallet();
   },
   methods: {
     redirect(to) {
@@ -89,10 +117,10 @@ export default {
       const accounts = await window.ethereum.request({
         method: "eth_requestAccounts",
       });
-      this.register(accounts[0])
+      this.register(accounts[0]);
       // console.log(accounts[0]);
 
-      this.$store.commit('connect', accounts[0])
+      this.$store.commit("connect", accounts[0]);
 
       const chainId = await window.ethereum.request({ method: "eth_chainId" });
       if (chainId != "0x120c7") {
@@ -117,6 +145,9 @@ export default {
         public_key: checked,
       });
       localStorage.setItem("user", JSON.stringify(result.data.user.key));
+    },
+    toGithub(){
+      window.open("https://github.com/zed-wong/mvm-bridge")
     }
   },
 };

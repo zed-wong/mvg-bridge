@@ -147,7 +147,7 @@ export default {
       localStorage.setItem("user", JSON.stringify(result.data.user.key));
     },
     toGithub(){
-      window.open("https://github.com/zed-wong/mvm-bridge")
+      window.open("https://github.com/zed-wong/zed-wong.github.io")
     }
   },
 };

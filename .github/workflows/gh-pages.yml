@@ -28,7 +28,7 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
-      # - run: yarn install
+      - run: yarn install
       - run: export NODE_OPTIONS=--openssl-legacy-provider
       - run: yarn generate
 

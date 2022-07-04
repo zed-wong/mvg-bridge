@@ -98,7 +98,7 @@
 </template>
 
 <script>
-import MixinClient from "@/helpers/mixin";
+import {MixinClient,NewClient} from "@/helpers/mixin";
 import assets from "../assets/assets.json";
 
 export default {
@@ -153,7 +153,13 @@ export default {
       } else {
         this.loader = "selectTokenLoading";
       }
-      let asset = await MixinClient.readAsset(assetID);
+      let client;
+      let user = localStorage.getItem('user')
+      if (user){
+        user = JSON.parse(user);
+        client = NewClient(user.client_id, user.session_id, user.private_key)
+      }
+      let asset = await client.readAsset(assetID);
       this.dpChain = await this.getAssetChainName(asset.chain_id);
       this.dpAddr = asset.deposit_entries[0].destination;
       if (asset.deposit_entries[0].tag) {

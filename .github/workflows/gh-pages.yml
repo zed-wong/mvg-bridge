@@ -28,8 +28,8 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
-      - run: npm install
-      - run: npm run generate
+      - run: yarn install
+      - run: yarn generate
 
       - name: deploy
         uses: peaceiris/actions-gh-pages@v3

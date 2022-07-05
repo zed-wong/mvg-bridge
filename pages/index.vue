@@ -83,7 +83,7 @@ export default {
         },
         {
           name: "Verify User",
-          intro: "Verify user before claim faucet, a useless sample for building faucet.",
+          intro: "Verify user before claim faucet, a sample for building faucet.",
           to: "verify",
           btntext: "Verify",
         },

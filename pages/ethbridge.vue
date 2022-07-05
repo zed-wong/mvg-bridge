@@ -2,7 +2,7 @@
   <v-row class="d-flex justify-center mt-5">
     <v-col cols="12" class="text-center">
       <span class="text-h5 font-weight-normal">
-        Buy XIN in MVM Mainnet through ETH Mainnet</span
+        Buy XIN in MVM Mainnet through ETH Mainnet (Metamask)</span
       >
     </v-col>
     <v-col cols="12" class="mt-5">

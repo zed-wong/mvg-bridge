@@ -18,7 +18,7 @@
           pt-2
         "
       >
-        Enter user metamask address to verify if the user is eligible to claim faucet. <br/> A useless sample for building faucet. (max tx limit:10)
+        Enter user metamask address to verify if the user is eligible to claim faucet. <br/> A sample for building faucet. (max tx limit:10)
       </span>
       <v-text-field
         filled

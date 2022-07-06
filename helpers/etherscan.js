@@ -49,3 +49,13 @@ export async function getETHAddressExistTime(address) {
     console.log(error)
   }
 }
+
+export async function getETHEstimatedGas() {
+  let url = `https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=${ethscan_code}`;
+  try {
+    let resp = await axios.get(url);
+    return resp.data.result
+  } catch(error) {
+    console.log(error)
+  }
+}

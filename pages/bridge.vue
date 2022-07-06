@@ -4,7 +4,7 @@
       <span class="text-h5 font-weight-normal"> Bridge <br /> </span>
       <div class="mt-3">
         <span class="font-weight-light" style="font-size: 12px">
-          Powered By Zed Wong and MixPay
+          Powered By MixPay
         </span>
       </div>
     </v-col>
@@ -36,7 +36,6 @@
         placeholder="From"
         v-model="from"
         :rules="fromRules"
-        @change="checkBalance"
         solo
         flat
       />
@@ -86,14 +85,14 @@
     </v-col>
     <v-col cols="12" class="mt-3 pl-0" v-if="priceGot">
       <v-list-item>
-        <span style="font-weight:300"> Price </span>
+        <span style="font-weight: 300"> Price </span>
         <v-spacer />
-        <span style="font-weight:500"> {{ priceString }} </span>
+        <span style="font-weight: 500"> {{ priceString }} </span>
       </v-list-item>
       <v-list-item>
-        <span style="font-weight:300"> Route </span>
+        <span style="font-weight: 300"> Route </span>
         <v-spacer />
-        <span style="font-weight:500"> {{ routeString }} </span>
+        <span style="font-weight: 500"> {{ routeString }} </span>
       </v-list-item>
     </v-col>
     <v-col cols="12" class="text-center">
@@ -130,7 +129,9 @@
       >
         <v-list-item>
           <v-list-item-content>
-            <v-list-item-title> Destination: {{ destinationAddress }}</v-list-item-title>
+            <v-list-item-title>
+              Destination: {{ destinationAddress }}</v-list-item-title
+            >
           </v-list-item-content>
         </v-list-item>
       </v-card>
@@ -265,29 +266,33 @@ export default {
   },
   methods: {
     async connectWallet() {
-      const accounts = await window.ethereum.request({
-        method: "eth_requestAccounts",
-      });
-      this.register(accounts[0]);
-      // console.log(accounts[0]);
+      try {
+        const accounts = await window.ethereum.request({
+          method: "eth_requestAccounts",
+        });
+        this.register(accounts[0]);
+        // console.log(accounts[0]);
 
-      this.$store.commit("connect", accounts[0]);
-
-      const chainId = await window.ethereum.request({ method: "eth_chainId" });
-      if (chainId != "0x1") {
-        try {
+        this.$store.commit("connect", accounts[0]);
+        const chainId = await window.ethereum.request({
+          method: "eth_chainId",
+        });
+        if (chainId != "0x1") {
           await window.ethereum.request({
             method: "wallet_switchEthereumChain",
             params: [{ chainId: "0x1" }],
           });
-        } catch (error) {
-          if (error.code === 4902) {
-            await window.ethereum.request({
-              method: "wallet_addEthereumChain",
-              params: chain,
-            });
-          }
         }
+      } catch (error) {
+        if (error.code === 4902) {
+          await window.ethereum.request({
+            method: "wallet_addEthereumChain",
+            params: chain,
+          });
+        }
+        console.log(error);
+        this.errorMessage = error;
+        this.snackbar = true;
       }
     },
     async register(Address) {
@@ -395,7 +400,7 @@ export default {
         chainId: 0x1,
       };
       try {
-        let txHash = await provider.sendTransaction(transactionParameters)
+        let txHash = await provider.sendTransaction(transactionParameters);
         console.log(`https://scan.mvm.dev/tx/${txHash}`);
       } catch (error) {
         this.errorMessage = error;
@@ -403,19 +408,19 @@ export default {
         console.log("deposit error:", error);
       }
     },
-    async getBalance(){
-      this.balance = await provider.getBalance()._hex
+    async getBalance() {
+      this.balance = await provider.getBalance()._hex;
     },
-    async checkBalance(){
-      console.log("check balance")
+    async checkBalance() {
+      console.log("check balance");
       if (Number(this.from) > this.balance) {
-        console.log(this.balance)
-        this.fromValid = false
-        this.createPaymentBtn = "Insufficient Balance"
-        return
+        console.log(this.balance);
+        this.fromValid = false;
+        this.createPaymentBtn = "Insufficient Balance";
+        return;
       }
-      this.createPaymentBtn = "Create Payment"
-    }
+      this.createPaymentBtn = "Create Payment";
+    },
   },
 };
 </script>

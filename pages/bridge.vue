@@ -122,17 +122,30 @@
     </v-col>
     <v-col cols="12" class="d-flex justify-center" v-if="paymentCreated">
       <v-card
-        height="200px"
+        height="500px"
         width="600px"
         elevation="0"
-        class="grey lighten-2 mt-3"
+        v-if="destinationAddress.length != 0"
+        class="mt-5"
       >
         <v-list-item>
-          <v-list-item-content>
-            <v-list-item-title>
-              Destination: {{ destinationAddress }}</v-list-item-title
-            >
-          </v-list-item-content>
+          <span style="font-weight: 300"> Destination </span>
+          <v-spacer />
+          <span style="font-weight: 500"> {{ destinationAddress }} </span>
+        </v-list-item>
+        <v-list-item>
+          <span style="font-weight: 300"> NetWork </span>
+          <v-spacer />
+          <span style="font-weight: 500"> {{ select.network }} Mainnet </span>
+        </v-list-item>
+        <v-list-item>
+          <span style="font-weight: 300"> Transfer Amount </span>
+          <v-spacer />
+          <span style="font-weight: 500"> {{ from }} {{ select.symbol }} </span>
+        </v-list-item>
+
+        <v-list-item class="d-flex justify-center mt-2">
+          <vue-qrcode :value="destinationAddress" :options="{ width: 400 }" />
         </v-list-item>
       </v-card>
     </v-col>
@@ -155,6 +168,7 @@
 // 4. Track tx by calling Mixpay API.
 import PaymentAssets from "@/assets/mixpay/paymentAssets.json";
 import SettlementAssets from "@/assets/mixpay/settlementAssets.json";
+import VueQrcode from "@chenfengyuan/vue-qrcode";
 import { provider } from "@/helpers/registry";
 import { v4 as uuidv4 } from "uuid";
 import { ethers } from "ethers";
@@ -224,8 +238,13 @@ export default {
             this.fromValid = false;
             return `Max Amount is ${this.select.maxPaymentAmount}`;
           }
+          if (v && v > this.balance) {
+            this.fromValid = false;
+            this.createPaymentBtn = "Insufficient Balance";
+            return `Insufficient Balance`;
+          }
+          this.createPaymentBtn = "Create Payment";
           this.estimatePayment();
-          this.fromValid = true;
           return true;
         },
       ],
@@ -239,6 +258,9 @@ export default {
       errorMessage: "",
       snackbar: false,
     };
+  },
+  components: {
+    VueQrcode,
   },
   watch: {
     select(newValue, oldValue) {
@@ -260,9 +282,9 @@ export default {
       return this.$store.state.address;
     },
   },
-  mounted() {
+  async mounted() {
     this.connectWallet();
-    this.getBalance();
+    await this.getBalance();
   },
   methods: {
     async connectWallet() {
@@ -316,19 +338,20 @@ export default {
               quoteAssetId: this.select1.assetId,
               paymentAmount: this.from,
               isChain: 1,
+              expireSeconds: 86400,
             }
           );
           let data = result.data.data;
           console.log(data);
 
-          if (this.select1.chainAsset.symbol == "ETH") {
+          console.log(this.select, this.select.chainAsset.symbol);
+          if (this.select.chainAsset.symbol == "ETH") {
             this.createMetamaskTx(data.destination, this.from);
           } else {
-            // Print QR code
+            this.destinationAddress = data.destination;
+            this.paymentCreated = true;
           }
-          this.destinationAddress = data.destination;
           this.to = data.quoteAmount;
-          this.paymentCreated = true;
         }
       } catch (error) {
         console.log(error);
@@ -339,6 +362,7 @@ export default {
     },
     async estimatePayment() {
       this.paymentCreated = false;
+      this.fromValid = false;
       this.fetching = true;
       try {
         if (this.select != "" && this.select1 != "" && this.from != "") {
@@ -372,6 +396,7 @@ export default {
         this.snackbar = true;
         return;
       }
+      this.fromValid = true;
       this.fetching = false;
     },
     async getPaymentInfo(trace) {
@@ -401,7 +426,7 @@ export default {
       };
       try {
         let txHash = await provider.sendTransaction(transactionParameters);
-        console.log(`https://scan.mvm.dev/tx/${txHash}`);
+        console.log(`https://etherscan.io/tx/${txHash}`);
       } catch (error) {
         this.errorMessage = error;
         this.snackbar = true;

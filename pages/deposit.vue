@@ -35,7 +35,7 @@
       </span>
     </v-col>
     <v-col cols="12" class="d-flex justify-center">
-      <v-switch v-model="specific" :label="`Specific asset: ${specific}`" />
+      <v-switch v-model="specific" label="Specific asset" />
     </v-col>
     <v-col cols="6" v-if="specific">
       <v-select

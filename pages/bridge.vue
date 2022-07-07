@@ -4,7 +4,7 @@
       <span class="text-h5 font-weight-normal"> Bridge <br /> </span>
       <div class="mt-3">
         <span class="font-weight-light" style="font-size: 12px">
-          Written By Zed Wong. Powered By MixPay
+          Deposit to MVM Mainnet
         </span>
       </div>
     </v-col>
@@ -123,17 +123,29 @@
             {{ createPaymentBtn }}
           </v-btn>
         </template>
+        <!-- For Other network tx -->
         <v-card
           flat
+          class="px-3"
           rounded="xl"
-          height="550px"
+          height="600px"
           width="600px"
-          v-if="destinationAddress.length != 0"
+          v-if="select.chainAsset.symbol != 'ETH'"
         >
-          <v-list-item class="pt-5">
+          <v-col cols="12" class="pt-4 pb-0 d-flex justify-end">
+            <v-icon @click="dialog = false"> mdi-close</v-icon>
+          </v-col>
+          <div class="pb-2 text-center" style="font-size: 18px">
+            <span> Send </span>
+            <span class="font-weight-bold">
+              {{ from }} {{ select.symbol }}</span
+            >
+            <span> from {{ select.network }} Mainnet to MVM Mainnet </span>
+          </div>
+          <v-list-item class="pt-3">
             <span style="font-weight: 300"> Destination </span>
             <v-spacer />
-            <span style="font-weight: 500"> {{ destinationAddress }} </span>
+            <span style="font-weight: 500"> {{ paymentData.destination }} </span>
           </v-list-item>
           <v-list-item>
             <span style="font-weight: 300"> NetWork </span>
@@ -156,13 +168,17 @@
                 </v-icon>
               </template>
               <span>
-                Must complete payment before timeout, otherwise the payment will
-                fail</span
+                Please complete payment before timeout, otherwise the payment
+                will fail</span
               >
             </v-tooltip>
             <v-spacer />
-            <vac :end-time="new Date(Number(expire)*1000)">
-              <span slot="process" slot-scope="{ timeObj } " style="font-weight: 500">
+            <vac :end-time="new Date(Number(paymentData.expire) * 1000)">
+              <span
+                slot="process"
+                slot-scope="{ timeObj }"
+                style="font-weight: 500"
+              >
                 {{ timeObj.h }} h {{ timeObj.m }} m {{ timeObj.s }} s
               </span>
               <span slot="finish">Expired, please create a new payment</span>
@@ -171,11 +187,50 @@
           <v-hover>
             <v-list-item class="d-flex justify-center mt-2">
               <vue-qrcode
-                :value="destinationAddress"
+                :value="paymentData.destination"
                 :options="{ width: 300 }"
               />
             </v-list-item>
           </v-hover>
+        </v-card>
+        <!-- For ETH Mainnet Metamask tx -->
+        <v-card
+          flat
+          v-else
+          rounded="xl"
+          width="600px"
+          height="300px"
+          class="px-3"
+        >
+          <v-col cols="12" class="pt-5 pb-0 d-flex justify-end">
+            <v-icon @click="dialog = false"> mdi-close</v-icon>
+          </v-col>
+          <div class="pb-3 text-center" style="font-size: 18px">
+            <span> Send </span>
+            <span class="font-weight-bold">
+              {{ from }} {{ select.symbol }}</span
+            >
+            <span> from Ethereum Mainnet to MVM Mainnet </span>
+          </div>
+          <div class="pt-2 pb-1 text-center" style="font-size: 14px">
+            <span> Estimated Received: </span>
+          </div>
+          <div
+            class="pb-2 text-center font-weight-bold"
+            style="font-size: 14px"
+          >
+            <span> {{ to }} {{ select1.symbol }} </span>
+          </div>
+          <div
+            class="pt-3 pb-2 text-center font-weight-light"
+            style="font-size: 10px"
+          >
+            <span> Please make sure your wallet is <br />connected to the </span
+            ><span style="font-weight: 500">Ethereum</span><span> Network.</span>
+          </div>
+          <v-col cols="12" class="d-flex justify-center">
+            <v-btn depressed x-large rounded @click="createMetamaskTx(paymentData.destination, from)"> Send </v-btn>
+          </v-col>
         </v-card>
       </v-dialog>
     </v-col>
@@ -198,17 +253,15 @@
 // 4. Track tx by calling Mixpay API.
 import PaymentAssets from "@/assets/mixpay/paymentAssets.json";
 import SettlementAssets from "@/assets/mixpay/settlementAssets.json";
-// import vueAwesomeCountdown from "vue-awesome-countdown";
 import VueQrcode from "@chenfengyuan/vue-qrcode";
+// import { NetworkBaseClient } from "mixin-node-sdk";
 import { provider } from "@/helpers/registry";
 import { v4 as uuidv4 } from "uuid";
 import { ethers } from "ethers";
-// Vue.use(vueAwesomeCountdown, 'vac')
 
 export default {
   components: {
     VueQrcode,
-    // vueAwesomeCountdown,
   },
   data() {
     return {
@@ -223,7 +276,7 @@ export default {
         network: "Ethereum(ERC20)",
         onChainSupported: true,
         minPaymentAmount: "0.00000879",
-        maxPaymentAmount: "8.79700901",
+        maxPaymentAmount: "9",
         chainAsset: {
           id: "43d61dcd-e413-450d-80b8-101d5e903357",
           name: "Ether",
@@ -241,7 +294,7 @@ export default {
         network: "Ethereum(ERC20)",
         onChainSupported: false,
         minPaymentAmount: "0.00006441",
-        maxPaymentAmount: "64.41710431",
+        maxPaymentAmount: "65",
         chainAsset: {
           id: "43d61dcd-e413-450d-80b8-101d5e903357",
           name: "Ether",
@@ -251,7 +304,6 @@ export default {
         },
       },
       dialog: false,
-      expire: 0.0,
       balance: 0.0,
       fetching: false,
       priceGot: false,
@@ -276,11 +328,6 @@ export default {
             this.fromValid = false;
             return `Max Amount is ${this.select.maxPaymentAmount}`;
           }
-          // if (v && v > this.balance) {
-          //   this.fromValid = false;
-          //   this.createPaymentBtn = "Insufficient Balance";
-          //   return `Insufficient Balance`;
-          // }
           this.createPaymentBtn = "Create Payment";
           this.estimatePayment();
           return true;
@@ -289,8 +336,7 @@ export default {
       fromValid: false,
 
       // Payment
-      estimatedAmount: "",
-      destinationAddress: "",
+      paymentData: {},
 
       // Error
       errorMessage: "",
@@ -327,7 +373,6 @@ export default {
           method: "eth_requestAccounts",
         });
         this.register(accounts[0]);
-        // console.log(accounts[0]);
 
         this.$store.commit("connect", accounts[0]);
         const chainId = await window.ethereum.request({
@@ -359,6 +404,11 @@ export default {
       localStorage.setItem("user", JSON.stringify(result.data.user.key));
     },
     async createPayment() {
+      if (!this.select.onChainSupported){
+        this.errorMessage = "This asset is not supported yet.";
+        this.snackbar = true;
+        return;
+      }
       this.createLoading = true;
       try {
         if (this.select != "" && this.select1 != "" && this.from != "") {
@@ -376,17 +426,14 @@ export default {
             }
           );
           let data = result.data.data;
-          // console.log(data);
-
-          if (this.select.chainAsset.symbol == "ETH") {
-            this.createMetamaskTx(data.destination, this.from);
-          } else {
-            this.destinationAddress = data.destination;
-            this.expire = data.expire;
-            this.paymentCreated = true;
-            this.dialog = true;
-          }
+          console.log(data);
+          
+          this.paymentData = data;
+          this.paymentCreated = true;
+          this.dialog = true;
           this.to = data.estimatedSettlementAmount;
+
+          localStorage.setItem(data.traceId, JSON.stringify(data))
         }
       } catch (error) {
         console.log(error);
@@ -424,7 +471,7 @@ export default {
       } catch (error) {
         console.log(error);
         if (error.toString().includes("403")) {
-          this.errorMessage = "Error 403: Amount is too large or too small";
+          this.errorMessage = "Error: Amount is too large or too small";
         } else {
           this.errorMessage = error;
         }
@@ -434,10 +481,10 @@ export default {
       this.fromValid = true;
       this.fetching = false;
     },
-    async getPaymentInfo(trace) {
+    async getPaymentResult(trace) {
       try {
         let result = await this.$axios.get(
-          "https://api.mixpay.me/v1/payments_info",
+          "https://api.mixpay.me/v1/payments_result",
           {
             params: {
               traceId: trace,
@@ -446,13 +493,12 @@ export default {
         );
         console.log(result);
       } catch (error) {
+        this.errorMessage = error;
+        this.snackbar = true;
         console.log(error);
       }
     },
     async createMetamaskTx(depositAddress, value) {
-      // let gas = await getETHEstimatedGas();
-      // console.log(gas);
-
       const transactionParameters = {
         from: window.ethereum.selectedAddress,
         to: depositAddress,

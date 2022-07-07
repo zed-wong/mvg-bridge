@@ -4,7 +4,7 @@
       <span class="text-h5 font-weight-normal"> Bridge <br /> </span>
       <div class="mt-3">
         <span class="font-weight-light" style="font-size: 12px">
-          Powered By MixPay
+          Written By Zed Wong. Powered By MixPay
         </span>
       </div>
     </v-col>

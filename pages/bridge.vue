@@ -12,6 +12,7 @@
       <v-select
         solo
         flat
+        cache-items
         v-model="select"
         item-text="symbol"
         :items="payassetList"
@@ -95,6 +96,7 @@
         <span style="font-weight: 500"> {{ routeString }} </span>
       </v-list-item>
     </v-col>
+
     <v-col cols="12" class="text-center">
       <v-btn
         x-large
@@ -107,47 +109,75 @@
       >
         Connect Wallet
       </v-btn>
-      <v-btn
-        x-large
-        rounded
-        depressed
-        v-if="connected"
-        :disabled="!fromValid"
-        @click="createPayment"
-        :loading="createLoading"
-        class="six00-weight mt-5"
-      >
-        {{ createPaymentBtn }}
-      </v-btn>
-    </v-col>
-    <v-col cols="12" class="d-flex justify-center" v-if="paymentCreated">
-      <v-card
-        height="500px"
-        width="600px"
-        elevation="0"
-        v-if="destinationAddress.length != 0"
-        class="mt-5"
-      >
-        <v-list-item>
-          <span style="font-weight: 300"> Destination </span>
-          <v-spacer />
-          <span style="font-weight: 500"> {{ destinationAddress }} </span>
-        </v-list-item>
-        <v-list-item>
-          <span style="font-weight: 300"> NetWork </span>
-          <v-spacer />
-          <span style="font-weight: 500"> {{ select.network }} Mainnet </span>
-        </v-list-item>
-        <v-list-item>
-          <span style="font-weight: 300"> Transfer Amount </span>
-          <v-spacer />
-          <span style="font-weight: 500"> {{ from }} {{ select.symbol }} </span>
-        </v-list-item>
-
-        <v-list-item class="d-flex justify-center mt-2">
-          <vue-qrcode :value="destinationAddress" :options="{ width: 400 }" />
-        </v-list-item>
-      </v-card>
+      <v-dialog v-model="dialog" width="600px" v-if="connected">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            x-large
+            rounded
+            depressed
+            :disabled="!fromValid"
+            @click="createPayment"
+            :loading="createLoading"
+            class="six00-weight mt-5"
+          >
+            {{ createPaymentBtn }}
+          </v-btn>
+        </template>
+        <v-card
+          flat
+          rounded="xl"
+          height="550px"
+          width="600px"
+          v-if="destinationAddress.length != 0"
+        >
+          <v-list-item class="pt-5">
+            <span style="font-weight: 300"> Destination </span>
+            <v-spacer />
+            <span style="font-weight: 500"> {{ destinationAddress }} </span>
+          </v-list-item>
+          <v-list-item>
+            <span style="font-weight: 300"> NetWork </span>
+            <v-spacer />
+            <span style="font-weight: 500"> {{ select.network }} Mainnet </span>
+          </v-list-item>
+          <v-list-item>
+            <span style="font-weight: 300"> Transfer Amount </span>
+            <v-spacer />
+            <span style="font-weight: 500">
+              {{ from }} {{ select.symbol }}
+            </span>
+          </v-list-item>
+          <v-list-item>
+            <span style="font-weight: 300"> Timeout </span>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-icon class="ml-2" size="16px" v-bind="attrs" v-on="on">
+                  mdi-alert-circle-outline
+                </v-icon>
+              </template>
+              <span>
+                Must complete payment before timeout, otherwise the payment will
+                fail</span
+              >
+            </v-tooltip>
+            <v-spacer />
+            <vac :end-time="new Date(Number(expire)*1000)">
+              <span slot="process" slot-scope="{ timeObj } " style="font-weight: 500">
+                {{ timeObj.h }} h {{ timeObj.m }} m {{ timeObj.s }} s
+              </span>
+              <span slot="finish">Expired, please create a new payment</span>
+            </vac>
+          </v-list-item>
+          <v-hover>
+            <v-list-item class="d-flex justify-center mt-2">
+              <vue-qrcode
+                :value="destinationAddress"
+                :options="{ width: 300 }"
+              />
+            </v-list-item>
+          </v-hover>
+        </v-card>
+      </v-dialog>
     </v-col>
 
     <v-snackbar v-model="snackbar">
@@ -168,12 +198,18 @@
 // 4. Track tx by calling Mixpay API.
 import PaymentAssets from "@/assets/mixpay/paymentAssets.json";
 import SettlementAssets from "@/assets/mixpay/settlementAssets.json";
+// import vueAwesomeCountdown from "vue-awesome-countdown";
 import VueQrcode from "@chenfengyuan/vue-qrcode";
 import { provider } from "@/helpers/registry";
 import { v4 as uuidv4 } from "uuid";
 import { ethers } from "ethers";
+// Vue.use(vueAwesomeCountdown, 'vac')
 
 export default {
+  components: {
+    VueQrcode,
+    // vueAwesomeCountdown,
+  },
   data() {
     return {
       to: "",
@@ -214,6 +250,8 @@ export default {
             "https://app.mixpay.me/fiats/43d61dcd-e413-450d-80b8-101d5e903357.png",
         },
       },
+      dialog: false,
+      expire: 0.0,
       balance: 0.0,
       fetching: false,
       priceGot: false,
@@ -238,11 +276,11 @@ export default {
             this.fromValid = false;
             return `Max Amount is ${this.select.maxPaymentAmount}`;
           }
-          if (v && v > this.balance) {
-            this.fromValid = false;
-            this.createPaymentBtn = "Insufficient Balance";
-            return `Insufficient Balance`;
-          }
+          // if (v && v > this.balance) {
+          //   this.fromValid = false;
+          //   this.createPaymentBtn = "Insufficient Balance";
+          //   return `Insufficient Balance`;
+          // }
           this.createPaymentBtn = "Create Payment";
           this.estimatePayment();
           return true;
@@ -258,9 +296,6 @@ export default {
       errorMessage: "",
       snackbar: false,
     };
-  },
-  components: {
-    VueQrcode,
   },
   watch: {
     select(newValue, oldValue) {
@@ -282,9 +317,8 @@ export default {
       return this.$store.state.address;
     },
   },
-  async mounted() {
+  mounted() {
     this.connectWallet();
-    await this.getBalance();
   },
   methods: {
     async connectWallet() {
@@ -335,23 +369,24 @@ export default {
               orderId: uuidv4(),
               paymentAssetId: this.select.assetId,
               settlementAssetId: this.select1.assetId,
-              quoteAssetId: this.select1.assetId,
+              quoteAssetId: this.select.assetId,
               paymentAmount: this.from,
               isChain: 1,
               expireSeconds: 86400,
             }
           );
           let data = result.data.data;
-          console.log(data);
+          // console.log(data);
 
-          console.log(this.select, this.select.chainAsset.symbol);
           if (this.select.chainAsset.symbol == "ETH") {
             this.createMetamaskTx(data.destination, this.from);
           } else {
             this.destinationAddress = data.destination;
+            this.expire = data.expire;
             this.paymentCreated = true;
+            this.dialog = true;
           }
-          this.to = data.quoteAmount;
+          this.to = data.estimatedSettlementAmount;
         }
       } catch (error) {
         console.log(error);
@@ -379,7 +414,7 @@ export default {
           );
           let data = result.data.data;
           // console.log(data);
-          this.to = data.quoteAmount;
+          this.to = data.estimatedSettlementAmount;
 
           let price = (this.to / this.from).toFixed(8);
           this.priceString = `1 ${this.select.symbol} = ${price} ${this.select1.symbol}`;
@@ -439,7 +474,6 @@ export default {
     async checkBalance() {
       console.log("check balance");
       if (Number(this.from) > this.balance) {
-        console.log(this.balance);
         this.fromValid = false;
         this.createPaymentBtn = "Insufficient Balance";
         return;
@@ -453,5 +487,10 @@ export default {
 <style>
 .six00-weight {
   font-weight: 600;
+}
+.theme--light.v-text-field--outline:not(.v-input--is-focused):not(.v-input--has-state)
+  > .v-input__control
+  > .v-input__slot:hover {
+  background-color: ;
 }
 </style>

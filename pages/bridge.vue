@@ -1,7 +1,7 @@
 <template>
   <v-row>
     <v-col cols="12" class="mt-10 mb-5 text-center d-flex flex-column">
-      <span class="text-h5 font-weight-normal"> Bridge <br /> </span>
+      <span class="text-h5 font-weight-normal"> MVM Bridge <br /> </span>
       <div class="mt-3">
         <span class="font-weight-light" style="font-size: 12px">
           Deposit to MVM Mainnet
@@ -145,7 +145,9 @@
           <v-list-item class="pt-3">
             <span style="font-weight: 300"> Destination </span>
             <v-spacer />
-            <span style="font-weight: 500"> {{ paymentData.destination }} </span>
+            <span style="font-weight: 500">
+              {{ paymentData.destination }}
+            </span>
           </v-list-item>
           <v-list-item>
             <span style="font-weight: 300"> NetWork </span>
@@ -196,7 +198,7 @@
         <!-- For ETH Mainnet Metamask tx -->
         <v-card
           flat
-          v-else
+          v-if="select.chainAsset.symbol == 'ETH' && !txSent"
           rounded="xl"
           width="600px"
           height="300px"
@@ -226,11 +228,93 @@
             style="font-size: 10px"
           >
             <span> Please make sure your wallet is <br />connected to the </span
-            ><span style="font-weight: 500">Ethereum</span><span> Network.</span>
+            ><span style="font-weight: 500">Ethereum</span
+            ><span> Network.</span>
           </div>
           <v-col cols="12" class="d-flex justify-center">
-            <v-btn depressed x-large rounded @click="createMetamaskTx(paymentData.destination, from)"> Send </v-btn>
+            <v-btn
+              depressed
+              x-large
+              rounded
+              @click="createMetamaskTx(paymentData.destination, from, paymentData.traceId)"
+            >
+              Send
+            </v-btn>
           </v-col>
+        </v-card>
+        <!-- After Click on Send -->
+        <v-card
+          flat
+          v-if="txSent && !txConfirmed"
+          rounded="xl"
+          width="600px"
+          height="250px"
+          class="px-3"
+        >
+          <v-col cols="12" class="pt-5 pb-0 d-flex justify-end">
+            <v-icon @click="dialog = false"> mdi-close</v-icon>
+          </v-col>
+          <div class="py-3 text-center">
+            <v-progress-circular
+              :size="80"
+              width="3"
+              color="primary"
+              indeterminate
+            ></v-progress-circular>
+          </div>
+          <div class="mt-5 text-center">
+            <span style="font-weight: 500; font-size: 20px">
+              Waiting For Confirmation
+            </span>
+          </div>
+        </v-card>
+        <!-- After Send success -->
+        <v-card
+          v-if="txConfirmed && txSuccess"
+          rounded="xl"
+          width="600px"
+          height="300px"
+          class="px-3"
+        >
+          <v-col cols="12" class="pt-5 pb-0 d-flex justify-end">
+            <v-icon @click="dialog = false"> mdi-close</v-icon>
+          </v-col>
+          <div class="py-3 text-center">
+            <v-icon size="96px"> mdi-arrow-up-thin-circle-outline </v-icon>
+          </div>
+          <div class="mt-3 text-center">
+            <span style="font-weight: 500; font-size: 20px">
+              Transaction Submitted
+            </span>
+          </div>
+          <div class="mt-3 text-center">
+            <a :href="txLink" style="text-decoration: none">
+              <span style="font-weight: 300; font-size: 14px">
+                View On Explorer
+              </span>
+            </a>
+          </div>
+        </v-card>
+
+        <!-- After Send canceled -->
+        <v-card
+          v-if="txConfirmed && !txSuccess"
+          rounded="xl"
+          width="600px"
+          height="250px"
+          class="px-3"
+        >
+          <v-col cols="12" class="pt-5 pb-0 d-flex justify-end">
+            <v-icon @click="dialog = false"> mdi-close</v-icon>
+          </v-col>
+          <div class="py-3 text-center">
+            <v-icon size="72px" color="red"> mdi-alert-circle-outline </v-icon>
+          </div>
+          <div class="mt-3 text-center">
+            <span style="font-weight: 400; font-size: 18px; color:red">
+              {{ txErrorText }}
+            </span>
+          </div>
         </v-card>
       </v-dialog>
     </v-col>
@@ -303,7 +387,6 @@ export default {
             "https://app.mixpay.me/fiats/43d61dcd-e413-450d-80b8-101d5e903357.png",
         },
       },
-      dialog: false,
       balance: 0.0,
       fetching: false,
       priceGot: false,
@@ -320,11 +403,11 @@ export default {
       fromRules: [
         (v) => {
           if (!v) return "Please enter amount";
-          if (v && v <= Number(this.select.minPaymentAmount)) {
+          if (v && v < Number(this.select.minPaymentAmount)) {
             this.fromValid = false;
             return `Min Amount is ${this.select.minPaymentAmount}`;
           }
-          if (v && v >= Number(this.select.maxPaymentAmount)) {
+          if (v && v > Number(this.select.maxPaymentAmount)) {
             this.fromValid = false;
             return `Max Amount is ${this.select.maxPaymentAmount}`;
           }
@@ -336,7 +419,13 @@ export default {
       fromValid: false,
 
       // Payment
+      dialog: false,
       paymentData: {},
+      txSent: false,
+      txConfirmed: false,
+      txSuccess: false,
+      txLink: "https://etherscan.io/tx/",
+      txErrorText: "",
 
       // Error
       errorMessage: "",
@@ -404,11 +493,14 @@ export default {
       localStorage.setItem("user", JSON.stringify(result.data.user.key));
     },
     async createPayment() {
-      if (!this.select.onChainSupported){
+      if (!this.select.onChainSupported) {
         this.errorMessage = "This asset is not supported yet.";
         this.snackbar = true;
         return;
       }
+      this.txSent = false;
+      this.txConfirmed = false;
+      this.txSuccess = false;
       this.createLoading = true;
       try {
         if (this.select != "" && this.select1 != "" && this.from != "") {
@@ -426,19 +518,20 @@ export default {
             }
           );
           let data = result.data.data;
-          console.log(data);
-          
+          // console.log(data);
+
           this.paymentData = data;
           this.paymentCreated = true;
           this.dialog = true;
           this.to = data.estimatedSettlementAmount;
 
-          localStorage.setItem(data.traceId, JSON.stringify(data))
+          localStorage.setItem(data.traceId, JSON.stringify(data));
         }
       } catch (error) {
         console.log(error);
         this.errorMessage = error;
         this.snackbar = true;
+        this.dialog = false;
       }
       this.createLoading = false;
     },
@@ -481,6 +574,33 @@ export default {
       this.fromValid = true;
       this.fetching = false;
     },
+    async createMetamaskTx(depositAddress, value, trace) {
+      this.txSent = true;
+      const transactionParameters = {
+        from: window.ethereum.selectedAddress,
+        to: depositAddress,
+        value: ethers.utils.parseUnits(value, "ether").toHexString(),
+        chainId: 0x1,
+      };
+      try {
+        let tx = await provider.sendTransaction(transactionParameters);
+        console.log(tx)
+        this.txLink = `https://etherscan.io/tx/${tx.hash}`;
+        this.txConfirmed = true;
+        this.txSuccess = true;
+      } catch (error) {
+        if (error.code === "INSUFFICIENT_FUNDS") {
+          this.txErrorText = "Insufficient Balance."
+        }
+        if (error.code === 4001) {
+          this.txErrorText = "Transaction rejected."
+        }
+        this.txConfirmed = true;
+        this.txSuccess = false;
+        console.log(error);
+        localStorage.removeItem(trace)
+      }
+    },
     async getPaymentResult(trace) {
       try {
         let result = await this.$axios.get(
@@ -498,34 +618,18 @@ export default {
         console.log(error);
       }
     },
-    async createMetamaskTx(depositAddress, value) {
-      const transactionParameters = {
-        from: window.ethereum.selectedAddress,
-        to: depositAddress,
-        value: ethers.utils.parseUnits(value, "ether").toHexString(),
-        chainId: 0x1,
-      };
-      try {
-        let txHash = await provider.sendTransaction(transactionParameters);
-        console.log(`https://etherscan.io/tx/${txHash}`);
-      } catch (error) {
-        this.errorMessage = error;
-        this.snackbar = true;
-        console.log("deposit error:", error);
-      }
-    },
-    async getBalance() {
-      this.balance = await provider.getBalance()._hex;
-    },
-    async checkBalance() {
-      console.log("check balance");
-      if (Number(this.from) > this.balance) {
-        this.fromValid = false;
-        this.createPaymentBtn = "Insufficient Balance";
-        return;
-      }
-      this.createPaymentBtn = "Create Payment";
-    },
+    // async getBalance() {
+    //   this.balance = await provider.getBalance()._hex;
+    // },
+    // async checkBalance() {
+    //   console.log("check balance");
+    //   if (Number(this.from) > this.balance) {
+    //     this.fromValid = false;
+    //     this.createPaymentBtn = "Insufficient Balance";
+    //     return;
+    //   }
+    //   this.createPaymentBtn = "Create Payment";
+    // },
   },
 };
 </script>
@@ -538,5 +642,8 @@ export default {
   > .v-input__control
   > .v-input__slot:hover {
   background-color: ;
+}
+.v-dialog{
+  border-radius: 24px;
 }
 </style>

@@ -42,13 +42,6 @@ export default {
       installed: false,
       items: [
         {
-          name: "Register",
-          intro:
-            "This is the register step which has been done when you connected",
-          to: "register",
-          btntext: "Register",
-        },
-        {
           name: "Deposit From Mixin Messenger",
           intro:
             "Deposit from your Mixin Messenger to your Metamask wallet (MVM mainnet)",
@@ -75,23 +68,29 @@ export default {
           to: "anydeposit",
           btntext: "Deposit",
         },
-        {
-          name: "Withdraw To Address",
-          intro: "Withdraw from your Metamask wallet to any Address.(WIP)",
-          to: "anywithdraw",
-          btntext: "Withdraw",
-        },
-        {
-          name: "Verify User",
-          intro: "Verify user before claim faucet, a sample for building faucet.",
-          to: "verify",
-          btntext: "Verify",
-        },
+        // {
+        //   name: "Withdraw To Address",
+        //   intro: "Withdraw from your Metamask wallet to any Address.(WIP)",
+        //   to: "anywithdraw",
+        //   btntext: "Withdraw",
+        // },
+        // {
+        //   name: "Verify User",
+        //   intro: "Verify user before claim faucet, a sample for building faucet.",
+        //   to: "verify",
+        //   btntext: "Verify",
+        // },
         { 
           name: "Query",
           intro:"Query Asset Address or User Address from Registry contract.",
           to: "query",
           btntext:"Query"
+        },
+        { 
+          name: "Bridge",
+          intro:"Bridge Asset Directly From Other Networks To MVM Mainnet",
+          to: "bridge",
+          btntext:"Bridge"
         },
         // { name: "", intro:"", to: "", btntext:""},
       ],

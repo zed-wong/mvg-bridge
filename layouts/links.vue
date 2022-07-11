@@ -10,7 +10,7 @@
           @click="redirect('/')"
         />
         <span class="font-weight-bold ml-2" @click="redirect('/')">
-          MVM-Bridge
+          MVM Bridge
         </span>
         <v-spacer />
         <v-img :src="githublogo" max-height="22px" max-width="22px" class="mr-3" @click="toGithub"/>
@@ -90,10 +90,11 @@ export default {
         { name: "Register", to: "/register" },
         { name: "Deposit", to: "/deposit" },
         { name: "Withdraw", to: "/withdraw" },
-        // { name: "Query", to: "/query" },
+        { name: "Query", to: "/query" },
         { name: "Add Token", to: "/addtoken" },
         { name: "Deposit By Address", to: "/anydeposit" },
-        { name: "Withdraw To Address(WIP)", to: "/anywithdraw" },
+        { name: "Deposit From Other Network", to: "/bridge"},
+        // { name: "Withdraw To Address(WIP)", to: "/anywithdraw" },
         // {name: "", to: ""},
       ],
     };

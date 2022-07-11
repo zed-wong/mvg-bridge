@@ -236,7 +236,13 @@
               depressed
               x-large
               rounded
-              @click="createMetamaskTx(paymentData.destination, from, paymentData.traceId)"
+              @click="
+                createMetamaskTx(
+                  paymentData.destination,
+                  from,
+                  paymentData.traceId
+                )
+              "
             >
               Send
             </v-btn>
@@ -311,7 +317,7 @@
             <v-icon size="72px" color="red"> mdi-alert-circle-outline </v-icon>
           </div>
           <div class="mt-3 text-center">
-            <span style="font-weight: 400; font-size: 18px; color:red">
+            <span style="font-weight: 400; font-size: 18px; color: red">
               {{ txErrorText }}
             </span>
           </div>
@@ -331,17 +337,18 @@
 </template>
 
 <script>
-// 1. Enter coin type and amount (Chains supported by Mixpay)
-// 2. Call Mixpay API to create payment
-// 3. Call Metamask to transfer Or generate QRcode
-// 4. Track tx by calling Mixpay API.
 import PaymentAssets from "@/assets/mixpay/paymentAssets.json";
 import SettlementAssets from "@/assets/mixpay/settlementAssets.json";
 import VueQrcode from "@chenfengyuan/vue-qrcode";
-// import { NetworkBaseClient } from "mixin-node-sdk";
-import { provider } from "@/helpers/registry";
 import { v4 as uuidv4 } from "uuid";
 import { ethers } from "ethers";
+
+const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+provider.on("network", (newNetwork, oldNetwork) => {
+  if (oldNetwork) {
+    window.location.reload();
+  }
+});
 
 export default {
   components: {
@@ -577,28 +584,28 @@ export default {
     async createMetamaskTx(depositAddress, value, trace) {
       this.txSent = true;
       const transactionParameters = {
-        from: window.ethereum.selectedAddress,
+        from: ethers.utils.getAddress(window.ethereum.selectedAddress),
         to: depositAddress,
         value: ethers.utils.parseUnits(value, "ether").toHexString(),
         chainId: 0x1,
       };
       try {
-        let tx = await provider.sendTransaction(transactionParameters);
-        console.log(tx)
+        let tx = await provider.getSigner().sendTransaction(transactionParameters);
+        console.log(tx);
         this.txLink = `https://etherscan.io/tx/${tx.hash}`;
         this.txConfirmed = true;
         this.txSuccess = true;
       } catch (error) {
         if (error.code === "INSUFFICIENT_FUNDS") {
-          this.txErrorText = "Insufficient Balance."
+          this.txErrorText = "Insufficient Balance.";
         }
         if (error.code === 4001) {
-          this.txErrorText = "Transaction rejected."
+          this.txErrorText = "Transaction rejected.";
         }
         this.txConfirmed = true;
         this.txSuccess = false;
         console.log(error);
-        localStorage.removeItem(trace)
+        localStorage.removeItem(trace);
       }
     },
     async getPaymentResult(trace) {
@@ -643,7 +650,7 @@ export default {
   > .v-input__slot:hover {
   background-color: ;
 }
-.v-dialog{
+.v-dialog {
   border-radius: 24px;
 }
 </style>

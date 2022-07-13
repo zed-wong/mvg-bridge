@@ -1,6 +1,6 @@
 <template>
   <v-row class="justify-center align-self-start" no-gutters>
-    <v-sheet elevation="1" class="pa-9 mt-15 border-rounded" max-width="552px">
+    <v-sheet elevation="2" class="pa-9 mt-15 border-rounded" max-width="552px">
       <v-row class="d-flex flex-column">
         <v-col class="mb-6" style="font-size: 24px">
           <a class="pr-6 font-weight-bold"><span> Deposit </span></a>
@@ -14,11 +14,13 @@
           >
             <div class="d-flex align-center">
               <span class="mr-1 font-weight-light"> From </span>
-              <v-btn depressed small>
+
+              <v-btn depressed small @click.stop="selectNetworkDialog = true">
                 <v-img :src="asset_icon"> </v-img>
                 <span> Ethereum Mainnet </span>
                 <v-icon small> mdi-menu-down </v-icon>
               </v-btn>
+              <select-network />
             </div>
             <v-text-field
               class="from-form my-3"
@@ -48,7 +50,7 @@
               <span class="font-weight-light"> To </span>
               <v-img
                 :src="bridge"
-                max-height="20px"
+                max-height="22px"
                 max-width="20px"
                 class="ml-2"
               >
@@ -63,13 +65,17 @@
         </v-col>
 
         <v-col class="pt-5 px-0">
-          <v-btn depressed block elevation="0" x-large class="border-rounded main-btn white--text" color="#5959d8"> 
-            <span v-if="connected"> 
-              Deposit
-            </span>
-            <span v-else>
-              Connect Wallet
-            </span>
+          <v-btn
+            block
+            x-large
+            depressed
+            elevation="0"
+            color="#5959d8"
+            :disabled="!connected"
+            class="border-rounded main-btn white--text"
+          >
+            <span v-if="connected"> Deposit </span>
+            <span v-else> Connect Wallet </span>
           </v-btn>
         </v-col>
       </v-row>
@@ -78,13 +84,27 @@
 </template>
 
 <script lang="">
+import selectNetwork from "../components/selectNetwork.vue"
 import bridge from "../static/bridge.png";
 
 export default {
+  components:{
+    selectNetwork
+  },
   data() {
     return {
       bridge,
     };
+  },
+  computed: {
+    selectNetworkDialog: {
+      get(){
+        return this.$store.state.selectNetworkDialog;
+      },
+      set(value){
+        this.$store.commit("toggleSelectNetwork", value);
+      }
+    },
   },
   layout: "newbridge",
 };
@@ -106,7 +126,7 @@ export default {
 .v-btn:before {
   opacity: 0 !important;
 }
-.border-rounded.v-btn.v-btn--disabled.v-btn--has-bg {
+.v-btn.v-tbn--block.v-btn--disabled {
   background-color: #f1f4f9;
 }
 .v-ripple__container {

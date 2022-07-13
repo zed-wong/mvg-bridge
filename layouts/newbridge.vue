@@ -1,18 +1,18 @@
 <template>
   <v-app>
     <v-main>
-      <v-app-bar elevation="1" color="#ffffff" class="px-6" v-if="!isMobile">
+      <v-app-bar elevation="0" color="#ffffff" class="px-6 bar-css" v-if="!isMobile">
         <v-img
           :src="bridge"
           max-width="24px"
-          max-height="24px"
+          max-height="26px"
           class="ml-3"
-          @click="redirect('/')"
+          @click="redirect('https://scan.mvm.dev')"
         />
         <span
           class="font-weight-bold ml-3"
           style="font-size: 18px;"
-          @click="redirect('/')"
+          @click="redirect('https://scan.mvm.dev')"
         >
           Bridge
         </span>
@@ -191,5 +191,10 @@ export default {
 .connect-wallet:hover {
   background-color: #5959d8 !important;
   /* border: 0.5px solid #5959d8 !important; */
+}
+.bar-css {
+  border-width: 0 0 thin;
+  border-style: solid;
+  border-bottom-color: rgba(0,0,0,.12) !important;
 }
 </style>

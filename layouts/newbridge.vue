@@ -1,7 +1,13 @@
 <template>
   <v-app>
     <v-main>
-      <v-app-bar elevation="0" color="#ffffff" class="px-6 bar-css" v-if="!isMobile">
+      <v-app-bar
+        elevation="0"
+        color="#ffffff"
+        class="px-6 bar-css"
+        v-if="!isMobile"
+        height="72px"
+      >
         <v-img
           :src="bridge"
           max-width="24px"
@@ -11,7 +17,7 @@
         />
         <span
           class="font-weight-bold ml-3"
-          style="font-size: 18px;"
+          style="font-size: 18px"
           @click="redirect('https://scan.mvm.dev')"
         >
           Bridge
@@ -25,7 +31,7 @@
           @click="connectWallet"
           v-if="!connected"
         >
-          <span style="color:white"> Connect Wallet</span>
+          <span style="color: white"> Connect Wallet</span>
         </v-btn>
 
         <v-btn
@@ -37,10 +43,8 @@
           class="mx-3"
           v-if="connected"
         >
-          <span
-            style="max-width: 100px; font-size: 12px"
-            class="text-truncate px-1"
-            >{{ network }}</span
+          <span style="max-width: 120px; font-size: 12px" class="px-1"
+            >{{ network }} Mainnet</span
           >
         </v-btn>
 
@@ -63,7 +67,11 @@
           >
         </v-btn>
       </v-app-bar>
-      <v-container fluid class="fill-height" style="background-color:#f4f7fa">
+      <v-container
+        fluid
+        class="fill-height content py-0"
+        style="background-color: #f4f7fa"
+      >
         <Nuxt />
       </v-container>
     </v-main>
@@ -189,12 +197,14 @@ export default {
   padding: 0 12px;
 }
 .connect-wallet:hover {
-  background-color: #5959d8 !important;
-  /* border: 0.5px solid #5959d8 !important; */
+  background-color: #1976d2 !important;
 }
 .bar-css {
   border-width: 0 0 thin;
   border-style: solid;
-  border-bottom-color: rgba(0,0,0,.12) !important;
+  border-bottom-color: rgba(0, 0, 0, 0.12) !important;
+}
+.content {
+  height: calc(100vh - 72px);
 }
 </style>

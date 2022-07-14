@@ -1,11 +1,11 @@
 <template>
-  <v-dialog v-model="selectNetworkDialog" class="dialog-css" max-width="400px">
+  <v-dialog v-model="selectTokenDialog" class="dialog-css" max-width="400px">
     <v-sheet class="align-self-start px-9 pt-8">
       <v-row class="d-flex flex-column mb-0">
         <v-col class="align-center d-flex flex-row pr-0">
-          <h1 class="select-network-css">Select Network</h1>
+          <h1 class="select-token-css">Select token</h1>
           <v-spacer />
-          <v-btn icon @click="selectNetworkDialog = false">
+          <v-btn icon @click="selectTokenDialog = false">
             <v-icon> mdi-close </v-icon>
           </v-btn>
         </v-col>
@@ -17,19 +17,32 @@
             hide-details="true"
             class="search-border"
             prepend-inner-icon="mdi-magnify"
-            placeholder="Search network name"
+            placeholder="Search token name"
           />
         </v-col>
         <v-col class="pt-2 px-0">
           <v-list class="overflow-y-auto" height="400px">
             <v-list-item-group>
-              <v-list-item v-for="(item, i) in filteredItems" :key="i" class="px-2" @click="selectedNetwork = item" style="border-radius: 10px">
+              <v-list-item
+                v-for="(item, i) in filteredItems"
+                :key="i"
+                class="px-2"
+                @click="selectedToken = item"
+                style="border-radius: 10px"
+              >
                 <v-list-item-avatar>
                   <v-img :src="item.icon_url" />
                 </v-list-item-avatar>
                 <v-list-item-content>
-                  <v-list-item-title class="font-weight-bold" style="font-size:14px"> {{ item.name }} </v-list-item-title> 
-                  <v-list-item-subtitle class="" style="font-size:12px;">  {{ item.symbol }} </v-list-item-subtitle>
+                  <v-list-item-title
+                    class="font-weight-bold"
+                    style="font-size: 14px"
+                  >
+                    {{ item.symbol }}
+                  </v-list-item-title>
+                  <v-list-item-subtitle class="" style="font-size: 12px">
+                    {{ item.name }}
+                  </v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
             </v-list-item-group>
@@ -41,40 +54,41 @@
 </template>
 
 <script>
-import chains from "../assets/chainlist.json"
+import assets from "../assets/assets.json";
 
 export default {
   data() {
     return {
-      search: '',
-    }
+      search: "",
+    };
   },
   computed: {
-    selectNetworkDialog: {
+    selectTokenDialog: {
       get() {
-        return this.$store.state.selectNetworkDialog;
+        return this.$store.state.selectTokenDialog;
       },
       set(value) {
-        this.$store.commit("toggleSelectNetwork", value);
+        this.$store.commit("toggleSelectToken", value);
       },
     },
-    selectedNetwork: {
+    selectedToken: {
       get() {
-        return this.$store.state.fromNetwork;
+        return this.$store.state.fromToken;
       },
       set(value) {
-        this.$store.commit("setFromNetwork", value);
-        this.$store.commit("setFromToken",value);
-        this.selectNetworkDialog = false;
-      }
+        this.$store.commit("setFromToken", value);
+        this.selectTokenDialog = false;
+      },
     },
-    chains: {
+    assets: {
       get() {
-        return chains
-      }
+        return assets.assets.filter((item) => {
+          return item.chain_id.match(this.$store.state.fromNetwork.asset_id);
+        });
+      },
     },
     filteredItems() {
-      return this.chains.filter((item) => {
+      return this.assets.filter((item) => {
         return (
           item.symbol.toLowerCase().match(this.search) ||
           item.name.toLowerCase().match(this.search) ||
@@ -83,9 +97,6 @@ export default {
       });
     },
   },
-  mounted(){
-    this.selectedNetwork = this.filteredItems[1]
-  }
 };
 </script>
 
@@ -97,12 +108,12 @@ export default {
 }
 .v-dialog,
 .border-css {
-  border-radius: 20px 20px 0 0  !important;
+  border-radius: 20px 20px 0 0 !important;
 }
 .search-border {
   border-radius: 10px !important;
 }
-.select-network-css {
+.select-token-css {
   font-size: 20px;
   font-style: italic;
 }

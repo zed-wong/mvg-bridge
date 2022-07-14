@@ -198,23 +198,20 @@ export default {
 
   methods: {
     async deposit() {
-      // 1. Check if supported by metamask
-      // 2. Trigger metamask or show address & tag & qrcode
-      let addr = await this.getDepositAddress(this.selectedToken.asset_id)
-      console.log(addr[0])
+      let addr = await this.getDepositAddress(this.selectedToken.asset_id);
 
       if (!checkNetwork(this.selectedNetwork.symbol)) {
-        console.log('not supported by metamask')
+        console.log("not supported by metamask");
         return;
       }
-      
+
       if (!this.selectedToken.asset_key.includes("0x")) {
-        console.log('no asset contract address')
+        console.log("no asset contract address");
         return;
       }
-    
+
       if (this.selectedToken.symbol === "ETH") {
-        console.log('transfer ethermum')
+        console.log("transfer ethermum");
         this.createMetamaskTx(false, "", addr[0], this.fromAmount);
         return;
       }
@@ -242,16 +239,20 @@ export default {
         return;
       }
 
-      let provider = new ethers.providers.Web3Provider(window.ethereum)
-      let signer = provider.getSigner()
+      let provider = new ethers.providers.Web3Provider(window.ethereum);
+      let signer = provider.getSigner();
 
       this.txSent = true;
       let tx_value = ethers.utils.parseUnits(value, "ether").toHexString();
       if (erc20) {
-        console.log(asset_address);
-        let erc = new ethers.Contract(asset_address, ERC20ABI, signer);
-        
-        await erc.transfer(asset_address, tx_value);
+        try {
+          let tokenContract = new ethers.Contract(asset_address, ERC20ABI, provider);
+          let tokenContractSigner = tokenContract.connect(signer);
+
+          tokenContractSigner.transfer(asset_address, tx_value);
+        } catch (error) {
+          console.log(error);
+        }
       } else {
         const transactionParameters = {
           from: ethers.utils.getAddress(await signer.getAddress()),
@@ -280,7 +281,7 @@ export default {
       }
     },
 
-    async getDepositAddress(asset_id: string):Promise<any>{
+    async getDepositAddress(asset_id: string): Promise<any> {
       let suser = localStorage.getItem("user");
       if (suser) {
         let user = JSON.parse(suser);
@@ -292,7 +293,7 @@ export default {
         let asset = await client.readAsset(asset_id);
         let dest = asset.deposit_entries[0].destination;
         let tag = asset.deposit_entries[0].tag;
-        return [dest, tag]
+        return [dest, tag];
       }
     },
   },

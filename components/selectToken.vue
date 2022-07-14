@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="selectTokenDialog" class="dialog-css" max-width="400px">
+  <v-dialog v-model="selectTokenDialog" class="dialog-css" max-width="400px" overlay-opacity="0.95">
     <v-sheet class="align-self-start px-9 pt-8">
       <v-row class="d-flex flex-column mb-0">
         <v-col class="align-center d-flex flex-row pr-0">
@@ -21,7 +21,7 @@
           />
         </v-col>
         <v-col class="pt-2 px-0">
-          <v-list class="overflow-y-auto" height="400px">
+          <v-list class="overflow-y-auto" height="450px">
             <v-list-item-group>
               <v-list-item
                 v-for="(item, i) in filteredItems"
@@ -108,7 +108,7 @@ export default {
 }
 .v-dialog,
 .border-css {
-  border-radius: 20px 20px 0 0 !important;
+  border-radius: 20px !important;
 }
 .search-border {
   border-radius: 10px !important;

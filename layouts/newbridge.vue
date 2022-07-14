@@ -26,13 +26,14 @@
         <v-btn
           height="40px"
           elevation="0"
-          class="ml-3 connect-wallet"
           color="#5959d8"
-          @click="connectWallet"
           v-if="!connected"
+          class="ml-3 connect-wallet"
+          @click.stop="connectWalletDialog = true"
         >
           <span style="color: white"> Connect Wallet</span>
         </v-btn>
+        <connect-wallet />
 
         <v-btn
           text
@@ -79,12 +80,14 @@
 </template>
 
 <script>
-import githublogo from "../static/github.png";
 import bridge from "../static/bridge.png";
-import { ethers } from "ethers";
-import chainIds from "../helpers/chainids";
+import githublogo from "../static/github.png";
+import connectWallet from "../components/connectWallet.vue"
 
 export default {
+  components: {
+    connectWallet
+  },
   data() {
     return {
       bridge,
@@ -112,6 +115,14 @@ export default {
     network() {
       return this.$store.state.network.name;
     },
+    connectWalletDialog: {
+      get() {
+        return this.$store.state.connectWalletDialog;
+      },
+      set(value) {
+        this.$store.commit("toggleConnectWallet", value);
+      }
+    }
   },
   mounted() {
     this.isMobile = this.checkMobile();
@@ -124,41 +135,6 @@ export default {
     checkMobile() {
       return window.innerWidth < 600;
     },
-    async connectWallet() {
-      const accounts = await window.ethereum.request({
-        method: "eth_requestAccounts",
-      });
-      let account = ethers.utils.getAddress(accounts[0]);
-      this.register(account);
-
-      const chainId = await window.ethereum.request({ method: "eth_chainId" });
-      const chainName = chainIds[parseInt(chainId, 16)];
-      this.$store.commit("connect", { address: account, name: chainName });
-
-      // if (chainId != "0x120c7") {
-      //   try {
-      //     await window.ethereum.request({
-      //       method: "wallet_switchEthereumChain",
-      //       params: [{ chainId: "0x120c7" }],
-      //     });
-      //   } catch (error) {
-      //     if (error.code === 4902) {
-      //       await window.ethereum.request({
-      //         method: "wallet_addEthereumChain",
-      //         params: chain,
-      //       });
-      //     }
-      //   }
-      // }
-    },
-    async register(Address) {
-      const checked = ethers.utils.getAddress(Address);
-      const result = await this.$axios.post("https://bridge.mvm.dev/users", {
-        public_key: checked,
-      });
-      localStorage.setItem("user", JSON.stringify(result.data.user.key));
-    },
-
     getAvatar(length) {
       if (localStorage.getItem("avatar_url")) {
         return localStorage.getItem("avatar_url");
@@ -183,9 +159,6 @@ export default {
 <style>
 .v-btn {
   text-transform: none !important;
-}
-* {
-  font-family: Open Sans, sans-serif;
 }
 .connect-wallet {
   align-items: center;

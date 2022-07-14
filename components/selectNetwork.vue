@@ -1,9 +1,9 @@
 <template>
-  <v-dialog v-model="selectNetworkDialog" class="dialog-css" max-width="400px">
+  <v-dialog v-model="selectNetworkDialog" class="dialog-css" max-width="400px" overlay-opacity="0.95">
     <v-sheet class="align-self-start px-9 pt-8">
       <v-row class="d-flex flex-column mb-0">
         <v-col class="align-center d-flex flex-row pr-0">
-          <h1 class="select-network-css">Select Network</h1>
+          <h1 class="select-network-css">Select network</h1>
           <v-spacer />
           <v-btn icon @click="selectNetworkDialog = false">
             <v-icon> mdi-close </v-icon>
@@ -21,7 +21,7 @@
           />
         </v-col>
         <v-col class="pt-2 px-0">
-          <v-list class="overflow-y-auto" height="400px">
+          <v-list class="overflow-y-auto" height="450px">
             <v-list-item-group>
               <v-list-item v-for="(item, i) in filteredItems" :key="i" class="px-2" @click="selectedNetwork = item" style="border-radius: 10px">
                 <v-list-item-avatar>

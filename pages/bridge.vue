@@ -2,11 +2,6 @@
   <v-row>
     <v-col cols="12" class="mt-10 mb-5 text-center d-flex flex-column">
       <span class="text-h5 font-weight-normal"> Bridge <br /> </span>
-      <!-- <div class="mt-3">
-        <span class="font-weight-light" style="font-size: 12px">
-          Deposit to MVM Mainnet
-        </span>
-      </div> -->
     </v-col>
     <v-col cols="2" class="pr-0 pb-0 grey lighten-4">
       <v-select

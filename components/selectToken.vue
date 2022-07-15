@@ -55,6 +55,7 @@
 
 <script>
 import assets from "../assets/assets.json";
+const XINUUID = 'c94ac88f-4671-3976-b60a-09064f1811e8'
 
 export default {
   data() {
@@ -82,6 +83,10 @@ export default {
     },
     assets: {
       get() {
+        // Mixin Mainnet
+        if (this.$store.state.fromNetwork.asset_id == XINUUID) return assets.assets
+
+        // Other Network
         return assets.assets.filter((item) => {
           return item.chain_id.match(this.$store.state.fromNetwork.asset_id);
         });

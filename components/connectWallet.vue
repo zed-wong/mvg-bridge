@@ -34,7 +34,7 @@
   </v-dialog>
 </template>
 
-<script lang="ts">
+<script lang="">
 import { ethers } from "ethers";
 import chainIds from "../helpers/chainids";
 import metamask from "@/static/metamask.png";
@@ -64,7 +64,7 @@ export default {
   },
 
   methods: {
-    async connect(action: string){
+    async connect(action){
       if (action === "metamask") {
         await this.connectMetamask()
         return
@@ -90,7 +90,7 @@ export default {
       this.$store.commit("connect", { address: account, name: chainName });
       this.$store.commit("toggleConnectWallet", false);
     },
-    async register(Address: string) {
+    async register(Address) {
       const checked = ethers.utils.getAddress(Address);
       const result = await this.$axios.post("https://bridge.mvm.dev/users", {
         public_key: checked,

@@ -6,6 +6,8 @@ export const state = () => ({
   fromNetwork: {},
   selectTokenDialog: false,
   fromToken: {},
+  confirmDepositDialog: false,
+  depositAddr: [],
 })
 
 export const mutations = {
@@ -22,10 +24,16 @@ export const mutations = {
   toggleSelectToken(state: any, open: boolean) {
     state.selectTokenDialog = open
   },
+  toggleConfirmDeposit(state: any, open: boolean) {
+    state.confirmDepositDialog = open
+  },
   setFromNetwork(state: any, data: {}) {
     state.fromNetwork = data
   },
   setFromToken(state: any, data: {}) {
     state.fromToken = data
+  },
+  setDepositAddr(state: any, data: []) {
+    state.depositAddr = data
   }
 }

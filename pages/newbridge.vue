@@ -62,6 +62,9 @@
               </v-btn>
               <select-token />
             </div>
+            <span v-if="fromBalanceVisble" class="font-weight-light">
+              Balance: {{ fixedFromBalance }} {{ selectedToken.symbol }}
+            </span>
           </v-sheet>
         </v-col>
 
@@ -116,17 +119,19 @@
             color="#5959d8"
             v-if="connected"
             @click="deposit"
+            :loading="depositing"
             class="border-rounded main-btn white--text"
           >
             <span> Deposit </span>
           </v-btn>
+          <deposit-dialog :from-amount="fromAmount"/>
         </v-col>
       </v-row>
     </v-sheet>
   </v-row>
 </template>
 
-<script lang="ts">
+<script lang="">
 import { ethers } from "ethers";
 import bridge from "~/static/bridge.png";
 import { NewClient } from "@/helpers/mixin";
@@ -134,19 +139,26 @@ import ERC20ABI from "../assets/erc20.json";
 import selectToken from "~/components/selectToken.vue";
 import selectNetwork from "~/components/selectNetwork.vue";
 import ConnectWallet from "~/components/connectWallet.vue";
+import DepositDialog from "~/components/depositDialog.vue";
+
+let ETHUUID = "43d61dcd-e413-450d-80b8-101d5e903357";
 
 export default {
   components: {
     selectNetwork,
     selectToken,
     ConnectWallet,
+    DepositDialog,
   },
   data() {
     return {
       bridge,
       fromAmount: "0",
+      fromBalance: "",
+      fromBalanceVisble: false,
 
       // metamask tx
+      depositing: false,
       txSent: false,
       txConfirmed: false,
       txSucceed: false,
@@ -193,47 +205,126 @@ export default {
         this.$store.commit("toggleConnectWallet", value);
       },
     },
+    confirmDepositDialog: {
+      get() {
+        return this.$store.state.confirmDepositDialog;
+      },
+      set(value) {
+        this.$store.commit("toggleConfirmDeposit", value);
+      },
+    },
+    fixedFromBalance: {
+      get() {
+        if (Number(this.fromBalance) == 0) return 0;
+        return Number(this.fromBalance).toFixed(5);
+      },
+    },
   },
+
+  watch: {
+    selectedToken(o, n) {
+      this.getFromBalance();
+    },
+    connected(o, n) {
+      this.getFromBalance();
+    },
+  },
+  mounted() {
+    this.getFromBalance();
+  },
+
   layout: "newbridge",
 
   methods: {
     async deposit() {
+      this.depositing = true
       let addr = await this.getDepositAddress(this.selectedToken.asset_id);
+      this.depositing = false;
 
+      // Metamask
+      if (checkNetwork(this.selectedNetwork.symbol)) {
+        // console.log('Using Metamask')
+        if (!this.selectedToken.asset_key.includes("0x")) {
+          // console.log("[ERROR] No asset contract address");
+          return;
+        }
+
+        // transfer ETH
+        if (this.selectedToken.symbol === "ETH") {
+          this.createMetamaskTx(false, "", addr[0], this.fromAmount);
+          return;
+        }
+
+        // transfer erc20 tokens
+        if (this.selectedToken.chain_id === ETHUUID) {
+          this.createMetamaskTx(
+            true,
+            this.selectedToken.asset_key,
+            addr[0],
+            this.fromAmount
+          );
+          return;
+        }
+        return;
+      }
+
+      // Other Network
+      this.confirmDepositDialog = true;
+      this.$store.commit("setDepositAddr", addr);
+    },
+
+    async getFromBalance() {
+      if (!this.connected) {
+        console.log("[ERROR] Please connect wallet first.");
+        return;
+      }
+      if (window.ethereum == undefined) {
+        console.log("[ERROR] window.ethereum undefined");
+        return;
+      }
+      
       if (!checkNetwork(this.selectedNetwork.symbol)) {
-        console.log("not supported by metamask");
+        // console.log("Chain balance is not supported");
+        this.fromBalanceVisble = false;
+        return;
+      }
+
+      let provider = new ethers.providers.Web3Provider(window.ethereum);
+      let signer = provider.getSigner();
+      let userAddr = await signer.getAddress();
+
+      if (this.selectedToken.asset_id === ETHUUID) {
+        // console.log("Selected ETH")
+        let addr = ethers.utils.getAddress(userAddr);
+        let balance = ethers.utils.formatEther(await provider.getBalance(addr));
+        this.fromBalance = balance;
+        this.fromBalanceVisble = true;
         return;
       }
 
       if (!this.selectedToken.asset_key.includes("0x")) {
-        console.log("no asset contract address");
+        // console.log("Not ERC20 Token");
+        this.fromBalanceVisble = false;
         return;
       }
 
-      if (this.selectedToken.symbol === "ETH") {
-        console.log("transfer ethermum");
-        this.createMetamaskTx(false, "", addr[0], this.fromAmount);
-        return;
-      }
-
-      if (
-        this.selectedToken.chain_id === "43d61dcd-e413-450d-80b8-101d5e903357"
-      ) {
-        // transfer erc20 tokens
-        this.createMetamaskTx(
-          true,
-          this.selectedToken.asset_key,
-          addr[0],
-          this.fromAmount
-        );
-      }
+      // console.log("Selected ERC20 token")
+      let tokenContract = new ethers.Contract(
+        this.selectedToken.asset_key,
+        ERC20ABI,
+        provider
+      );
+      let tokenBalance = await tokenContract.balanceOf(userAddr);
+      let balance = ethers.utils.formatEther(tokenBalance);
+      this.fromBalance = balance;
+      this.fromBalanceVisble = true;
     },
 
     async createMetamaskTx(
-      erc20: boolean,
-      asset_address: string,
-      to_address: string,
-      value: string
+      erc20,
+      asset_address,
+      to_address,
+      value
     ) {
       if (window.ethereum == undefined) {
         return;
@@ -246,7 +337,11 @@ export default {
       let tx_value = ethers.utils.parseUnits(value, "ether").toHexString();
       if (erc20) {
         try {
-          let tokenContract = new ethers.Contract(asset_address, ERC20ABI, provider);
+          let tokenContract = new ethers.Contract(
+            asset_address,
+            ERC20ABI,
+            provider
+          );
           let tokenContractSigner = tokenContract.connect(signer);
 
           tokenContractSigner.transfer(asset_address, tx_value);
@@ -264,10 +359,10 @@ export default {
           let tx = await provider
             .getSigner()
             .sendTransaction(transactionParameters);
-          console.log(tx);
+          // console.log(tx);
           this.txConfirmed = true;
           this.txSucceed = true;
-        } catch (error: any) {
+        } catch (error) {
           if (error.code === "INSUFFICIENT_FUNDS") {
             this.txErrorText = "Insufficient Balance.";
           }
@@ -281,7 +376,7 @@ export default {
       }
     },
 
-    async getDepositAddress(asset_id: string): Promise<any> {
+    async getDepositAddress(asset_id){
       let suser = localStorage.getItem("user");
       if (suser) {
         let user = JSON.parse(suser);
@@ -299,7 +394,7 @@ export default {
   },
 };
 
-function checkNetwork(chain_symbol: string): boolean {
+function checkNetwork(chain_symbol) {
   const supportMetamaskNetworks = ["ETH"]; //['BNB','AVAX']
   return supportMetamaskNetworks.includes(chain_symbol);
 }

@@ -106,15 +106,6 @@ export default {
 </script>
 
 <style>
-.dialog-css {
-  width: 400px;
-  max-width: 400px;
-  min-height: 64px;
-}
-.v-dialog,
-.border-css {
-  border-radius: 20px !important;
-}
 .search-border {
   border-radius: 10px !important;
 }

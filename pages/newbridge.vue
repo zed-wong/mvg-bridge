@@ -425,6 +425,9 @@ function checkNetwork(chain_symbol) {
   border-width: 0.5px;
   border-left-width: 0px;
 }
+.v-dialog {
+  border-radius: 10px !important;
+}
 .v-btn {
   text-indent: 0;
   letter-spacing: 0;

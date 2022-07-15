@@ -234,10 +234,6 @@ export default {
   max-width: 400px;
   min-height: 64px;
 }
-.v-dialog,
-.border-css {
-  border-radius: 20px 20px 0 0 !important;
-}
 .title-css {
   font-size: 24px;
   font-weight: 600;

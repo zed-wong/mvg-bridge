@@ -1,11 +1,13 @@
 <template>
   <v-dialog
     max-width="500px"
-    overlay-opacity="0.7"
+    overlay-opacity="0.5"
     v-model="connectWalletDialog"
+    
+    close-delay="0"
   >
     <v-sheet class="align-start pa-9">
-      <v-row class="d-flex flex-column" no-gutters>
+      <v-row class="d-flex flex-column pb-6" no-gutters>
         <v-col class="align-center d-flex justify-center pa-0">
           <span class="connect-text">Connect your wallet</span>
         </v-col>
@@ -61,6 +63,12 @@ export default {
         ];
       },
     },
+
+    selectedNetwork: {
+      get() {
+        return this.$store.state.fromNetwork;
+      },
+    },
   },
 
   methods: {
@@ -86,8 +94,9 @@ export default {
       this.register(account);
 
       const chainId = await window.ethereum.request({ method: "eth_chainId" });
-      const chainName = chainIds[parseInt(chainId, 16)] == "" ? "Unspported Network": chainIds[parseInt(chainId, 16)];
-      this.$store.commit("connect", { address: account, name: chainName });
+      const chainid = parseInt(chainId, 16);
+      const chainName = chainid in chainIds ? chainIds[chainid].name : "Unspported Network";
+      this.$store.commit("connect", { address: account, name: chainName, id: chainid });
       this.$store.commit("toggleConnectWallet", false);
     },
     async register(Address) {
@@ -97,8 +106,18 @@ export default {
       });
       localStorage.setItem("user", JSON.stringify(result.data.user.key));
     },
+    checkNetwork(chainId){
+      // If current network not in supported networks
+      if (parseInt(chainId, 16) in chainIds) return;
+      // If selected network is not
+      // if (!this.selectedNetwork.asset_id in this.$store.state.supportMetamaskNetworks) return;
+
+    }
   },
 };
+function getObjKey(obj, value) {
+  return Object.keys(obj).find(key => obj[key].symbolId === value);
+}
 </script>
 
 <style>
@@ -110,16 +129,20 @@ export default {
   margin: 0 0 32px;
   text-align: center;
 }
+.item {
+  min-height: 64px;
+  max-height: 600px;
+}
 .item:not(:last-child) {
-  border-bottom: 0.5px solid #cbd5e0;
+  border-bottom: 1px solid #cbd5e0;
 }
 .item-title {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
   margin-left: 20px;
 }
 .group-border {
-  border: 0.5px solid #cbd5e0;
+  border: 1px solid #cbd5e0;
   border-radius: 12px;
 }
 </style>

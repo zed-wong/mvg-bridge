@@ -45,7 +45,7 @@
           v-if="connected"
         >
           <span style="max-width: 120px; font-size: 12px" class="px-1"
-            >{{ network }} Mainnet</span
+            >{{ network }} </span
           >
         </v-btn>
 

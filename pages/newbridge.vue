@@ -124,7 +124,7 @@
           >
             <span> Deposit </span>
           </v-btn>
-          <deposit-dialog :from-amount="fromAmount"/>
+          <deposit-dialog :from-amount="fromAmount" />
         </v-col>
       </v-row>
     </v-sheet>
@@ -142,6 +142,18 @@ import ConnectWallet from "~/components/connectWallet.vue";
 import DepositDialog from "~/components/depositDialog.vue";
 
 let ETHUUID = "43d61dcd-e413-450d-80b8-101d5e903357";
+
+function handleChanges(provider) {
+  if (provider != undefined) {
+    provider.on("accountsChanged", (accounts) => {
+      console.log("accountsChanges", accounts);
+    });
+
+    provider.on("chainChanged", (chainId) => {
+      console.log("chainChanged:", chainId);
+    });
+  }
+}
 
 export default {
   components: {
@@ -237,12 +249,12 @@ export default {
 
   methods: {
     async deposit() {
-      this.depositing = true
+      this.depositing = true;
       let addr = await this.getDepositAddress(this.selectedToken.asset_id);
       this.depositing = false;
 
       // Metamask
-      if (checkNetwork(this.selectedNetwork.symbol)) {
+      if (this.checkNetwork(this.selectedNetwork.symbol)) {
         // console.log('Using Metamask')
         if (!this.selectedToken.asset_key.includes("0x")) {
           // console.log("[ERROR] No asset contract address");
@@ -282,8 +294,8 @@ export default {
         console.log("[ERROR] window.ethereum undefined");
         return;
       }
-      
-      if (!checkNetwork(this.selectedNetwork.symbol)) {
+
+      if (!this.checkNetwork(this.selectedNetwork.symbol)) {
         // console.log("Chain balance is not supported");
         this.fromBalanceVisble = false;
         return;
@@ -320,12 +332,7 @@ export default {
       this.fromBalanceVisble = true;
     },
 
-    async createMetamaskTx(
-      erc20,
-      asset_address,
-      to_address,
-      value
-    ) {
+    async createMetamaskTx(erc20, asset_address, to_address, value) {
       if (window.ethereum == undefined) {
         return;
       }
@@ -376,7 +383,7 @@ export default {
       }
     },
 
-    async getDepositAddress(asset_id){
+    async getDepositAddress(asset_id) {
       let suser = localStorage.getItem("user");
       if (suser) {
         let user = JSON.parse(suser);
@@ -391,13 +398,11 @@ export default {
         return [dest, tag];
       }
     },
+    checkNetwork(chain_symbol) {
+      return this.$store.state.supportMetamaskNetworks.includes(chain_symbol);
+    },
   },
 };
-
-function checkNetwork(chain_symbol) {
-  const supportMetamaskNetworks = ["ETH"]; //['BNB','AVAX']
-  return supportMetamaskNetworks.includes(chain_symbol);
-}
 </script>
 
 <style>
@@ -422,11 +427,14 @@ function checkNetwork(chain_symbol) {
   border-radius: 0 12px 12px 0;
 }
 .border-width {
-  border-width: 0.5px;
+  border-width: 0.8px;
   border-left-width: 0px;
 }
 .v-dialog {
-  border-radius: 10px !important;
+  border-radius: 16px !important;
+}
+.v-text-field--outlined {
+  border-color: rgba(192, 0, 250, 0.986);
 }
 .v-btn {
   text-indent: 0;

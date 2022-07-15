@@ -1,13 +1,14 @@
 export const state = () => ({
   connected: false,
   connectWalletDialog: false,
-  network: {address: "", name: ""},
+  network: {address: "", name: "", id: ""},
   selectNetworkDialog: false,
   fromNetwork: {},
   selectTokenDialog: false,
   fromToken: {},
   confirmDepositDialog: false,
   depositAddr: [],
+  supportMetamaskNetworks: ["ETH"] //['BNB','AVAX'],
 })
 
 export const mutations = {

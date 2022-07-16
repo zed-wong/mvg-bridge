@@ -102,7 +102,7 @@ export default {
         name: chainName,
         id: chainid,
       });
-      this.$store.commit("toggleConnectWallet", false);
+      this.connectWalletDialog = false;
       this.checkNetwork(1);
     },
 

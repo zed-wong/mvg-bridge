@@ -39,7 +39,7 @@
               mdi-plus
             </v-icon>
 
-            <v-icon v-if="item.copyable" size="14px" class="ml-1" @click="copyAddr">
+            <v-icon v-if="item.copyable" size="14px" class="ml-1" @click="copyAddr(item.name)">
               mdi-content-copy
             </v-icon>
           </div>
@@ -221,8 +221,8 @@ export default {
         console.log(error);
       }
     },
-    copyAddr() {
-      navigator.clipboard.writeText(this.txQrUrl)
+    copyAddr(value) {
+      navigator.clipboard.writeText(value)
     }
   },
 };

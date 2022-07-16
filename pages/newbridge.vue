@@ -68,6 +68,18 @@
             <span v-if="fromBalanceVisble" class="font-weight-light">
               Balance: {{ fixedFromBalance }} {{ selectedToken.symbol }}
             </span>
+            <div v-if="fetchingBalance && connected">
+              <v-progress-circular
+                width="1"
+                size="10"
+                indeterminate
+                color="dark"
+                class="mr-2"
+              ></v-progress-circular>
+              <span class="font-weight-light" style="font-size"
+                >Loading Balance</span
+              >
+            </div>
           </v-sheet>
         </v-col>
 
@@ -165,6 +177,7 @@ export default {
       fromAmount: "0",
       fromBalance: "",
       fromBalanceVisble: false,
+      fetchingBalance: false,
 
       // metamask tx
       depositing: false,
@@ -304,16 +317,19 @@ export default {
 
     async getFromBalance() {
       if (!this.connected) {
-        console.log("[ERROR] Please connect wallet first.");
+        console.error("[000] Please connect wallet first.");
         return;
       }
       if (window.ethereum == undefined) {
-        console.log("[ERROR] window.ethereum undefined");
+        console.error("[001] window.ethereum undefined");
         return;
       }
 
+      this.fetchingBalance = true;
+      this.fromBalanceVisble = false;
       if (!this.checkNetwork(this.selectedNetwork.symbol)) {
         // console.log("Chain balance is not supported");
+        this.fetchingBalance = true;
         this.fromBalanceVisble = false;
         return;
       }
@@ -327,12 +343,14 @@ export default {
         let addr = ethers.utils.getAddress(userAddr);
         let balance = ethers.utils.formatEther(await provider.getBalance(addr));
         this.fromBalance = balance;
+        this.fetchingBalance = false;
         this.fromBalanceVisble = true;
         return;
       }
 
       if (!this.selectedToken.asset_key.includes("0x")) {
         // console.log("Not ERC20 Token");
+        this.fetchingBalance = false;
         this.fromBalanceVisble = false;
         return;
       }
@@ -346,6 +364,7 @@ export default {
       let tokenBalance = await tokenContract.balanceOf(userAddr);
       let balance = ethers.utils.formatEther(tokenBalance);
       this.fromBalance = balance;
+      this.fetchingBalance = false;
       this.fromBalanceVisble = true;
     },
 

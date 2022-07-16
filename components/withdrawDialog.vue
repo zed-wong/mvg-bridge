@@ -14,38 +14,51 @@
             <v-icon> mdi-close </v-icon>
           </v-btn>
         </v-col>
-        <v-col class="py-0" v-for="(item, i) in rows" :key="i">
-          <div v-if="item.subtitle">
-            <span class="subtitle-css">
-              {{ item.subtitle }}
-            </span>
-
-            <div
-              class="d-flex flex-row align-center pt-1 mb-5"
-              v-if="!item.input"
-            >
-              <v-img
-                v-if="item.haveIcon"
-                :src="item.icon"
-                max-height="20px"
-                max-width="20px"
-                class="mr-2"
-              />
-              <span class="main-title-css">
-                {{ item.name }}
+        <v-col>
+          <div class="py-0" v-for="(item, i) in rows" :key="i">
+            <div v-if="item.subtitle">
+              <span class="subtitle-css">
+                {{ item.subtitle }}
               </span>
-            </div>
 
-            <div class="d-flex flex-column mb-2" v-if="item.input">
-              <v-text-field
-                rounded
-                class="my-3 withdraw-addr"
-                v-model="item.value"
-                :placeholder="item.placeholder"
-                hide-details="true"
-                clearable
-              />
+              <div
+                class="d-flex flex-row align-center pt-1 mb-5"
+                v-if="!item.input"
+              >
+                <v-img
+                  v-if="item.haveIcon"
+                  :src="item.icon"
+                  max-height="20px"
+                  max-width="20px"
+                  class="mr-2"
+                />
+                <span class="main-title-css">
+                  {{ item.name }}
+                </span>
+              </div>
             </div>
+          </div>
+          <div class="d-flex flex-column mb-2">
+            <span class="subtitle-css">
+              {{ this.txToMixin ? "Mixin ID" : "Address" }}
+            </span>
+            <v-text-field
+              rounded
+              clearable
+              v-model="txAddress"
+              hide-details="true"
+              class="my-3 withdraw-addr"
+              :placeholder="inputPlaceHolder[0]"
+            />
+            <span class="subtitle-css"> Memo </span>
+            <v-text-field
+              rounded
+              clearable
+              v-model="txMemo"
+              hide-details="true"
+              class="my-3 withdraw-addr"
+              :placeholder="inputPlaceHolder[1]"
+            />
           </div>
         </v-col>
 
@@ -60,19 +73,6 @@
             <span v-if="!txToMixin"> Withdraw To Address</span>
             <span v-else> Withdraw To Mixin</span>
           </v-btn>
-          <!-- <v-btn
-            block
-            x-large
-            elevation="0"
-            class="metamask-pay-btn mt-5"
-            v-if="txSupportMetamask"
-            @click="newMetamaskTx"
-          >
-            <v-avatar size="28px" class="mr-2">
-              <v-img :src="MetamaskLogo" />
-            </v-avatar>
-            Pay with Metamask
-          </v-btn> -->
         </v-col>
       </v-row>
     </v-sheet>
@@ -101,9 +101,8 @@ export default {
     return {
       MetamaskLogo,
       search: "",
-      txShowQR: false,
       txAddress: "",
-      txMemos: "",
+      txMemo: "",
     };
   },
   props: ["toAmount"],
@@ -137,29 +136,6 @@ export default {
     txToMixin() {
       return this.selectedNetwork.asset_id === XINUUID;
     },
-
-    txQrUrl: {
-      get() {
-        if (this.selectedNetwork.asset_id == XINUUID)
-          return this.createMixinPayment();
-      },
-    },
-    txAddr: {
-      get() {
-        this.txAddress;
-      },
-      set(value) {
-        this.txAddress = value;
-      },
-    },
-    txMemo: {
-      get() {
-        this.txMemos;
-      },
-      set(value) {
-        this.txMemos = value;
-      },
-    },
     rows: {
       get() {
         return [
@@ -175,32 +151,16 @@ export default {
             icon: this.selectedToken.icon_url,
             name: this.toAmount + " " + this.selectedToken.symbol,
           },
-          // {
-          //   subtitle: "Amount",
-          //   haveIcon: false,
-          //   icon: "",
-          //   name: this.toAmount + " " + this.selectedToken.symbol,
-          // },
-          {
-            subtitle: this.txToMixin ? "Mixin ID" : "Address",
-            haveIcon: false,
-            icon: "",
-            input: true,
-            value: this.txAddr,
-            placeholder: this.txToMixin
-              ? "Please enter your Mixin ID or User ID"
-              : "Please enter your wallet address",
-          },
-          {
-            subtitle: "Memo",
-            haveIcon: false,
-            icon: "",
-            input: true,
-            value: this.txMemo,
-            placeholder: "Optional",
-          },
         ];
       },
+    },
+    inputPlaceHolder() {
+      return [
+        this.txToMixin
+          ? "Please enter your Mixin ID or User ID"
+          : "Please enter your wallet address",
+        "Optional",
+      ];
     },
   },
   methods: {
@@ -228,14 +188,14 @@ export default {
       let provider = new ethers.providers.Web3Provider(window.ethereum);
       let signer = provider.getSigner();
 
-      let mixinExtra = await this.getMixinExtra(this.txAddr, this.txMemo);
+      let mixinExtra = await this.getMixinExtra(this.txAddress, this.txMemo);
       if (mixinExtra === undefined) {
-        console.log('Get Mixin User Failed')
+        console.error("[403] Get Mixin User Failed");
         return;
       }
 
       let txValue = formatAmount(this.toAmount, this.selectedToken.asset_id);
-      let userContractAddr = this.userAddress;
+      let userContractAddr = await this.getUserProxyContract();
       let txResult;
       try {
         if (this.selectedToken.asset_id === XINUUID) {
@@ -244,13 +204,10 @@ export default {
             BRIDGEABI,
             signer
           );
-          txResult = await tokenContract.release(
-            userContractAddr, mixinExtra,
-            {
-              value: txValue,
-              gasLimit: 350000,
-            }
-          );
+          txResult = await tokenContract.release(userContractAddr, mixinExtra, {
+            value: txValue,
+            gasLimit: 350000,
+          });
         } else {
           let assetContractAddr = await getContractByAssetID(
             this.selectedToken.asset_id
@@ -276,13 +233,14 @@ export default {
     },
     async getMixinExtra(user_id, memo) {
       let userID = String(user_id).trim();
+
       if (!validateUUID(userID)) {
         let user = await MixinClient.searchUser(userID);
         userID = user.user_id;
       }
-      if (userID === undefined ) return undefined;
+      if (userID === undefined) return undefined;
       let payloads = {
-        receivers: [user_id],
+        receivers: [userID],
         threshold: 1,
         extra: memo,
       };
@@ -290,15 +248,22 @@ export default {
         "https://bridge.mvm.dev/extra",
         payloads
       );
-      return "0x"+mixinExtra.data.extra;
+      return "0x" + mixinExtra.data.extra;
+    },
+    async getUserProxyContract() {
+      const result = await this.$axios.post("https://bridge.mvm.dev/users", {
+        public_key: ethers.utils.getAddress(this.userAddress),
+      });
+      return result.data.user.contract ? result.data.user.contract : "";
     },
     async externalWithdraw() {
       // 1. get Asset fee data
-      // 2. 
+      // 2.
       // 3. construct data, call withdrawal contract
-      // 
-
-      console.log('external Withdraw')
+      
+      console.log("external Withdraw");
+      let fee = await MixinClient.readAssetFee(this.selectedToken.asset_id);
+      console.log(fee.amount);
     },
   },
 };

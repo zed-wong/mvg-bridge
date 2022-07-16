@@ -57,6 +57,18 @@
             <span v-if="toBalanceVisble" class="font-weight-light">
               Balance: {{ fixedToBalance }} {{ selectedToken.symbol }}
             </span>
+            <div v-if="fetchingBalance && connected">
+              <v-progress-circular
+                width="1"
+                size="10"
+                indeterminate
+                color="dark"
+                class="mr-2"
+              ></v-progress-circular>
+              <span class="font-weight-light" style="font-size"
+                >Loading Balance</span
+              >
+            </div>
           </v-sheet>
         </v-col>
 
@@ -168,6 +180,7 @@ export default {
       toAmount: "0",
       toBalance: "",
       toBalanceVisble: false,
+      fetchingBalance: false,
 
       // metamask tx
       withdrawing: false,
@@ -267,14 +280,16 @@ export default {
     async getMvmtoBalance() {
       // get mvm asset balance
       if (!this.connected) {
-        console.log("[ERROR] Please connect wallet first.");
+        console.error("[000] Please connect wallet first.");
         return;
       }
       if (window.ethereum == undefined) {
-        console.log("[ERROR] window.ethereum undefined");
+        console.error("[001]] window.ethereum undefined");
         return;
       }
 
+      this.fetchingBalance = true;
+      this.toBalanceVisble = false;
       let provider = new ethers.providers.Web3Provider(window.ethereum);
       let signer = provider.getSigner();
       let userAddr = await signer.getAddress();
@@ -285,6 +300,7 @@ export default {
         let balance = ethers.utils.formatEther(await provider.getBalance(addr));
         this.toBalance = balance;
         this.toBalanceVisble = true;
+        this.fetchingBalance = false;
         return;
       }
 
@@ -296,58 +312,59 @@ export default {
       let balance = ethers.utils.formatUnits(tokenBalance, 8);
       this.toBalance = balance;
       this.toBalanceVisble = true;
+      this.fetchingBalance = false;
     },
 
-    async createMetamaskTx(erc20, asset_address, to_address, value) {
-      if (window.ethereum == undefined) {
-        return;
-      }
+    // async createMetamaskTx(erc20, asset_address, to_address, value) {
+    //   if (window.ethereum == undefined) {
+    //     return;
+    //   }
 
-      let provider = new ethers.providers.Web3Provider(window.ethereum);
-      let signer = provider.getSigner();
+    //   let provider = new ethers.providers.Web3Provider(window.ethereum);
+    //   let signer = provider.getSigner();
 
-      this.txSent = true;
-      let tx_value = ethers.utils.parseUnits(value, "ether").toHexString();
-      if (erc20) {
-        try {
-          let tokenContract = new ethers.Contract(
-            asset_address,
-            ERC20ABI,
-            provider
-          );
-          let tokenContractSigner = tokenContract.connect(signer);
+    //   this.txSent = true;
+    //   let tx_value = ethers.utils.parseUnits(value, "ether").toHexString();
+    //   if (erc20) {
+    //     try {
+    //       let tokenContract = new ethers.Contract(
+    //         asset_address,
+    //         ERC20ABI,
+    //         provider
+    //       );
+    //       let tokenContractSigner = tokenContract.connect(signer);
 
-          tokenContractSigner.transfer(asset_address, tx_value);
-        } catch (error) {
-          console.log(error);
-        }
-      } else {
-        const transactionParameters = {
-          from: ethers.utils.getAddress(await signer.getAddress()),
-          to: to_address,
-          value: tx_value,
-          chainId: 0x1,
-        };
-        try {
-          let tx = await provider
-            .getSigner()
-            .sendTransaction(transactionParameters);
-          console.log(tx);
-          this.txConfirmed = true;
-          this.txSucceed = true;
-        } catch (error) {
-          if (error.code === "INSUFFICIENT_FUNDS") {
-            this.txErrorText = "Insufficient Balance.";
-          }
-          if (error.code === 4001) {
-            this.txErrorText = "Transaction rejected.";
-          }
-          this.txConfirmed = true;
-          this.txSucceed = false;
-          console.log(error);
-        }
-      }
-    },
+    //       tokenContractSigner.transfer(asset_address, tx_value);
+    //     } catch (error) {
+    //       console.log(error);
+    //     }
+    //   } else {
+    //     const transactionParameters = {
+    //       from: ethers.utils.getAddress(await signer.getAddress()),
+    //       to: to_address,
+    //       value: tx_value,
+    //       chainId: 0x1,
+    //     };
+    //     try {
+    //       let tx = await provider
+    //         .getSigner()
+    //         .sendTransaction(transactionParameters);
+    //       console.log(tx);
+    //       this.txConfirmed = true;
+    //       this.txSucceed = true;
+    //     } catch (error) {
+    //       if (error.code === "INSUFFICIENT_FUNDS") {
+    //         this.txErrorText = "Insufficient Balance.";
+    //       }
+    //       if (error.code === 4001) {
+    //         this.txErrorText = "Transaction rejected.";
+    //       }
+    //       this.txConfirmed = true;
+    //       this.txSucceed = false;
+    //       console.log(error);
+    //     }
+    //   }
+    // },
     handleChanges() {
       // handle network and account change (BUG)
       let provider = new ethers.providers.Web3Provider(window.ethereum);

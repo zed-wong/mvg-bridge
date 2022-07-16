@@ -3,7 +3,6 @@
     max-width="500px"
     overlay-opacity="0.5"
     v-model="connectWalletDialog"
-    
     close-delay="0"
   >
     <v-sheet class="align-start pa-9">
@@ -58,7 +57,11 @@ export default {
       get() {
         return [
           { name: "Metamask", icon: metamask, action: "metamask" },
-          { name: "WalletConnect", icon: walletconnect, action: "walletconnect" },
+          {
+            name: "WalletConnect",
+            icon: walletconnect,
+            action: "walletconnect",
+          },
           { name: "Coinbase Wallet", icon: coinbase, action: "coinbase" },
         ];
       },
@@ -72,33 +75,37 @@ export default {
   },
 
   methods: {
-    async connect(action){
+    async connect(action) {
       if (action === "metamask") {
-        await this.connectMetamask()
-        return
+        await this.connectMetamask();
+        return;
       }
       if (action === "walletconnect") {
         // await this.connectMetamask()
-        return
+        return;
       }
       if (action === "coinbase") {
         // await this.connectMetamask()
-        return
+        return;
       }
     },
     async connectMetamask() {
-      const accounts = await window.ethereum.request({
-        method: "eth_requestAccounts",
-      });
-      let account = ethers.utils.getAddress(accounts[0]);
+      let account = await this.getAccount();
       this.register(account);
 
       const chainId = await window.ethereum.request({ method: "eth_chainId" });
       const chainid = parseInt(chainId, 16);
-      const chainName = chainid in chainIds ? chainIds[chainid].name : "Unspported Network";
-      this.$store.commit("connect", { address: account, name: chainName, id: chainid });
+      const chainName =
+        chainid in chainIds ? chainIds[chainid].name : "Unspported";
+      this.$store.commit("connect", {
+        address: account,
+        name: chainName,
+        id: chainid,
+      });
       this.$store.commit("toggleConnectWallet", false);
+      this.checkNetwork(1);
     },
+
     async register(Address) {
       const checked = ethers.utils.getAddress(Address);
       const result = await this.$axios.post("https://bridge.mvm.dev/users", {
@@ -106,18 +113,52 @@ export default {
       });
       localStorage.setItem("user", JSON.stringify(result.data.user.key));
     },
-    checkNetwork(chainId){
-      // If current network not in supported networks
-      if (parseInt(chainId, 16) in chainIds) return;
-      // If selected network is not
-      // if (!this.selectedNetwork.asset_id in this.$store.state.supportMetamaskNetworks) return;
 
-    }
+    async checkNetwork(chainid) {
+      // 1. Check if from network is supported by metamask, if not, do nothing
+      // 2. Check if connected network is from network, if not, switch to from network
+
+      // If selected network supported by metamask
+      if (
+        !this.$store.state.supportMetamaskNetworks.includes(
+          this.selectedNetwork.symbol
+        )
+      ) {
+        // console.log("selected network is not supported");
+        return;
+      }
+
+      // Switch to ethermum
+      try {
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: "0x1" }],
+        });
+
+        let account = await this.getAccount();
+        let chainName =
+          chainid in chainIds ? chainIds[chainid].name : "Unspported";
+        this.$store.commit("connect", {
+          address: account,
+          name: chainName,
+          id: chainid,
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async getAccount() {
+      try {
+        const accounts = await window.ethereum.request({
+          method: "eth_requestAccounts",
+        });
+        return ethers.utils.getAddress(accounts[0]);
+      } catch (error) {
+        console.log(error);
+      }
+    },
   },
 };
-function getObjKey(obj, value) {
-  return Object.keys(obj).find(key => obj[key].symbolId === value);
-}
 </script>
 
 <style>

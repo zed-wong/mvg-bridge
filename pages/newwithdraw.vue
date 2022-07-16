@@ -3,10 +3,10 @@
     <v-sheet elevation="2" class="pa-9 mt-15 border-rounded" max-width="552px">
       <v-row class="d-flex flex-column" no-gutters>
         <v-col class="mb-6 px-0" style="font-size: 24px">
-          <a class="pr-6 font-weight-bold"><span> Deposit </span></a>
-          <a style="color: #68778d; text-decoration: none" :href="withdraw_url"
-            ><span> Withdraw </span></a
+          <a style="color: #68778d; text-decoration: none" :href="deposit_url"
+            ><span> Deposit </span></a
           >
+          <a class="pl-6 font-weight-bold"><span> Withdraw </span></a>
         </v-col>
 
         <v-col style="font-size: 14px" class="pa-0">
@@ -16,24 +16,14 @@
           >
             <div class="d-flex align-center">
               <span class="mr-1 font-weight-light"> From </span>
-              <v-btn
-                small
-                depressed
-                class="px-0"
-                @click.stop="selectNetworkDialog = true"
+              <v-img
+                :src="bridge"
+                max-height="21px"
+                max-width="19px"
+                class="ml-2"
               >
-                <v-img
-                  class="ml-2"
-                  max-width="20px"
-                  max-height="20px"
-                  :src="selectedNetwork.icon_url"
-                />
-                <span class="ml-2 selected-network font-weight-500">
-                  {{ selectedNetwork.name }} Mainnet
-                </span>
-                <v-icon small> mdi-menu-down </v-icon>
-              </v-btn>
-              <select-from-network />
+              </v-img>
+              <span class="ml-2 font-weight-500"> MVM Mainnet </span>
             </div>
 
             <div class="d-flex flex-row align-center">
@@ -41,7 +31,7 @@
                 outlined
                 placeholder="0.0"
                 hide-details="true"
-                v-model="fromAmount"
+                v-model="toAmount"
                 class="from-form my-3 border-width"
               ></v-text-field>
               <v-btn
@@ -60,19 +50,18 @@
                 <span class="mr-2" style="font-size: 18px">
                   {{ selectedToken.symbol }}
                 </span>
-
                 <v-icon small> mdi-menu-down </v-icon>
               </v-btn>
-              <select-from-token />
+              <select-to-token />
             </div>
-            <span v-if="fromBalanceVisble" class="font-weight-light">
-              Balance: {{ fixedFromBalance }} {{ selectedToken.symbol }}
+            <span v-if="toBalanceVisble" class="font-weight-light">
+              Balance: {{ fixedToBalance }} {{ selectedToken.symbol }}
             </span>
           </v-sheet>
         </v-col>
 
         <v-col class="text-center pa-0 py-1">
-          <v-btn icon :href="withdraw_url">
+          <v-btn icon :href="deposit_url">
             <v-icon class="arrow-down py-1"> mdi-arrow-down </v-icon>
           </v-btn>
         </v-col>
@@ -82,20 +71,30 @@
             style="background-color: #f4f7fa"
             class="px-5 py-4 border-rounded"
           >
-            <div class="d-flex flex-row mb-2">
+            <div class="d-flex align-center mb-2">
               <span class="font-weight-light"> To </span>
-              <v-img
-                :src="bridge"
-                max-height="21px"
-                max-width="19px"
-                class="ml-2"
+              <v-btn
+                small
+                depressed
+                class="px-0"
+                @click.stop="selectNetworkDialog = true"
               >
-              </v-img>
-              <span class="ml-2 font-weight-500"> MVM Mainnet </span>
+                <v-img
+                  class="ml-2"
+                  max-width="20px"
+                  max-height="20px"
+                  :src="selectedNetwork.icon_url"
+                />
+                <span class="ml-2 selected-network font-weight-500">
+                  {{ selectedNetwork.name }} Mainnet
+                </span>
+                <v-icon small> mdi-menu-down </v-icon>
+              </v-btn>
+              <select-to-network />
             </div>
             <div class="d-flex flex-column font-weight-light">
               <span class="mb-1">
-                You will receive: {{ fromAmount != 0 ? fromAmount : 0 }}
+                You will receive: {{ toAmount != 0 ? toAmount : 0 }}
                 {{ selectedToken.symbol }}
               </span>
             </div>
@@ -123,13 +122,13 @@
             elevation="0"
             color="#5959d8"
             v-if="connected"
-            @click="deposit"
-            :loading="depositing"
+            @click="withdraw"
+            :loading="withdrawing"
             class="border-rounded main-btn white--text"
           >
-            <span> Deposit </span>
+            <span> Withdraw </span>
           </v-btn>
-          <deposit-dialog :from-amount="fromAmount" />
+          <withdraw-dialog :to-amount="toAmount" />
         </v-col>
       </v-row>
     </v-sheet>
@@ -140,34 +139,38 @@
 import { ethers } from "ethers";
 import bridge from "~/static/bridge.png";
 import chainIds from "../helpers/chainids";
+import assets from "../assets/assets.json";
+import chains from "../assets/chainlist.json";
 import { NewClient } from "@/helpers/mixin";
 import ERC20ABI from "../assets/erc20.json";
-import selectFromToken from "~/components/selectFromToken.vue";
-import selectFromNetwork from "~/components/selectFromNetwork.vue";
+import ASSETABI from "../assets/assetABI.json";
+import { fetchAssetContract } from "../helpers/registry";
+import selectToToken from "~/components/selectToToken.vue";
 import ConnectWallet from "~/components/connectWallet.vue";
-import DepositDialog from "~/components/depositDialog.vue";
+import withdrawDialog from "~/components/withdrawDialog.vue";
+import selectToNetowrk from "~/components/selectToNetwork.vue";
 
-let ETHUUID = "43d61dcd-e413-450d-80b8-101d5e903357";
+const XINUUID = "c94ac88f-4671-3976-b60a-09064f1811e8";
 
 export default {
   components: {
-    selectFromNetwork,
-    selectFromToken,
+    selectToToken,
     ConnectWallet,
-    DepositDialog,
+    withdrawDialog,
+    selectToNetowrk,
   },
   data() {
     return {
       bridge,
 
-      withdraw_url: "/newwithdraw",
+      deposit_url: "/newbridge",
 
-      fromAmount: "0",
-      fromBalance: "",
-      fromBalanceVisble: false,
+      toAmount: "0",
+      toBalance: "",
+      toBalanceVisble: false,
 
       // metamask tx
-      depositing: false,
+      withdrawing: false,
       txSent: false,
       txConfirmed: false,
       txSucceed: false,
@@ -175,6 +178,27 @@ export default {
     };
   },
   computed: {
+    assets() {
+      return assets.assets;
+    },
+    connected() {
+      return this.$store.state.connected;
+    },
+    network() {
+      return this.$store.state.network.id;
+    },
+    selectedNetwork() {
+      return this.$store.state.toNetwork;
+    },
+    selectedToken() {
+      return this.$store.state.toToken;
+    },
+    fixedToBalance() {
+      if (Number(this.toBalance) == 0) return 0;
+      if (Number(this.toBalance).toFixed(8) > 0.00000001) return Number(this.toBalance).toFixed(8);
+      return 0;
+    },
+
     selectNetworkDialog: {
       get() {
         return this.$store.state.selectNetworkDialog;
@@ -191,26 +215,6 @@ export default {
         this.$store.commit("toggleSelectToken", value);
       },
     },
-    connected: {
-      get() {
-        return this.$store.state.connected;
-      },
-    },
-    network: {
-      get() {
-        return this.$store.state.network.id;
-      },
-    },
-    selectedNetwork: {
-      get() {
-        return this.$store.state.fromNetwork;
-      },
-    },
-    selectedToken: {
-      get() {
-        return this.$store.state.fromToken;
-      },
-    },
     connectWalletDialog: {
       get() {
         return this.$store.state.connectWalletDialog;
@@ -219,90 +223,61 @@ export default {
         this.$store.commit("toggleConnectWallet", value);
       },
     },
-    confirmDepositDialog: {
+    confirmWithdrawDialog: {
       get() {
-        return this.$store.state.confirmDepositDialog;
+        return this.$store.state.confirmWithdrawDialog;
       },
       set(value) {
-        this.$store.commit("toggleConfirmDeposit", value);
-      },
-    },
-    fixedFromBalance: {
-      get() {
-        if (Number(this.fromBalance) == 0) return 0;
-        return Number(this.fromBalance).toFixed(5);
+        this.$store.commit("toggleConfirmWithdraw", value);
       },
     },
   },
 
   watch: {
     selectedToken(o, n) {
-      this.getFromBalance();
+      this.getMvmtoBalance();
     },
     connected(o, n) {
-      this.getFromBalance();
+      this.getMvmtoBalance();
     },
     network(o, n) {
-      this.getFromBalance();
+      this.getMvmtoBalance();
     },
   },
-  async mounted() {
-    this.getFromBalance();
+
+  mounted() {
+    this.getMvmtoBalance();
+
+    this.setDefaultToNetwork();
+
+    this.mvmBydefault();
   },
 
   layout: "newbridge",
 
   methods: {
-    async deposit() {
-      this.depositing = true;
-      let addr = await this.getDepositAddress(this.selectedToken.asset_id);
-      this.depositing = false;
+    async withdraw() {
+      // console.log("withdraw");
+      this.confirmWithdrawDialog = true;
+      this.withdrawing = true;
+      this.withdrawing = false;
 
-      // Metamask
-      if (this.checkNetwork(this.selectedNetwork.symbol)) {
-        // if (this.selectedNetwork.evm_chain_id) {
-        //   if (this.network.id != this.selectedNetwork.chainid) {
+      // Open withdraw dialog
 
-        //     let provider = new ethers.providers.Web3Provider(window.ethereum);
-        //     await provider.request({
-        //       method: "wallet_switchEthereumChain",
-        //       params: [{ chainId: this.selectedNetwork.evm_chain_id.toString(16) }],
-        //     });
-        //     return;
-        //   }
-        // }
+      //  -> If connected network is not mvm mainnet, switch to mvm mainnet
+      //  -> Call withdrawal contract to withdraw
 
-        // console.log('Using Metamask')
-        if (!this.selectedToken.asset_key.includes("0x")) {
-          // console.log("[ERROR] No asset contract address");
-          return;
-        }
-
-        // transfer ETH
-        if (this.selectedToken.symbol === "ETH") {
-          this.createMetamaskTx(false, "", addr[0], this.fromAmount);
-          return;
-        }
-
-        // transfer erc20 tokens
-        if (this.selectedToken.chain_id === ETHUUID) {
-          this.createMetamaskTx(
-            true,
-            this.selectedToken.asset_key,
-            addr[0],
-            this.fromAmount
-          );
-          return;
-        }
-        return;
-      }
-
-      // Other Network
-      this.confirmDepositDialog = true;
-      this.$store.commit("setDepositAddr", addr);
+      //   if (this.network.id != this.selectedNetwork.chainid) {
+      //     let provider = new ethers.providers.Web3Provider(window.ethereum);
+      //     await provider.request({
+      //       method: "wallet_switchEthereumChain",
+      //       params: [{ chainId: this.selectedNetwork.evm_chain_id.toString(16) }],
+      //     });
+      //     return;
+      //   }
     },
 
-    async getFromBalance() {
+    async getMvmtoBalance() {
       if (!this.connected) {
         console.log("[ERROR] Please connect wallet first.");
         return;
@@ -312,41 +287,27 @@ export default {
         return;
       }
 
-      if (!this.checkNetwork(this.selectedNetwork.symbol)) {
-        // console.log("Chain balance is not supported");
-        this.fromBalanceVisble = false;
-        return;
-      }
-
       let provider = new ethers.providers.Web3Provider(window.ethereum);
       let signer = provider.getSigner();
       let userAddr = await signer.getAddress();
 
-      if (this.selectedToken.asset_id === ETHUUID) {
-        // console.log("Selected ETH")
+      if (this.selectedToken.asset_id === XINUUID) {
+        // console.log("Selected XIN")
         let addr = ethers.utils.getAddress(userAddr);
         let balance = ethers.utils.formatEther(await provider.getBalance(addr));
-        this.fromBalance = balance;
-        this.fromBalanceVisble = true;
-        return;
-      }
-
-      if (!this.selectedToken.asset_key.includes("0x")) {
-        // console.log("Not ERC20 Token");
-        this.fromBalanceVisble = false;
+        this.toBalance = balance;
+        this.toBalanceVisble = true;
         return;
       }
 
       // console.log("Selected ERC20 token")
-      let tokenContract = new ethers.Contract(
-        this.selectedToken.asset_key,
-        ERC20ABI,
-        provider
-      );
+      let assetAddr = await fetchAssetContract(this.selectedToken.asset_id);
+
+      let tokenContract = new ethers.Contract(assetAddr, ASSETABI, provider);
       let tokenBalance = await tokenContract.balanceOf(userAddr);
       let balance = ethers.utils.formatEther(tokenBalance);
-      this.fromBalance = balance;
-      this.fromBalanceVisble = true;
+      this.toBalance = balance;
+      this.toBalanceVisble = true;
     },
 
     async createMetamaskTx(erc20, asset_address, to_address, value) {
@@ -399,22 +360,6 @@ export default {
         }
       }
     },
-
-    async getDepositAddress(asset_id) {
-      let suser = localStorage.getItem("user");
-      if (suser) {
-        let user = JSON.parse(suser);
-        let client = NewClient(
-          user.client_id,
-          user.session_id,
-          user.private_key
-        );
-        let asset = await client.readAsset(asset_id);
-        let dest = asset.deposit_entries[0].destination;
-        let tag = asset.deposit_entries[0].tag;
-        return [dest, tag];
-      }
-    },
     handleChanges() {
       let provider = new ethers.providers.Web3Provider(window.ethereum);
 
@@ -435,11 +380,44 @@ export default {
         });
       });
     },
+    setDefaultToNetwork() {
+      let asset = this.assets[6];
+      this.$store.commit("setToToken", asset);
+
+      let chain = chains.filter((item) => {
+        return item.asset_id.match(asset.chain_id);
+      })[0];
+      this.$store.commit("setToNetwork", chain);
+    },
     checkNetwork(chain_symbol) {
       return this.$store.state.supportMetamaskNetworks.includes(chain_symbol);
     },
     followNetwork() {
-      // make sure connected network is the same as selected network
+      //
+    },
+    async mvmBydefault() {
+      if (window.ethereum == undefined) {
+        return;
+      }
+      let provider = new ethers.providers.Web3Provider(window.ethereum);
+      if ((await provider.getNetwork().chainId) == "73927") {
+        return;
+      }
+
+      try {
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: "0x120c7" }],
+        });
+      } catch (error) {
+        console.log(error);
+        // if (error.code === 4902) {
+        //   await window.ethereum.request({
+        //     method: "wallet_addEthereumChain",
+        //     params: chain,
+        //   });
+        // }
+      }
     },
   },
 };

@@ -8,7 +8,12 @@ export const state = () => ({
   fromToken: {},
   confirmDepositDialog: false,
   depositAddr: [],
-  supportMetamaskNetworks: ["ETH"] //['BNB','AVAX'],
+  supportMetamaskNetworks: ["ETH"], //['BNB','AVAX'],
+
+  toNetwork: {},
+  toToken: {},
+  confirmWithdrawDialog: false,
+  withdrawAddr:[],
 })
 
 export const mutations = {
@@ -28,13 +33,25 @@ export const mutations = {
   toggleConfirmDeposit(state: any, open: boolean) {
     state.confirmDepositDialog = open
   },
+  toggleConfirmWithdraw(state: any, open: boolean) {
+    state.confirmWithdrawDialog = open
+  },
   setFromNetwork(state: any, data: {}) {
     state.fromNetwork = data
   },
   setFromToken(state: any, data: {}) {
     state.fromToken = data
   },
+  setToNetwork(state: any, data: {}) {
+    state.toNetwork = data
+  },
+  setToToken(state: any, data: {}) {
+    state.toToken = data
+  },
   setDepositAddr(state: any, data: []) {
     state.depositAddr = data
-  }
+  },
+  setWithdrawAddr(state: any, data: []) {
+    state.withdrawAddr = data
+  },
 }

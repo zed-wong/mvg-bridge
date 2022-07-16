@@ -1,7 +1,7 @@
 const chainIds = {
   // 0: "Kardia",
   1: { name: "Ethereum", symbolId: '43d61dcd-e413-450d-80b8-101d5e903357'},
-  73927: { name: "Mvm", symbolId: 'c94ac88f-4671-3976-b60a-09064f1811e8'},
+  73927: { name: "MVM", symbolId: 'c94ac88f-4671-3976-b60a-09064f1811e8'},
   // 2: "Expanse",
   // 8: "Ubiq",
   // 10: "Optimism",

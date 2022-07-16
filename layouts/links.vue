@@ -104,7 +104,7 @@ export default {
       return this.$store.state.connected;
     },
     address() {
-      return this.$store.state.address;
+      return this.$store.state.network.address;
     },
   },
   mounted() {
@@ -121,7 +121,7 @@ export default {
       this.register(accounts[0]);
       // console.log(accounts[0]);
 
-      this.$store.commit("connect", accounts[0]);
+      this.$store.commit("connect", {address:accounts[0]});
 
       const chainId = await window.ethereum.request({ method: "eth_chainId" });
       if (chainId != "0x120c7") {

@@ -1,13 +1,15 @@
 import { Client } from 'mixin-node-sdk'
 
-export const MixinClient = new Client({
-  "pin": "523536",
-  "client_id": "7d23f225-6104-3a3c-973a-4394b3d1b496",
-  "session_id": "f2dcdba3-2bb8-49fe-8e2c-20b130faaac8",
-  "pin_token": "tn9G6JdlXi17jQBySBpDJzCcXME7hqkoWmd_jl94iTM",
-  "private_key": "lI9P8r0dCawroLumbnfJNgT3qQI97aDWHz8GdNmUOZ6zzrFseCeFycar6DAwCcRA3npNRh3TPCTElDxAhR4aKw",
+const conf = { 
+  "client_id": "01fc34ef-a627-3496-8977-80c8ecbc32de",
+  "session_id": "1819b4e8-2daf-463c-a351-16e74d479d86",
+  "private_key": "Sb6lyBjsd9e89NuAEGcCmE5oWdy2YmFmHneN6MtKu_LkvTx9tUzIjzUkFL_Ttdj1YNoZ44hnpxeWCN99jFSxHA",
+  "pin": "912459", 
+  "pin_token": "oE-OsyZZP2ZYMdIPm-Vgg84nEHrMOrk-D3koP6UVE3M",
   "client_secret": ''
-});
+ }
+
+export const MixinClient = new Client(conf);
 
 export function NewClient(client_id, session_id, private_key) {
   return new Client({
@@ -18,6 +20,7 @@ export function NewClient(client_id, session_id, private_key) {
     "private_key": private_key,
     "client_secret": ''
   }
-)}
+  )
+}
 
 export default MixinClient;

@@ -210,8 +210,6 @@ export default {
       //  call mixin withdraw
       // False, Call withdrawal contract to withdraw
       //  call external withdraw
-      // -> 1. get Asset fee data
-      // -> 2. construct data, call withdrawal contract
       if (this.selectedNetwork.asset_id == XINUUID) {
         await this.mixinWithdraw();
         return;
@@ -227,11 +225,14 @@ export default {
       // 3. call contract
       // 3.1 if (asset_id == xinuuid) call bridge contract
       // 3.2 call asset contract
-      // (this.txAddr, this.txMemo)
       let provider = new ethers.providers.Web3Provider(window.ethereum);
       let signer = provider.getSigner();
 
       let mixinExtra = await this.getMixinExtra(this.txAddr, this.txMemo);
+      if (mixinExtra === undefined) {
+        console.log('Get Mixin User Failed')
+        return;
+      }
 
       let txValue = formatAmount(this.toAmount, this.selectedToken.asset_id);
       let userContractAddr = this.userAddress;
@@ -274,11 +275,12 @@ export default {
       }
     },
     async getMixinExtra(user_id, memo) {
-      user_id = String(user_id).trim();
-      if (!validateUUID(user_id)) {
-        let user = await MixinClient.searchUser(user_id);
-        user_id = user.user_id;
+      let userID = String(user_id).trim();
+      if (!validateUUID(userID)) {
+        let user = await MixinClient.searchUser(userID);
+        userID = user.user_id;
       }
+      if (userID === undefined ) return undefined;
       let payloads = {
         receivers: [user_id],
         threshold: 1,
@@ -291,6 +293,11 @@ export default {
       return "0x"+mixinExtra.data.extra;
     },
     async externalWithdraw() {
+      // 1. get Asset fee data
+      // 2. 
+      // 3. construct data, call withdrawal contract
+      // 
+
       console.log('external Withdraw')
     },
   },

@@ -195,7 +195,8 @@ export default {
     },
     fixedToBalance() {
       if (Number(this.toBalance) == 0) return 0;
-      if (Number(this.toBalance).toFixed(8) > 0.00000001) return Number(this.toBalance).toFixed(8);
+      if (Number(this.toBalance).toFixed(8) > 0.00000001)
+        return Number(this.toBalance).toFixed(8);
       return 0;
     },
 
@@ -257,27 +258,14 @@ export default {
 
   methods: {
     async withdraw() {
-      // console.log("withdraw");
       this.confirmWithdrawDialog = true;
       this.withdrawing = true;
+      this.mvmBydefault()
       this.withdrawing = false;
-
-      // Open withdraw dialog
-
-      //  -> If connected network is not mvm mainnet, switch to mvm mainnet
-      //  -> Call withdrawal contract to withdraw
-
-      //   if (this.network.id != this.selectedNetwork.chainid) {
-      //     let provider = new ethers.providers.Web3Provider(window.ethereum);
-      //     await provider.request({
-      //       method: "wallet_switchEthereumChain",
-      //       params: [{ chainId: this.selectedNetwork.evm_chain_id.toString(16) }],
-      //     });
-      //     return;
-      //   }
     },
 
     async getMvmtoBalance() {
+      // get mvm asset balance
       if (!this.connected) {
         console.log("[ERROR] Please connect wallet first.");
         return;
@@ -305,7 +293,7 @@ export default {
 
       let tokenContract = new ethers.Contract(assetAddr, ASSETABI, provider);
       let tokenBalance = await tokenContract.balanceOf(userAddr);
-      let balance = ethers.utils.formatEther(tokenBalance);
+      let balance = ethers.utils.formatUnits(tokenBalance, 8);
       this.toBalance = balance;
       this.toBalanceVisble = true;
     },
@@ -361,6 +349,7 @@ export default {
       }
     },
     handleChanges() {
+      // handle network and account change (BUG)
       let provider = new ethers.providers.Web3Provider(window.ethereum);
 
       provider.on("accountsChanged", (accounts) => {
@@ -381,6 +370,7 @@ export default {
       });
     },
     setDefaultToNetwork() {
+      // set eth as default to network
       let asset = this.assets[6];
       this.$store.commit("setToToken", asset);
 
@@ -392,10 +382,8 @@ export default {
     checkNetwork(chain_symbol) {
       return this.$store.state.supportMetamaskNetworks.includes(chain_symbol);
     },
-    followNetwork() {
-      //
-    },
     async mvmBydefault() {
+      // switch to mvm if is not
       if (window.ethereum == undefined) {
         return;
       }
@@ -411,12 +399,25 @@ export default {
         });
       } catch (error) {
         console.log(error);
-        // if (error.code === 4902) {
-        //   await window.ethereum.request({
-        //     method: "wallet_addEthereumChain",
-        //     params: chain,
-        //   });
-        // }
+        if (error.code === 4902) {
+          const chain = [
+            {
+              chainId: `0x${Number(73927).toString(16)}`,
+              blockExplorerUrls: ["https://scan.mvm.dev/"],
+              rpcUrls: ["https://geth.mvm.dev"],
+              chainName: "Mixin Virtual Machine",
+              nativeCurrency: {
+                name: "Mixin",
+                symbol: "XIN",
+                decimals: 18,
+              },
+            },
+          ];
+          await window.ethereum.request({
+            method: "wallet_addEthereumChain",
+            params: chain,
+          });
+        }
       }
     },
   },

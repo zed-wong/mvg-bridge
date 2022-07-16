@@ -6,6 +6,7 @@ import RegistryABI from '../assets/registryABI.json';
 import AssetABI from '../assets/assetABI.json';
 import BridgeABI from '../assets/bridgeABI.json';
 
+export const DECIMAL = 100000000
 export const RPCURL = "https://geth.mvm.dev/";
 export const registryAddress = "0x3c84B6C98FBeB813e05a7A7813F0442883450B1F";
 export const bridgeAddress = "0x12266b2BbdEAb152f8A0CF83c3997Bc8dbAD0be0";

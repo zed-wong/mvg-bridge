@@ -80,5 +80,16 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+
+    extend(config) {
+      config.module.rules.push({
+        test: /\.mjs$/,
+        include: /node_modules/,
+        type: "javascript/auto"
+      })
+    }
   },
+  env: {
+    INFURA_KEY: process.env.INFURA_KEY
+  }
 }

@@ -6,7 +6,7 @@
         color="#ffffff"
         class="px-6 bar-css"
         v-if="!isMobile"
-        height="72px"
+        height="90px"
       >
         <v-img
           :src="bridge"
@@ -23,50 +23,8 @@
           Bridge
         </span>
         <v-spacer />
-        <v-btn
-          height="40px"
-          elevation="0"
-          color="#5959d8"
-          v-if="!connected"
-          class="ml-3 connect-wallet"
-          @click.stop="connectWalletDialog = true"
-        >
-          <span style="color: white"> Connect Wallet</span>
-        </v-btn>
-        <connect-wallet />
+        <connect-wallet :small="true" v-if="!connected"/>
 
-        <v-btn
-          text
-          rounded
-          outlined
-          depressed
-          elevation="0"
-          class="mx-3"
-          v-if="connected"
-        >
-          <span style="max-width: 120px; font-size: 12px" class="px-1"
-            >{{ network }} Mainnet</span
-          >
-        </v-btn>
-
-        <v-btn
-          depressed
-          rounded
-          outlined
-          elevation="0"
-          class="mx-1"
-          v-if="connected"
-          text
-        >
-          <v-avatar size="22px" class="mr-2">
-            <v-img :src="getAvatar(6)" max-height="22px" max-width="22px" />
-          </v-avatar>
-          <span
-            style="max-width: 100px; font-size: 12px"
-            class="text-truncate"
-            >{{ address }}</span
-          >
-        </v-btn>
       </v-app-bar>
       <v-container
         fluid
@@ -178,6 +136,6 @@ export default {
   border-bottom-color: rgba(0, 0, 0, 0.12) !important;
 }
 .content {
-  height: calc(100vh - 72px);
+  height: calc(100vh - 90px);
 }
 </style>

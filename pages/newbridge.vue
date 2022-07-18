@@ -115,19 +115,7 @@
         </v-col>
 
         <v-col class="mt-8 px-0">
-          <v-btn
-            block
-            x-large
-            depressed
-            elevation="0"
-            color="#5959d8"
-            v-if="!connected"
-            @click.stop="connectWalletDialog = true"
-            class="border-rounded main-btn white--text"
-          >
-            <span> Connect Wallet </span>
-          </v-btn>
-          <connect-wallet />
+          <connect-wallet :huge="true" v-if="!connected" />
           <v-btn
             block
             x-large
@@ -154,6 +142,7 @@ import bridge from "~/static/bridge.png";
 import chainIds from "../helpers/chainids";
 import { NewClient } from "@/helpers/mixin";
 import ERC20ABI from "../assets/erc20.json";
+import { useOnboard } from "@web3-onboard/vue";
 import selectFromToken from "~/components/selectFromToken.vue";
 import selectFromNetwork from "~/components/selectFromNetwork.vue";
 import ConnectWallet from "~/components/connectWallet.vue";
@@ -209,9 +198,9 @@ export default {
         return this.$store.state.connected;
       },
     },
-    network: {
+    network_id: {
       get() {
-        return this.$store.state.network.id;
+        return this.$store.state.chainId;
       },
     },
     selectedNetwork: {
@@ -255,7 +244,7 @@ export default {
     connected(o, n) {
       this.getFromBalance();
     },
-    network(o, n) {
+    network_id(o, n) {
       this.getFromBalance();
     },
   },
@@ -325,16 +314,20 @@ export default {
         return;
       }
 
-      this.fetchingBalance = true;
-      this.fromBalanceVisble = false;
       if (!this.checkNetwork(this.selectedNetwork.symbol)) {
         // console.log("Chain balance is not supported");
-        this.fetchingBalance = true;
+        this.fetchingBalance = false;
         this.fromBalanceVisble = false;
         return;
       }
 
-      let provider = new ethers.providers.Web3Provider(window.ethereum);
+      this.fetchingBalance = true;
+      this.fromBalanceVisble = false;
+      const { connectedWallet } = useOnboard();
+      const provider = new ethers.providers.Web3Provider(
+        connectedWallet.value.provider,
+        "any"
+      );
       let signer = provider.getSigner();
       let userAddr = await signer.getAddress();
 
@@ -434,26 +427,26 @@ export default {
         return [dest, tag];
       }
     },
-    handleChanges() {
-      let provider = new ethers.providers.Web3Provider(window.ethereum);
+    // handleChanges() {
+    //   let provider = new ethers.providers.Web3Provider(window.ethereum);
 
-      provider.on("accountsChanged", (accounts) => {
-        console.log("accountsChanges", accounts);
-        this.$store.commit("connect", { address: accounts[0] });
-      });
+    //   provider.on("accountsChanged", (accounts) => {
+    //     console.log("accountsChanges", accounts);
+    //     this.$store.commit("connect", { address: accounts[0] });
+    //   });
 
-      provider.on("chainChanged", async (chainid) => {
-        console.log("chainChanged:", chainid);
-        let account = await this.getAccount();
-        let chainName =
-          chainid in chainIds ? chainIds[chainid].name : "Unspported";
-        this.$store.commit("connect", {
-          address: account,
-          name: chainName,
-          id: chainid,
-        });
-      });
-    },
+    //   provider.on("chainChanged", async (chainid) => {
+    //     console.log("chainChanged:", chainid);
+    //     let account = await this.getAccount();
+    //     let chainName =
+    //       chainid in chainIds ? chainIds[chainid].name : "Unspported";
+    //     this.$store.commit("connect", {
+    //       address: account,
+    //       name: chainName,
+    //       id: chainid,
+    //     });
+    //   });
+    // },
     checkNetwork(chain_symbol) {
       return this.$store.state.supportMetamaskNetworks.includes(chain_symbol);
     },

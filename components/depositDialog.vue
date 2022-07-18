@@ -19,10 +19,7 @@
             {{ item.subtitle }}
           </span>
 
-          <div
-            class="d-flex flex-row align-center pt-1 mb-5"
-            v-if="item.name"
-          >
+          <div class="d-flex flex-row align-center pt-1 mb-5" v-if="item.name">
             <v-img
               v-if="item.haveIcon"
               :src="item.icon"
@@ -35,11 +32,21 @@
               {{ item.name }}
             </span>
 
-            <v-icon v-if="item.addtoken" size="14px" class="ml-1" @click="addToken">
+            <v-icon
+              v-if="item.addtoken"
+              size="14px"
+              class="ml-1"
+              @click="addToken"
+            >
               mdi-plus
             </v-icon>
 
-            <v-icon v-if="item.copyable" size="14px" class="ml-1" @click="copyAddr(item.name)">
+            <v-icon
+              v-if="item.copyable"
+              size="14px"
+              class="ml-1"
+              @click="copyAddr(item.name)"
+            >
               mdi-content-copy
             </v-icon>
           </div>
@@ -180,7 +187,7 @@ export default {
             icon: "",
             addtoken: false,
             copyable: true,
-            name: this.depositAddr[1] ? this.depositAddr[1] : "",
+            name: this.selectedNetwork.asset_id == XINUUID ? '': (this.depositAddr[1] ? this.depositAddr[1] : ""),
           },
         ];
       },
@@ -222,8 +229,8 @@ export default {
       }
     },
     copyAddr(value) {
-      navigator.clipboard.writeText(value)
-    }
+      navigator.clipboard.writeText(value);
+    },
   },
 };
 </script>

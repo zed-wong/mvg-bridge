@@ -105,28 +105,37 @@
               <select-to-network />
             </div>
             <div class="d-flex flex-column font-weight-light">
-              <span class="mb-1">
+              <span class="mb-2">
                 You will receive: {{ toAmount != 0 ? toAmount : 0 }}
                 {{ selectedToken.symbol }}
+              </span>
+            </div>
+            <div v-if="txGettingFee">
+              <v-progress-circular
+                width="1"
+                size="10"
+                indeterminate
+                color="dark"
+                class="mr-2"
+              ></v-progress-circular>
+              <span class="font-weight-light" style="font-size"
+                >Loading Transaction Fee</span
+              >
+            </div>
+            <div
+              class="d-flex flex-column font-weight-light"
+              v-if="txEstimatedFeeVisible"
+            >
+              <span class="mb-2">
+                Withdrawal Fee: {{ txEstimatedFee }}
+                {{ selectedNetwork.symbol }}
               </span>
             </div>
           </v-sheet>
         </v-col>
 
         <v-col class="mt-8 px-0">
-          <v-btn
-            block
-            x-large
-            depressed
-            elevation="0"
-            color="#5959d8"
-            v-if="!connected"
-            @click.stop="connectWalletDialog = true"
-            class="border-rounded main-btn white--text"
-          >
-            <span> Connect Wallet </span>
-          </v-btn>
-          <connect-wallet />
+          <connect-wallet v-if="!connected" :huge="true"/>
           <v-btn
             block
             x-large
@@ -140,7 +149,7 @@
           >
             <span> Withdraw </span>
           </v-btn>
-          <withdraw-dialog :to-amount="toAmount" />
+          <withdraw-dialog :to-amount="toAmount" :fee=txEstimatedFee />
         </v-col>
       </v-row>
     </v-sheet>
@@ -150,12 +159,11 @@
 <script lang="">
 import { ethers } from "ethers";
 import bridge from "~/static/bridge.png";
-import chainIds from "../helpers/chainids";
 import assets from "../assets/assets.json";
 import chains from "../assets/chainlist.json";
-import { NewClient } from "@/helpers/mixin";
-import ERC20ABI from "../assets/erc20.json";
 import ASSETABI from "../assets/assetABI.json";
+import { MixinClient } from "@/helpers/mixin";
+import { useOnboard } from "@web3-onboard/vue";
 import { fetchAssetContract } from "../helpers/registry";
 import selectToToken from "~/components/selectToToken.vue";
 import ConnectWallet from "~/components/connectWallet.vue";
@@ -188,6 +196,9 @@ export default {
       txConfirmed: false,
       txSucceed: false,
       txErrorText: "",
+      txEstimatedFee: "",
+      txGettingFee: false,
+      txEstimatedFeeVisible: false,
     };
   },
   computed: {
@@ -197,8 +208,8 @@ export default {
     connected() {
       return this.$store.state.connected;
     },
-    network() {
-      return this.$store.state.network.id;
+    network_id() {
+      return this.$store.state.chainId;
     },
     selectedNetwork() {
       return this.$store.state.toNetwork;
@@ -250,11 +261,15 @@ export default {
   watch: {
     selectedToken(o, n) {
       this.getMvmtoBalance();
+      this.estimateTxFee();
+    },
+    selectedNetwork(o, n) {
+      this.estimateTxFee();
     },
     connected(o, n) {
       this.getMvmtoBalance();
     },
-    network(o, n) {
+    network_id(o, n) {
       this.getMvmtoBalance();
     },
   },
@@ -265,6 +280,8 @@ export default {
     this.setDefaultToNetwork();
 
     this.mvmBydefault();
+
+    this.estimateTxFee();
   },
 
   layout: "newbridge",
@@ -273,7 +290,7 @@ export default {
     async withdraw() {
       this.confirmWithdrawDialog = true;
       this.withdrawing = true;
-      this.mvmBydefault()
+      this.mvmBydefault();
       this.withdrawing = false;
     },
 
@@ -290,7 +307,11 @@ export default {
 
       this.fetchingBalance = true;
       this.toBalanceVisble = false;
-      let provider = new ethers.providers.Web3Provider(window.ethereum);
+      const { connectedWallet } = useOnboard();
+      const provider = new ethers.providers.Web3Provider(
+        connectedWallet.value.provider,
+        "any"
+      );
       let signer = provider.getSigner();
       let userAddr = await signer.getAddress();
 
@@ -305,87 +326,42 @@ export default {
       }
 
       // console.log("Selected ERC20 token")
-      let assetAddr = await fetchAssetContract(this.selectedToken.asset_id);
+      try {
+        let assetAddr = await fetchAssetContract(this.selectedToken.asset_id);
 
-      let tokenContract = new ethers.Contract(assetAddr, ASSETABI, provider);
-      let tokenBalance = await tokenContract.balanceOf(userAddr);
-      let balance = ethers.utils.formatUnits(tokenBalance, 8);
-      this.toBalance = balance;
-      this.toBalanceVisble = true;
-      this.fetchingBalance = false;
+        let tokenContract = new ethers.Contract(assetAddr, ASSETABI, provider);
+        let tokenBalance = await tokenContract.balanceOf(userAddr);
+        let balance = ethers.utils.formatUnits(tokenBalance, 8);
+        this.toBalance = balance;
+        this.toBalanceVisble = true;
+        this.fetchingBalance = false;
+      } catch (error) {
+        console.log(error);
+      }
     },
 
-    // async createMetamaskTx(erc20, asset_address, to_address, value) {
-    //   if (window.ethereum == undefined) {
-    //     return;
-    //   }
-
+    
+    // handleChanges() {
+    //   // handle network and account change (BUG)
     //   let provider = new ethers.providers.Web3Provider(window.ethereum);
-    //   let signer = provider.getSigner();
 
-    //   this.txSent = true;
-    //   let tx_value = ethers.utils.parseUnits(value, "ether").toHexString();
-    //   if (erc20) {
-    //     try {
-    //       let tokenContract = new ethers.Contract(
-    //         asset_address,
-    //         ERC20ABI,
-    //         provider
-    //       );
-    //       let tokenContractSigner = tokenContract.connect(signer);
+    //   provider.on("accountsChanged", (accounts) => {
+    //     console.log("accountsChanges", accounts);
+    //     this.$store.commit("connect", { address: accounts[0] });
+    //   });
 
-    //       tokenContractSigner.transfer(asset_address, tx_value);
-    //     } catch (error) {
-    //       console.log(error);
-    //     }
-    //   } else {
-    //     const transactionParameters = {
-    //       from: ethers.utils.getAddress(await signer.getAddress()),
-    //       to: to_address,
-    //       value: tx_value,
-    //       chainId: 0x1,
-    //     };
-    //     try {
-    //       let tx = await provider
-    //         .getSigner()
-    //         .sendTransaction(transactionParameters);
-    //       console.log(tx);
-    //       this.txConfirmed = true;
-    //       this.txSucceed = true;
-    //     } catch (error) {
-    //       if (error.code === "INSUFFICIENT_FUNDS") {
-    //         this.txErrorText = "Insufficient Balance.";
-    //       }
-    //       if (error.code === 4001) {
-    //         this.txErrorText = "Transaction rejected.";
-    //       }
-    //       this.txConfirmed = true;
-    //       this.txSucceed = false;
-    //       console.log(error);
-    //     }
-    //   }
+    //   provider.on("chainChanged", async (chainid) => {
+    //     console.log("chainChanged:", chainid);
+    //     let account = await this.getAccount();
+    //     let chainName =
+    //       chainid in chainIds ? chainIds[chainid].name : "Unspported";
+    //     this.$store.commit("connect", {
+    //       address: account,
+    //       name: chainName,
+    //       id: chainid,
+    //     });
+    //   });
     // },
-    handleChanges() {
-      // handle network and account change (BUG)
-      let provider = new ethers.providers.Web3Provider(window.ethereum);
-
-      provider.on("accountsChanged", (accounts) => {
-        console.log("accountsChanges", accounts);
-        this.$store.commit("connect", { address: accounts[0] });
-      });
-
-      provider.on("chainChanged", async (chainid) => {
-        console.log("chainChanged:", chainid);
-        let account = await this.getAccount();
-        let chainName =
-          chainid in chainIds ? chainIds[chainid].name : "Unspported";
-        this.$store.commit("connect", {
-          address: account,
-          name: chainName,
-          id: chainid,
-        });
-      });
-    },
     setDefaultToNetwork() {
       // set eth as default to network
       let asset = this.assets[6];
@@ -436,6 +412,21 @@ export default {
           });
         }
       }
+    },
+    async getTxFee() {
+      if (this.selectedNetwork.asset_id === XINUUID) return 0;
+
+      let fee = await MixinClient.readAssetFee(this.selectedToken.asset_id);
+      return fee.amount;
+    },
+    async estimateTxFee() {
+      this.txGettingFee = true;
+      this.txEstimatedFeeVisible = false;
+
+      this.txEstimatedFee = await this.getTxFee();
+
+      this.txGettingFee = false;
+      this.txEstimatedFeeVisible = true;
     },
   },
 };

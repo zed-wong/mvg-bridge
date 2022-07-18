@@ -73,6 +73,20 @@
             <span v-if="!txToMixin"> Withdraw To Address</span>
             <span v-else> Withdraw To Mixin</span>
           </v-btn>
+
+          <v-btn
+            block
+            x-large
+            elevation="0"
+            class="metamask-pay-btn mt-4"
+            @click="withdraw('metamask')"
+            v-if="txSupportMetamask"
+          >
+            <v-avatar size="20px">
+              <v-img :src="MetamaskLogo" />
+            </v-avatar>
+            <span class="ml-2"> Withdraw To Metamask</span>
+          </v-btn>
         </v-col>
       </v-row>
     </v-sheet>
@@ -83,16 +97,16 @@
 import { ethers } from "ethers";
 import { multiply, round } from "mathjs";
 import { MixinClient } from "../helpers/mixin";
-import { validate as validateUUID } from "uuid";
+import { useOnboard } from "@web3-onboard/vue";
 import ASSETABI from "../assets/assetABI.json";
 import BRIDGEABI from "../assets/bridgeABI.json";
 import MetamaskLogo from "../static/metamask.png";
+import { validate as validateUUID, v4 as uuidV4 } from "uuid";
 import {
-  getContractByAssetID,
-  bridgeAddress,
   DECIMAL,
+  bridgeAddress,
+  getContractByAssetID,
 } from "../helpers/registry";
-// import { readNetworkAsset } from "mixin-node-sdk";
 
 const XINUUID = "c94ac88f-4671-3976-b60a-09064f1811e8";
 
@@ -105,7 +119,7 @@ export default {
       txMemo: "",
     };
   },
-  props: ["toAmount"],
+  props: ["toAmount", "fee"],
   computed: {
     confirmWithdrawDialog: {
       get() {
@@ -126,7 +140,7 @@ export default {
       },
     },
     userAddress() {
-      return this.$store.state.network.address;
+      return this.$store.state.userAddress;
     },
     txSupportMetamask() {
       return this.$store.state.supportMetamaskNetworks.includes(
@@ -164,7 +178,7 @@ export default {
     },
   },
   methods: {
-    async withdraw() {
+    async withdraw(type) {
       // Check if To Network is mixin mainnet
       // True, deposit to Mixin
       //  call mixin withdraw
@@ -174,7 +188,13 @@ export default {
         await this.mixinWithdraw();
         return;
       }
-      await this.externalWithdraw();
+      if (type == "metamask") {
+        let trace = await this.externalWithdraw("metamask", 0, "");
+        await this.externalWithdraw("metamask", 1, trace);
+        return;
+      }
+      let trace = await this.externalWithdraw("", 0, "");
+      await this.externalWithdraw("", 1, trace);
     },
     async mixinWithdraw() {
       // 1. construct mixin extra payload   (user_id, memo, threshold, extra)
@@ -185,7 +205,11 @@ export default {
       // 3. call contract
       // 3.1 if (asset_id == xinuuid) call bridge contract
       // 3.2 call asset contract
-      let provider = new ethers.providers.Web3Provider(window.ethereum);
+      const { connectedWallet } = useOnboard();
+      const provider = new ethers.providers.Web3Provider(
+        connectedWallet.value.provider,
+        "any"
+      );
       let signer = provider.getSigner();
 
       let mixinExtra = await this.getMixinExtra(this.txAddress, this.txMemo);
@@ -195,7 +219,9 @@ export default {
       }
 
       let txValue = formatAmount(this.toAmount, this.selectedToken.asset_id);
-      let userContractAddr = await this.getUserProxyContract();
+
+      let userContractAddr = await this.getUserProxyContract(this.userAddress);
+
       let txResult;
       try {
         if (this.selectedToken.asset_id === XINUUID) {
@@ -231,6 +257,93 @@ export default {
         console.log(error);
       }
     },
+
+    async externalWithdraw(type, step, oldTrace) {
+      // 0. Open transfer withdraw asset dialog
+      // 1. call bridge or asset, transfer withdrawal asset (trace:A)
+      // 2. Open transfer withdraw fee dialog
+      // 3. call bridge or asset, transfer fee asset (trace:B)
+
+      const { connectedWallet } = useOnboard();
+      const provider = new ethers.providers.Web3Provider(
+        connectedWallet.value.provider,
+        "any"
+      );
+      let signer = provider.getSigner();
+      console.log(connectedWallet, signer)
+      try {
+        let txaddr =
+          type == "metamask" ? await signer.getAddress() : this.txAddress;
+        let txAmount = formatAmount(this.toAmount, this.selectedToken.asset_id);
+        let traceID = step === 0 ? uuidV4() : oldTrace;
+        let ma = await this.getExternalExtra(
+          txaddr,
+          this.txMemo,
+          traceID + ":A"
+        );
+        let txResult;
+
+        if (step == 1) {
+          let feeAmount = formatAmount(this.fee, this.selectedToken.chain_id);
+          let mb = await this.getExternalExtra(
+            txaddr,
+            this.txMemo,
+            traceID + ":B"
+          );
+
+          let assetContractAddr = await getContractByAssetID(
+            this.selectedToken.chain_id
+          );
+          let tokenContract = new ethers.Contract(
+            assetContractAddr,
+            ASSETABI,
+            signer
+          );
+
+          txResult = await tokenContract.transferWithExtra(
+            assetContractAddr,
+            feeAmount,
+            mb
+          );
+          console.log(txResult);
+        }
+
+        // If step 0
+        if (this.selectedToken.asset_id === XINUUID) {
+          let tokenContract = new ethers.Contract(
+            bridgeAddress,
+            BRIDGEABI,
+            signer
+          );
+          txResult = await tokenContract.release(txaddr, ma, {
+            value: txAmount,
+            gasLimit: 350000,
+          });
+          console.log(txResult);
+          return traceID;
+        } else {
+          let assetContractAddr = await getContractByAssetID(
+            this.selectedToken.asset_id
+          );
+          let tokenContract = new ethers.Contract(
+            assetContractAddr,
+            ASSETABI,
+            signer
+          );
+
+          txResult = await tokenContract.transferWithExtra(
+            assetContractAddr,
+            txAmount,
+            ma
+          );
+          console.log(txResult);
+          return traceID;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
     async getMixinExtra(user_id, memo) {
       let userID = String(user_id).trim();
 
@@ -250,20 +363,23 @@ export default {
       );
       return "0x" + mixinExtra.data.extra;
     },
-    async getUserProxyContract() {
+    async getExternalExtra(destination, tag, extra) {
+      let payload = {
+        destination: destination,
+        tag: tag,
+        extra: extra,
+      };
+      let externalExtra = await this.$axios.post(
+        "https://bridge.mvm.dev/extra",
+        payload
+      );
+      return "0x" + externalExtra.data.extra;
+    },
+    async getUserProxyContract(userAddr) {
       const result = await this.$axios.post("https://bridge.mvm.dev/users", {
-        public_key: ethers.utils.getAddress(this.userAddress),
+        public_key: ethers.utils.getAddress(userAddr),
       });
       return result.data.user.contract ? result.data.user.contract : "";
-    },
-    async externalWithdraw() {
-      // 1. get Asset fee data
-      // 2.
-      // 3. construct data, call withdrawal contract
-      
-      console.log("external Withdraw");
-      let fee = await MixinClient.readAssetFee(this.selectedToken.asset_id);
-      console.log(fee.amount);
     },
   },
 };
@@ -314,9 +430,9 @@ function formatAmount(amount, asset_id) {
   border-radius: 10px;
   background-color: #f4f7fa;
 }
-/* .metamask-pay-btn {
+.metamask-pay-btn {
   color: white;
   background-color: #2979ff !important;
   border-radius: 10px;
-} */
+}
 </style>

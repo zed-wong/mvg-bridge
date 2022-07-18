@@ -1,109 +1,70 @@
 <template>
-  <v-dialog
-    max-width="500px"
-    overlay-opacity="0.5"
-    v-model="connectWalletDialog"
-    close-delay="0"
-  >
-    <v-sheet class="align-start pa-9">
-      <v-row class="d-flex flex-column pb-6" no-gutters>
-        <v-col class="align-center d-flex justify-center pa-0">
-          <span class="connect-text">Connect your wallet</span>
-        </v-col>
-
-        <v-col>
-          <v-list-item-group class="group-border">
-            <v-list-item
-              :key="i"
-              class="px-5 py-2 item"
-              @click="connect(item.action)"
-              v-for="(item, i) in connectMethods"
-            >
-              <v-list-item-avatar class="mr-0">
-                <v-img :src="item.icon" max-height="44px" max-width="44px" />
-              </v-list-item-avatar>
-              <v-list-item-content>
-                <v-list-item-title class="item-title">
-                  {{ item.name }}
-                </v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list-item-group>
-        </v-col>
-      </v-row>
-    </v-sheet>
-  </v-dialog>
+  <div>
+    <v-btn
+      height="40px"
+      elevation="0"
+      color="#5959d8"
+      v-if="small"
+      class="ml-3 connect-wallet"
+      @click="connect"
+    >
+      <span style="color: white"> Connect Wallet</span>
+    </v-btn>
+    <v-btn
+      block
+      x-large
+      depressed
+      elevation="0"
+      color="#5959d8"
+      v-if="huge"
+      @click="connect"
+      class="border-rounded main-btn white--text"
+    >
+      <span> Connect Wallet </span>
+    </v-btn>
+  </div>
 </template>
 
 <script lang="">
+import { useOnboard } from "@web3-onboard/vue";
+import { web3Onboard } from "../helpers/web3onboard";
 import { ethers } from "ethers";
-import chainIds from "../helpers/chainids";
-import metamask from "@/static/metamask.png";
-import walletconnect from "@/static/walletconnect.png";
-import coinbase from "@/static/coinbase.png";
 
 export default {
-  computed: {
-    connectWalletDialog: {
-      get() {
-        return this.$store.state.connectWalletDialog;
-      },
-      set(value) {
-        this.$store.commit("toggleConnectWallet", value);
-      },
-    },
-
-    connectMethods: {
-      get() {
-        return [
-          { name: "Metamask", icon: metamask, action: "metamask" },
-          {
-            name: "WalletConnect",
-            icon: walletconnect,
-            action: "walletconnect",
-          },
-          { name: "Coinbase Wallet", icon: coinbase, action: "coinbase" },
-        ];
-      },
-    },
-
-    selectedNetwork: {
-      get() {
-        return this.$store.state.fromNetwork;
-      },
-    },
-  },
-
+  props: ["small", "huge"],
   methods: {
-    async connect(action) {
-      if (action === "metamask") {
-        await this.connectMetamask();
-        return;
-      }
-      if (action === "walletconnect") {
-        // await this.connectMetamask()
-        return;
-      }
-      if (action === "coinbase") {
-        // await this.connectMetamask()
-        return;
-      }
-    },
-    async connectMetamask() {
-      let account = await this.getAccount();
-      this.register(account);
+    async connect() {
+      try {
+        await web3Onboard.connectWallet();
+        const {
+          wallets,
+          connectWallet,
+          disconnectConnectedWallet,
+          connectedChain,
+          connectedWallet,
+        } = useOnboard();
+        if (connectedWallet) {
+          const provider = new ethers.providers.Web3Provider(
+            connectedWallet.value.provider,
+            "any"
+          );
+          const signer = provider.getSigner();
+          const userAddr = await signer.getAddress();
+          const userAddress = ethers.utils.getAddress(userAddr)
+          await this.register(userAddr);
+          
+          this.$store.commit("connect", { address: userAddress, name: "", id: connectedChain.value.id});
 
-      const chainId = await window.ethereum.request({ method: "eth_chainId" });
-      const chainid = parseInt(chainId, 16);
-      const chainName =
-        chainid in chainIds ? chainIds[chainid].name : "Unspported";
-      this.$store.commit("connect", {
-        address: account,
-        name: chainName,
-        id: chainid,
-      });
-      this.connectWalletDialog = false;
-      this.checkNetwork(1);
+          // Use in other component
+          // import { useOnboard } from "@web3-onboard/vue";
+          // const { connectedWallet } = useOnboard();
+          // const provider = new ethers.providers.Web3Provider(connectedWallet.value.provider, "any")
+          // const signer = provider.getSigner()
+        }
+      } catch (error) {
+        console.log(error);
+      }
+      return;
     },
 
     async register(Address) {
@@ -113,56 +74,13 @@ export default {
       });
       localStorage.setItem("user", JSON.stringify(result.data.user.key));
     },
-
-    async checkNetwork(chainid) {
-      // 1. Check if from network is supported by metamask, if not, do nothing
-      // 2. Check if connected network is from network, if not, switch to from network
-
-      // If selected network supported by metamask
-      if (
-        !this.$store.state.supportMetamaskNetworks.includes(
-          this.selectedNetwork.symbol
-        )
-      ) {
-        // console.log("selected network is not supported");
-        return;
-      }
-
-      // Switch to ethermum
-      try {
-        await window.ethereum.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: "0x1" }],
-        });
-
-        let account = await this.getAccount();
-        let chainName =
-          chainid in chainIds ? chainIds[chainid].name : "Unspported";
-        this.$store.commit("connect", {
-          address: account,
-          name: chainName,
-          id: chainid,
-        });
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    async getAccount() {
-      try {
-        const accounts = await window.ethereum.request({
-          method: "eth_requestAccounts",
-        });
-        return ethers.utils.getAddress(accounts[0]);
-      } catch (error) {
-        console.log(error);
-      }
-    },
   },
 };
 </script>
 
 <style>
-.connect-text {
+
+/* .connect-text {
   color: var(--input-text-color);
   font-size: 24px;
   font-style: italic;
@@ -185,5 +103,5 @@ export default {
 .group-border {
   border: 1px solid #cbd5e0;
   border-radius: 12px;
-}
+} */
 </style>

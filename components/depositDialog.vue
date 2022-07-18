@@ -8,7 +8,7 @@
     <v-sheet class="align-self-start px-9 py-8">
       <v-row class="d-flex flex-column mb-0">
         <v-col class="align-center d-flex flex-row pr-0 mb-2">
-          <h1 class="title-css">Deposit</h1>
+          <h1 class="title-css">Confirm Deposit</h1>
           <v-spacer />
           <v-btn icon @click="confirmDepositDialog = false">
             <v-icon> mdi-close </v-icon>
@@ -62,6 +62,19 @@
           >
             {{ txQrBtnText }}
           </v-btn>
+          <v-btn
+            block
+            x-large
+            elevation="0"
+            v-if="supportsMetamask"
+            class="metamask-pay-btn mt-4"
+            @click="deposit"
+          >
+            <v-avatar size="24">
+              <v-img :src="MetamaskLogo" />
+            </v-avatar>
+            <span class="ml-1"> Transfer With Metamask</span>
+          </v-btn>
           <div
             class="d-flex justify-center mt-5 pa-4 align-center qr-area"
             v-if="txShowQR"
@@ -84,24 +97,34 @@
 <script>
 import { ethers } from "ethers";
 import { v4 as uuidv4 } from "uuid";
+import ERC20ABI from "../assets/erc20.json";
+import { useOnboard } from "@web3-onboard/vue";
 import VueQrcode from "@chenfengyuan/vue-qrcode";
 import { readNetworkAsset } from "mixin-node-sdk";
+import MetamaskLogo from "../static/metamask.png";
 import { getContractByAssetID } from "../helpers/registry";
 
 const XINUUID = "c94ac88f-4671-3976-b60a-09064f1811e8";
+const ETHUUID = "43d61dcd-e413-450d-80b8-101d5e903357";
 
 export default {
   data() {
     return {
       search: "",
+      MetamaskLogo,
       txShowQR: false,
       txQrBtnText: "Show QR Code",
+      // Metamask tx
+      txSent: false,
+      txConfirmed: false,
+      txSucceed: false,
+      txErrorText: "",
     };
   },
   components: {
     VueQrcode,
   },
-  props: ["fromAmount"],
+  props: ["fromAmount", "fromBalance"],
   computed: {
     confirmDepositDialog: {
       get() {
@@ -124,6 +147,18 @@ export default {
     depositAddr: {
       get() {
         return this.$store.state.depositAddr;
+      },
+    },
+    supportsMetamask: {
+      get() {
+        if (!this.$store.state.supportMetamaskNetworks.includes( this.selectedNetwork.symbol )){
+          return false
+        }
+        console.log(this.fromBalance, this.fromAmount)
+        if (this.fromBalance < this.fromAmount){
+          return false
+        }
+        return true
       },
     },
 
@@ -187,7 +222,12 @@ export default {
             icon: "",
             addtoken: false,
             copyable: true,
-            name: this.selectedNetwork.asset_id == XINUUID ? '': (this.depositAddr[1] ? this.depositAddr[1] : ""),
+            name:
+              this.selectedNetwork.asset_id == XINUUID
+                ? ""
+                : this.depositAddr[1]
+                ? this.depositAddr[1]
+                : "",
           },
         ];
       },
@@ -206,6 +246,9 @@ export default {
       }&amount=${this.fromAmount}&trace=${uuidv4()}`;
     },
     async addToken() {
+      // if (window.ethereum == undefined) {
+      //   return;
+      // }
       let assetID = this.selectedToken.asset_id;
       if (assetID == XINUUID) return;
       let asset = await readNetworkAsset(assetID);
@@ -230,6 +273,105 @@ export default {
     },
     copyAddr(value) {
       navigator.clipboard.writeText(value);
+    },
+
+    async deposit() {
+      // Tx
+      try {
+        if (this.supportsMetamask) {
+          if (!this.selectedToken.asset_key.includes("0x")) {
+            // console.log("[ERROR] No asset contract address");
+            return;
+          }
+
+          // transfer ETH
+          if (this.selectedToken.symbol === "ETH") {
+            this.createTx(
+              false,
+              "",
+              this.depositAddr[0],
+              this.fromAmount
+            );
+            return;
+          }
+
+          // transfer Erc20 tokens
+          if (this.selectedToken.chain_id === ETHUUID) {
+            this.createTx(
+              true,
+              this.selectedToken.asset_key,
+              this.depositAddr[0],
+              this.fromAmount
+            );
+            return;
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+
+      // if (this.selectedNetwork.evm_chain_id) {
+      //   if (this.network.id != this.selectedNetwork.chainid) {
+
+      //     let provider = new ethers.providers.Web3Provider(window.ethereum);
+      //     await provider.request({
+      //       method: "wallet_switchEthereumChain",
+      //       params: [{ chainId: this.selectedNetwork.evm_chain_id.toString(16) }],
+      //     });
+      //     return;
+      //   }
+      // }
+    },
+    async createTx(erc20, asset_address, to_address, value) {
+      const { connectedWallet } = useOnboard();
+      const provider = new ethers.providers.Web3Provider(
+        connectedWallet.value.provider,
+        "any"
+      );
+      let signer = provider.getSigner();
+
+      this.txSent = true;
+      let tx_value = ethers.utils.parseUnits(value, "ether").toHexString();
+    
+      if (erc20) {
+        try {
+          let tokenContract = new ethers.Contract(
+            asset_address,
+            ERC20ABI,
+            provider
+          );
+          let tokenContractSigner = tokenContract.connect(signer);
+
+          tokenContractSigner.transfer(asset_address, tx_value);
+        } catch (error) {
+          console.log(error);
+        }
+      } else {
+        const transactionParameters = {
+          from: ethers.utils.getAddress(await signer.getAddress()),
+          to: to_address,
+          value: tx_value,
+          chainId: 0x1,
+        };
+        try {
+          let tx = await provider
+            .getSigner()
+            .sendTransaction(transactionParameters);
+          console.log(tx);
+          this.txConfirmed = true;
+          this.txSucceed = true;
+        } catch (error) {
+          if (error.code === "INSUFFICIENT_FUNDS") {
+            this.txErrorText = "Insufficient Balance.";
+          }
+          if (error.code === 4001) {
+            this.txErrorText = "Transaction rejected.";
+          }
+          this.txConfirmed = true;
+          this.txSucceed = false;
+          console.log(error);
+        }
+      }
     },
   },
 };
@@ -260,6 +402,11 @@ export default {
   font-weight: 600;
   border-radius: 10px !important;
   background-color: #5959d8 !important;
+}
+.metamask-pay-btn {
+  color: white !important;
+  background-color: #2979ff !important;
+  border-radius: 10px;
 }
 .qr-area {
   background-color: #f4f7fa;

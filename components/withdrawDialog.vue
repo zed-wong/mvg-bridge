@@ -82,10 +82,10 @@
             @click="withdraw('metamask')"
             v-if="txSupportMetamask"
           >
-            <v-avatar size="20px">
+            <v-avatar size="24px">
               <v-img :src="MetamaskLogo" />
             </v-avatar>
-            <span class="ml-2"> Withdraw To Metamask</span>
+            <span class="ml-1"> Withdraw To Metamask</span>
           </v-btn>
         </v-col>
       </v-row>
@@ -115,8 +115,14 @@ export default {
     return {
       MetamaskLogo,
       search: "",
+
       txAddress: "",
       txMemo: "",
+      // tx state
+      txSent: false,
+      txConfirmed: false,
+      txSucceed: false,
+      txErrorText: "",
     };
   },
   props: ["toAmount", "fee"],

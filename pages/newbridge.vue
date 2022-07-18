@@ -37,13 +37,16 @@
             </div>
 
             <div class="d-flex flex-row align-center">
-              <v-text-field
-                outlined
-                placeholder="0.0"
-                hide-details="true"
-                v-model="fromAmount"
-                class="from-form my-3 border-width"
-              ></v-text-field>
+              <v-form v-model="valueValid">
+                <v-text-field
+                  outlined
+                  :rules="rules"
+                  placeholder="0.0"
+                  hide-details="true"
+                  v-model="fromAmount"
+                  class="from-form my-3 border-width"
+                ></v-text-field>
+              </v-form>
               <v-btn
                 outlined
                 elevation="0"
@@ -125,11 +128,12 @@
             v-if="connected"
             @click="deposit"
             :loading="depositing"
+            :disabled="!valueValid"
             class="border-rounded main-btn white--text"
           >
             <span> Deposit </span>
           </v-btn>
-          <deposit-dialog :from-amount="fromAmount" />
+          <deposit-dialog :from-amount="fromAmount" :from-balance="fromBalance" />
         </v-col>
       </v-row>
     </v-sheet>
@@ -139,7 +143,6 @@
 <script lang="">
 import { ethers } from "ethers";
 import bridge from "~/static/bridge.png";
-import chainIds from "../helpers/chainids";
 import { NewClient } from "@/helpers/mixin";
 import ERC20ABI from "../assets/erc20.json";
 import { useOnboard } from "@web3-onboard/vue";
@@ -167,13 +170,14 @@ export default {
       fromBalance: "",
       fromBalanceVisble: false,
       fetchingBalance: false,
-
-      // metamask tx
       depositing: false,
-      txSent: false,
-      txConfirmed: false,
-      txSucceed: false,
-      txErrorText: "",
+
+      rules: [
+        (value) => !!value || 'Value is required',
+        (value) => value >= 0 || 'Value must bigger than 0',
+        // (value) => value <= this.fromBalance || 'Deposit Asset Balance is not enought',
+      ],
+      valueValid: false,
     };
   },
   computed: {
@@ -232,7 +236,7 @@ export default {
     fixedFromBalance: {
       get() {
         if (Number(this.fromBalance) == 0) return 0;
-        return Number(this.fromBalance).toFixed(5);
+        return Number(this.fromBalance).toFixed(6);
       },
     },
   },
@@ -259,47 +263,6 @@ export default {
       this.depositing = true;
       let addr = await this.getDepositAddress(this.selectedToken.asset_id);
       this.depositing = false;
-
-      // Metamask
-      if (this.checkNetwork(this.selectedNetwork.symbol)) {
-        // if (this.selectedNetwork.evm_chain_id) {
-        //   if (this.network.id != this.selectedNetwork.chainid) {
-
-        //     let provider = new ethers.providers.Web3Provider(window.ethereum);
-        //     await provider.request({
-        //       method: "wallet_switchEthereumChain",
-        //       params: [{ chainId: this.selectedNetwork.evm_chain_id.toString(16) }],
-        //     });
-        //     return;
-        //   }
-        // }
-
-        // console.log('Using Metamask')
-        if (!this.selectedToken.asset_key.includes("0x")) {
-          // console.log("[ERROR] No asset contract address");
-          return;
-        }
-
-        // transfer ETH
-        if (this.selectedToken.symbol === "ETH") {
-          this.createMetamaskTx(false, "", addr[0], this.fromAmount);
-          return;
-        }
-
-        // transfer erc20 tokens
-        if (this.selectedToken.chain_id === ETHUUID) {
-          this.createMetamaskTx(
-            true,
-            this.selectedToken.asset_key,
-            addr[0],
-            this.fromAmount
-          );
-          return;
-        }
-        return;
-      }
-
-      // Other Network
       this.confirmDepositDialog = true;
       this.$store.commit("setDepositAddr", addr);
     },
@@ -361,57 +324,6 @@ export default {
       this.fromBalanceVisble = true;
     },
 
-    async createMetamaskTx(erc20, asset_address, to_address, value) {
-      if (window.ethereum == undefined) {
-        return;
-      }
-
-      let provider = new ethers.providers.Web3Provider(window.ethereum);
-      let signer = provider.getSigner();
-
-      this.txSent = true;
-      let tx_value = ethers.utils.parseUnits(value, "ether").toHexString();
-      if (erc20) {
-        try {
-          let tokenContract = new ethers.Contract(
-            asset_address,
-            ERC20ABI,
-            provider
-          );
-          let tokenContractSigner = tokenContract.connect(signer);
-
-          tokenContractSigner.transfer(asset_address, tx_value);
-        } catch (error) {
-          console.log(error);
-        }
-      } else {
-        const transactionParameters = {
-          from: ethers.utils.getAddress(await signer.getAddress()),
-          to: to_address,
-          value: tx_value,
-          chainId: 0x1,
-        };
-        try {
-          let tx = await provider
-            .getSigner()
-            .sendTransaction(transactionParameters);
-          console.log(tx);
-          this.txConfirmed = true;
-          this.txSucceed = true;
-        } catch (error) {
-          if (error.code === "INSUFFICIENT_FUNDS") {
-            this.txErrorText = "Insufficient Balance.";
-          }
-          if (error.code === 4001) {
-            this.txErrorText = "Transaction rejected.";
-          }
-          this.txConfirmed = true;
-          this.txSucceed = false;
-          console.log(error);
-        }
-      }
-    },
-
     async getDepositAddress(asset_id) {
       let suser = localStorage.getItem("user");
       if (suser) {
@@ -427,26 +339,6 @@ export default {
         return [dest, tag];
       }
     },
-    // handleChanges() {
-    //   let provider = new ethers.providers.Web3Provider(window.ethereum);
-
-    //   provider.on("accountsChanged", (accounts) => {
-    //     console.log("accountsChanges", accounts);
-    //     this.$store.commit("connect", { address: accounts[0] });
-    //   });
-
-    //   provider.on("chainChanged", async (chainid) => {
-    //     console.log("chainChanged:", chainid);
-    //     let account = await this.getAccount();
-    //     let chainName =
-    //       chainid in chainIds ? chainIds[chainid].name : "Unspported";
-    //     this.$store.commit("connect", {
-    //       address: account,
-    //       name: chainName,
-    //       id: chainid,
-    //     });
-    //   });
-    // },
     checkNetwork(chain_symbol) {
       return this.$store.state.supportMetamaskNetworks.includes(chain_symbol);
     },

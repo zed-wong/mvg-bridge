@@ -1,4 +1,5 @@
 import { init } from '@web3-onboard/vue'
+import { useOnboard } from "@web3-onboard/vue";
 import injectedModule from '@web3-onboard/injected-wallets'
 import coinbaseWalletModule from "@web3-onboard/coinbase";
 import walletConnectModule from "@web3-onboard/walletconnect";
@@ -39,3 +40,16 @@ export const web3Onboard = init({
     ]
   }
 })
+
+// const {
+//   wallets,
+//   connectWallet,
+//   disconnectConnectedWallet,
+//   connectedChain,
+//   connectedWallet,
+// } = useOnboard();
+
+// const provider = new ethers.providers.Web3Provider(
+//   connectedWallet.value.provider,
+//   "any"
+// );

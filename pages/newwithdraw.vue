@@ -27,13 +27,16 @@
             </div>
 
             <div class="d-flex flex-row align-center">
-              <v-text-field
-                outlined
-                placeholder="0.0"
-                hide-details="true"
-                v-model="toAmount"
-                class="from-form my-3 border-width"
-              ></v-text-field>
+              <v-form v-model="valueValid" ref="form">
+                <v-text-field
+                  outlined
+                  :rules="rules"
+                  placeholder="0.0"
+                  hide-details="true"
+                  v-model="toAmount"
+                  class="from-form my-3 border-width"
+                ></v-text-field>
+              </v-form>
               <v-btn
                 outlined
                 elevation="0"
@@ -135,7 +138,7 @@
         </v-col>
 
         <v-col class="mt-8 px-0">
-          <connect-wallet v-if="!connected" :huge="true"/>
+          <connect-wallet v-if="!connected" :huge="true" />
           <v-btn
             block
             x-large
@@ -145,11 +148,12 @@
             v-if="connected"
             @click="withdraw"
             :loading="withdrawing"
+            :disabled="!valueValid"
             class="border-rounded main-btn white--text"
           >
-            <span> Withdraw </span>
+            <span> {{ giantBtnText }} </span>
           </v-btn>
-          <withdraw-dialog :to-amount="toAmount" :fee=txEstimatedFee />
+          <withdraw-dialog :to-amount="toAmount" :fee="txEstimatedFee" />
         </v-col>
       </v-row>
     </v-sheet>
@@ -192,18 +196,32 @@ export default {
 
       // metamask tx
       withdrawing: false,
-      txSent: false,
-      txConfirmed: false,
-      txSucceed: false,
-      txErrorText: "",
       txEstimatedFee: "",
       txGettingFee: false,
       txEstimatedFeeVisible: false,
+      txFeeAssetBalance: "",
+
+      valueValid: false,
+      rules: [
+        (value) => !!value || "Value is required",
+        (value) => value > 0 || "Value must bigger than 0",
+        (value) =>
+          value <= this.toBalance || "Withdraw Asset Balance is not enought",
+        (value) =>
+          this.txFeeAssetBalance >= this.txEstimatedFee ||
+          "Fee Asset Balance is Not Enough",
+      ],
     };
   },
   computed: {
     assets() {
       return assets.assets;
+    },
+    giantBtnText: {
+      get() {
+        if (!this.valueValid) return "Invalid Amount";
+        return "Withdraw";
+      },
     },
     connected() {
       return this.$store.state.connected;
@@ -259,29 +277,40 @@ export default {
   },
 
   watch: {
-    selectedToken(o, n) {
+    async selectedToken(o, n) {
       this.getMvmtoBalance();
-      this.estimateTxFee();
+      this.getMvmFeeBalance();
+      await this.estimateTxFee();
+      this.$nextTick(() => {
+        this.$refs.form.validate();
+      });
     },
-    selectedNetwork(o, n) {
-      this.estimateTxFee();
+    async selectedNetwork(o, n) {
+      await this.estimateTxFee();
+      this.$nextTick(() => {
+        this.$refs.form.validate();
+      });
     },
     connected(o, n) {
       this.getMvmtoBalance();
+      this.getMvmFeeBalance();
     },
     network_id(o, n) {
       this.getMvmtoBalance();
+      this.getMvmFeeBalance();
     },
   },
 
-  mounted() {
+  async mounted() {
     this.getMvmtoBalance();
+
+    this.getMvmFeeBalance();
 
     this.setDefaultToNetwork();
 
     this.mvmBydefault();
 
-    this.estimateTxFee();
+    await this.estimateTxFee();
   },
 
   layout: "newbridge",
@@ -298,10 +327,6 @@ export default {
       // get mvm asset balance
       if (!this.connected) {
         console.error("[000] Please connect wallet first.");
-        return;
-      }
-      if (window.ethereum == undefined) {
-        console.error("[001]] window.ethereum undefined");
         return;
       }
 
@@ -340,7 +365,34 @@ export default {
       }
     },
 
-    
+    async getMvmFeeBalance() {
+      // get mvm asset balance
+      if (!this.connected) {
+        console.error("[000] Please connect wallet first.");
+        return;
+      }
+
+      const { connectedWallet } = useOnboard();
+      const provider = new ethers.providers.Web3Provider(
+        connectedWallet.value.provider,
+        "any"
+      );
+      let signer = provider.getSigner();
+      let userAddr = await signer.getAddress();
+
+      // console.log("Selected ERC20 token")
+      try {
+        let assetAddr = await fetchAssetContract(this.selectedToken.chain_id);
+
+        let tokenContract = new ethers.Contract(assetAddr, ASSETABI, provider);
+        let tokenBalance = await tokenContract.balanceOf(userAddr);
+        let balance = ethers.utils.formatUnits(tokenBalance, 8);
+        this.txFeeAssetBalance = balance;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
     // handleChanges() {
     //   // handle network and account change (BUG)
     //   let provider = new ethers.providers.Web3Provider(window.ethereum);

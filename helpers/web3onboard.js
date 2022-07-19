@@ -1,5 +1,5 @@
 import { init } from '@web3-onboard/vue'
-import { useOnboard } from "@web3-onboard/vue";
+// import { useOnboard } from "@web3-onboard/vue";
 import injectedModule from '@web3-onboard/injected-wallets'
 import coinbaseWalletModule from "@web3-onboard/coinbase";
 import walletConnectModule from "@web3-onboard/walletconnect";
@@ -11,7 +11,10 @@ const modules = [injected, walletConnect, coinbaseWalletSdk]
 
 const infuraKey = process.env.INFURA_KEY
 const rpcUrl = `https://mainnet.infura.io/v3/${infuraKey}`
+const EtherScanURL = 'https://etherscan.io/'
+
 const MVMRPCURL = "https://geth.mvm.dev/";
+const MVMSCANURL = "https://scan.mvm.dev/";
 
 export const web3Onboard = init({
   wallets: modules,
@@ -19,14 +22,18 @@ export const web3Onboard = init({
     {
       id: '0x1',
       token: 'ETH',
+      namespace: 'evm',
       label: 'Ethereum Mainnet',
-      rpcUrl
+      rpcUrl,
+      blockExplorerUrl: EtherScanURL,
     },
     {
       id: '0x120C7',
+      namespace: 'evm',
       token: 'XIN',
       label: 'MVM Mainnet',
-      rpcUrl: MVMRPCURL
+      rpcUrl: MVMRPCURL,
+      blockExplorerUrl: MVMSCANURL,
     }
   ],
   appMetadata: {

@@ -163,12 +163,12 @@
 <script lang="">
 import { ethers } from "ethers";
 import bridge from "~/static/bridge.png";
-import assets from "../assets/assets.json";
-import chains from "../assets/chainlist.json";
-import ASSETABI from "../assets/assetABI.json";
+import assets from "~/assets/assets.json";
+import chains from "~/assets/chainlist.json";
+import ASSETABI from "~/assets/assetABI.json";
 import { MixinClient } from "@/helpers/mixin";
 import { useOnboard } from "@web3-onboard/vue";
-import { fetchAssetContract } from "../helpers/registry";
+import { fetchAssetContract } from "~/helpers/registry";
 import selectToToken from "~/components/selectToToken.vue";
 import ConnectWallet from "~/components/connectWallet.vue";
 import withdrawDialog from "~/components/withdrawDialog.vue";
@@ -189,28 +189,40 @@ export default {
 
       deposit_url: "/newbridge",
 
-      toAmount: "0",
+      toAmount: 0,
       toBalance: "",
       toBalanceVisble: false,
       fetchingBalance: false,
 
       // metamask tx
       withdrawing: false,
-      txEstimatedFee: "",
+      txEstimatedFee: 0,
       txGettingFee: false,
       txEstimatedFeeVisible: false,
       txFeeAssetBalance: "",
 
       valueValid: false,
       rules: [
-        (value) => !!value || "Value is required",
-        (value) => value > 0 || "Value must bigger than 0",
-        (value) =>
-          value <= this.toBalance || "Withdraw Asset Balance is not enought",
-        (value) =>
-          this.txFeeAssetBalance >= this.txEstimatedFee ||
-          "Fee Asset Balance is Not Enough",
+        (value) => {
+          if (value <= 0) {
+            this.btnErrorMsg = "Invalid Amount";
+            return false;
+          }
+          // Check Fee Balance
+          if (this.txFeeAssetBalance < this.txEstimatedFee) {
+            this.btnErrorMsg = "Insufficient Fee Balance";
+            return false;
+          }
+        
+          // Check Asset Balance
+          if (value > this.toBalance) {
+            this.btnErrorMsg = "Insufficient Balance";
+            return false;
+          }
+          return true;
+        },
       ],
+      btnErrorMsg: "",
     };
   },
   computed: {
@@ -219,7 +231,7 @@ export default {
     },
     giantBtnText: {
       get() {
-        if (!this.valueValid) return "Invalid Amount";
+        if (!this.valueValid) return this.btnErrorMsg;
         return "Withdraw";
       },
     },
@@ -280,53 +292,56 @@ export default {
     async selectedToken(o, n) {
       this.getMvmtoBalance();
       this.getMvmFeeBalance();
-      await this.estimateTxFee();
+      this.estimateTxFee();
+      if (!this.connected) return 
       this.$nextTick(() => {
         this.$refs.form.validate();
       });
     },
     async selectedNetwork(o, n) {
-      await this.estimateTxFee();
+      this.getMvmFeeBalance();
+      this.estimateTxFee();
+      if (!this.connected) return
       this.$nextTick(() => {
         this.$refs.form.validate();
       });
     },
-    connected(o, n) {
-      this.getMvmtoBalance();
-      this.getMvmFeeBalance();
+    async connected(o, n) {
+      await this.getMvmtoBalance();
+      await this.getMvmFeeBalance();
     },
-    network_id(o, n) {
-      this.getMvmtoBalance();
-      this.getMvmFeeBalance();
+    async network_id(o, n) {
+      await this.getMvmtoBalance();
+      await this.getMvmFeeBalance();
     },
   },
 
-  async mounted() {
+  mounted() {
     this.getMvmtoBalance();
+
+    this.estimateTxFee();
 
     this.getMvmFeeBalance();
 
     this.setDefaultToNetwork();
 
     this.mvmBydefault();
-
-    await this.estimateTxFee();
   },
 
   layout: "newbridge",
 
   methods: {
     async withdraw() {
+      this.mvmBydefault();
       this.confirmWithdrawDialog = true;
       this.withdrawing = true;
-      this.mvmBydefault();
       this.withdrawing = false;
     },
 
     async getMvmtoBalance() {
       // get mvm asset balance
       if (!this.connected) {
-        console.error("[000] Please connect wallet first.");
+        // console.error("[Error] Please connect wallet first.");
         return;
       }
 
@@ -340,8 +355,8 @@ export default {
       let signer = provider.getSigner();
       let userAddr = await signer.getAddress();
 
+      // XIN
       if (this.selectedToken.asset_id === XINUUID) {
-        // console.log("Selected XIN")
         let addr = ethers.utils.getAddress(userAddr);
         let balance = ethers.utils.formatEther(await provider.getBalance(addr));
         this.toBalance = balance;
@@ -350,10 +365,9 @@ export default {
         return;
       }
 
-      // console.log("Selected ERC20 token")
+      // ERC20
       try {
         let assetAddr = await fetchAssetContract(this.selectedToken.asset_id);
-
         let tokenContract = new ethers.Contract(assetAddr, ASSETABI, provider);
         let tokenBalance = await tokenContract.balanceOf(userAddr);
         let balance = ethers.utils.formatUnits(tokenBalance, 8);
@@ -362,13 +376,14 @@ export default {
         this.fetchingBalance = false;
       } catch (error) {
         console.log(error);
+        this.toBalanceVisble = false;
+        this.fetchingBalance = false;
       }
     },
 
     async getMvmFeeBalance() {
       // get mvm asset balance
       if (!this.connected) {
-        console.error("[000] Please connect wallet first.");
         return;
       }
 
@@ -380,7 +395,7 @@ export default {
       let signer = provider.getSigner();
       let userAddr = await signer.getAddress();
 
-      // console.log("Selected ERC20 token")
+      // ERC20
       try {
         let assetAddr = await fetchAssetContract(this.selectedToken.chain_id);
 
@@ -393,30 +408,9 @@ export default {
       }
     },
 
-    // handleChanges() {
-    //   // handle network and account change (BUG)
-    //   let provider = new ethers.providers.Web3Provider(window.ethereum);
-
-    //   provider.on("accountsChanged", (accounts) => {
-    //     console.log("accountsChanges", accounts);
-    //     this.$store.commit("connect", { address: accounts[0] });
-    //   });
-
-    //   provider.on("chainChanged", async (chainid) => {
-    //     console.log("chainChanged:", chainid);
-    //     let account = await this.getAccount();
-    //     let chainName =
-    //       chainid in chainIds ? chainIds[chainid].name : "Unspported";
-    //     this.$store.commit("connect", {
-    //       address: account,
-    //       name: chainName,
-    //       id: chainid,
-    //     });
-    //   });
-    // },
     setDefaultToNetwork() {
       // set eth as default to network
-      let asset = this.assets[6];
+      let asset = this.assets[0];
       this.$store.commit("setToToken", asset);
 
       let chain = chains.filter((item) => {
@@ -424,11 +418,7 @@ export default {
       })[0];
       this.$store.commit("setToNetwork", chain);
     },
-    checkNetwork(chain_symbol) {
-      return this.$store.state.supportMetamaskNetworks.includes(chain_symbol);
-    },
     async mvmBydefault() {
-      // switch to mvm if is not
       if (window.ethereum == undefined) {
         return;
       }
@@ -447,7 +437,7 @@ export default {
         if (error.code === 4902) {
           const chain = [
             {
-              chainId: `0x${Number(73927).toString(16)}`,
+              chainId: `0x120c7`,
               blockExplorerUrls: ["https://scan.mvm.dev/"],
               rpcUrls: ["https://geth.mvm.dev"],
               chainName: "Mixin Virtual Machine",
@@ -465,12 +455,6 @@ export default {
         }
       }
     },
-    async getTxFee() {
-      if (this.selectedNetwork.asset_id === XINUUID) return 0;
-
-      let fee = await MixinClient.readAssetFee(this.selectedToken.asset_id);
-      return fee.amount;
-    },
     async estimateTxFee() {
       this.txGettingFee = true;
       this.txEstimatedFeeVisible = false;
@@ -479,6 +463,12 @@ export default {
 
       this.txGettingFee = false;
       this.txEstimatedFeeVisible = true;
+    },
+    async getTxFee() {
+      if (this.selectedNetwork.asset_id === XINUUID) return 0;
+
+      let fee = await MixinClient.readAssetFee(this.selectedToken.asset_id);
+      return fee.amount;
     },
   },
 };

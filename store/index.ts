@@ -8,6 +8,8 @@ export const state = () => ({
   networkName: "",
   chainId: "",
 
+  network: "",
+
   selectNetworkDialog: false,
   fromNetwork: {},
   selectTokenDialog: false,
@@ -19,6 +21,7 @@ export const state = () => ({
   toNetwork: {},
   toToken: {},
   confirmWithdrawDialog: false,
+  confirmNetworkDialog: false,
   withdrawAddr:[],
 })
 
@@ -43,6 +46,9 @@ export const mutations = {
   },
   toggleConfirmWithdraw(state: any, open: boolean) {
     state.confirmWithdrawDialog = open
+  },
+  toggleConfirmNetwork(state: any, open: boolean) {
+    state.confirmNetworkDialog = open
   },
   setProvider(state: any, data: any) {
     state.provider = data

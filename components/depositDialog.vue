@@ -67,6 +67,7 @@
             x-large
             elevation="0"
             v-if="supportsMetamask"
+            :loading="txSent"
             class="metamask-pay-btn mt-4"
             @click="deposit"
           >
@@ -154,7 +155,6 @@ export default {
         if (!this.$store.state.supportMetamaskNetworks.includes( this.selectedNetwork.symbol )){
           return false
         }
-        console.log(this.fromBalance, this.fromAmount)
         if (this.fromBalance < this.fromAmount){
           return false
         }
@@ -345,6 +345,8 @@ export default {
           tokenContractSigner.transfer(asset_address, tx_value);
         } catch (error) {
           console.log(error);
+          this.txSent = false;
+          this.confirmDepositDialog = false;
         }
       } else {
         const transactionParameters = {
@@ -369,6 +371,8 @@ export default {
           }
           this.txConfirmed = true;
           this.txSucceed = false;
+          this.txSent = false;
+          this.confirmDepositDialog = false;
           console.log(error);
         }
       }

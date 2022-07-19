@@ -36,13 +36,7 @@ export default {
     async connect() {
       try {
         await web3Onboard.connectWallet();
-        const {
-          wallets,
-          connectWallet,
-          disconnectConnectedWallet,
-          connectedChain,
-          connectedWallet,
-        } = useOnboard();
+        const { connectedChain, connectedWallet } = useOnboard();
         if (connectedWallet) {
           const provider = new ethers.providers.Web3Provider(
             connectedWallet.value.provider,
@@ -50,10 +44,14 @@ export default {
           );
           const signer = provider.getSigner();
           const userAddr = await signer.getAddress();
-          const userAddress = ethers.utils.getAddress(userAddr)
+          const userAddress = ethers.utils.getAddress(userAddr);
           await this.register(userAddr);
           
-          this.$store.commit("connect", { address: userAddress, name: "", id: connectedChain.value.id});
+          this.$store.commit("connect", {
+            address: userAddress,
+            name: "",
+            id: connectedChain.value.id,
+          });
 
           // Use in other component
           // import { useOnboard } from "@web3-onboard/vue";
@@ -79,7 +77,6 @@ export default {
 </script>
 
 <style>
-
 /* .connect-text {
   color: var(--input-text-color);
   font-size: 24px;

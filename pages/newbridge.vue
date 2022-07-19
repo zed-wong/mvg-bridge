@@ -174,8 +174,7 @@ export default {
 
       rules: [
         (value) => !!value || 'Value is required',
-        (value) => value >= 0 || 'Value must bigger than 0',
-        // (value) => value <= this.fromBalance || 'Deposit Asset Balance is not enought',
+        (value) => value > 0 || 'Value must bigger than 0',
       ],
       valueValid: false,
     };
@@ -254,6 +253,7 @@ export default {
   },
   async mounted() {
     this.getFromBalance();
+    this.ethBydefault();
   },
 
   layout: "newbridge",
@@ -269,11 +269,11 @@ export default {
 
     async getFromBalance() {
       if (!this.connected) {
-        console.error("[000] Please connect wallet first.");
+        // console.error("[Error] Please connect wallet first.");
         return;
       }
       if (window.ethereum == undefined) {
-        console.error("[001] window.ethereum undefined");
+        console.error("[Error] window.ethereum undefined");
         return;
       }
 
@@ -342,8 +342,23 @@ export default {
     checkNetwork(chain_symbol) {
       return this.$store.state.supportMetamaskNetworks.includes(chain_symbol);
     },
-    followNetwork() {
-      // make sure connected network is the same as selected network
+    async ethBydefault() {
+      if (window.ethereum == undefined) {
+        return;
+      }
+      let provider = new ethers.providers.Web3Provider(window.ethereum);
+      if ((await provider.getNetwork().chainId) == "1") {
+        return;
+      }
+
+      try {
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: "0x1" }],
+        });
+      } catch (error) {
+        console.error(error);
+      }
     },
   },
 };

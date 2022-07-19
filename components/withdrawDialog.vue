@@ -267,18 +267,14 @@ export default {
           signer
         );
 
-        console.log(userContractAddr, txValue, mixinExtra);
-
         txResult = await tokenContract.transferWithExtra(
           userContractAddr,
           txValue,
           mixinExtra
         );
-        console.log(txResult);
       }
-      // } catch (error) {
-      //   console.log(error);
-      // }
+      console.log(txResult);
+      this.confirmWithdrawDialog = false;
     },
 
     async externalWithdraw(type, step, oldTrace) {

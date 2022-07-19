@@ -342,7 +342,8 @@ export default {
           );
           let tokenContractSigner = tokenContract.connect(signer);
 
-          tokenContractSigner.transfer(asset_address, tx_value);
+          let tx = tokenContractSigner.transfer(asset_address, tx_value);
+          console.log(tx)
         } catch (error) {
           console.log(error);
           this.txSent = false;

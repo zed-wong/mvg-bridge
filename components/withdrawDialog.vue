@@ -40,7 +40,7 @@
           </div>
           <div class="d-flex flex-column mb-2">
             <span class="subtitle-css">
-              {{ this.txToMixin ? "Mixin ID" : "Address" }}
+              {{ this.txToMixin ? "User ID" : "Address" }}
             </span>
             <v-text-field
               rounded
@@ -244,6 +244,7 @@ export default {
 
       let userContractAddr = await this.getUserProxyContract(this.userAddress);
 
+      // console.log(bridgeAddress, BRIDGEABI, signer, userContractAddr)
       let txResult;
       // try {
       if (this.selectedToken.asset_id === XINUUID) {

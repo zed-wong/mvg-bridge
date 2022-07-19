@@ -39,11 +39,6 @@ export const fetchUserContract = (userId) => {
   return fetchUsersContract([userId]);
 }
 
-export const provider = new ethers.providers.Web3Provider(window.ethereum).getSigner();
-export const assetContract = (assetAddress) => new ethers.Contract(assetAddress, AssetABI, provider);
-export const bridgeContract = (bridgeAddress = bridgeAddress, bridgeABI = BridgeABI) => new ethers.Contract(bridgeAddress, bridgeABI, provider);
-
-
 export const getContract = async (addr, abi) => {
   const signer = await getSigner()
   return new ethers.Contract(addr, abi, signer)

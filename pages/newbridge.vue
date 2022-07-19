@@ -272,10 +272,6 @@ export default {
         // console.error("[Error] Please connect wallet first.");
         return;
       }
-      if (window.ethereum == undefined) {
-        console.error("[Error] window.ethereum undefined");
-        return;
-      }
 
       if (!this.checkNetwork(this.selectedNetwork.symbol)) {
         // console.log("Chain balance is not supported");

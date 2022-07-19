@@ -37,7 +37,7 @@ export default {
       try {
         await web3Onboard.connectWallet();
         const { connectedChain, connectedWallet } = useOnboard();
-        if (connectedWallet) {
+        if (connectedWallet.value) {
           const provider = new ethers.providers.Web3Provider(
             connectedWallet.value.provider,
             "any"

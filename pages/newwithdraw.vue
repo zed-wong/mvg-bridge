@@ -293,7 +293,7 @@ export default {
       this.getMvmtoBalance();
       this.getMvmFeeBalance();
       this.estimateTxFee();
-      if (!this.connected) return 
+      if (!this.connected) return
       this.$nextTick(() => {
         this.$refs.form.validate();
       });
@@ -317,6 +317,7 @@ export default {
   },
 
   mounted() {
+
     this.getMvmtoBalance();
 
     this.estimateTxFee();
@@ -347,6 +348,7 @@ export default {
 
       this.fetchingBalance = true;
       this.toBalanceVisble = false;
+      
       const { connectedWallet } = useOnboard();
       const provider = new ethers.providers.Web3Provider(
         connectedWallet.value.provider,
@@ -387,7 +389,7 @@ export default {
         return;
       }
 
-      const { connectedWallet } = useOnboard();
+      const { connectedWallet } = useOnboard();      
       const provider = new ethers.providers.Web3Provider(
         connectedWallet.value.provider,
         "any"

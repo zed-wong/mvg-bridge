@@ -342,7 +342,7 @@ export default {
           );
           let tokenContractSigner = tokenContract.connect(signer);
 
-          let tx = tokenContractSigner.transfer(asset_address, tx_value);
+          let tx = await tokenContractSigner.transfer(asset_address, tx_value);
           console.log(tx)
         } catch (error) {
           console.log(error);

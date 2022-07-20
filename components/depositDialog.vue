@@ -152,13 +152,17 @@ export default {
     },
     supportsMetamask: {
       get() {
-        if (!this.$store.state.supportMetamaskNetworks.includes( this.selectedNetwork.symbol )){
-          return false
+        if (
+          !this.$store.state.supportMetamaskNetworks.includes(
+            this.selectedNetwork.symbol
+          )
+        ) {
+          return false;
         }
-        if (this.fromBalance < this.fromAmount){
-          return false
+        if (this.fromBalance < this.fromAmount) {
+          return false;
         }
-        return true
+        return true;
       },
     },
 
@@ -286,12 +290,7 @@ export default {
 
           // transfer ETH
           if (this.selectedToken.symbol === "ETH") {
-            this.createTx(
-              false,
-              "",
-              this.depositAddr[0],
-              this.fromAmount
-            );
+            this.createTx(false, "", this.depositAddr[0], this.fromAmount);
             return;
           }
 
@@ -331,51 +330,46 @@ export default {
       let signer = provider.getSigner();
 
       this.txSent = true;
-      let tx_value = ethers.utils.parseUnits(value, "ether").toHexString();
-    
-      if (erc20) {
-        try {
+      try {
+        if (erc20) {
           let tokenContract = new ethers.Contract(
             asset_address,
             ERC20ABI,
             provider
           );
           let tokenContractSigner = tokenContract.connect(signer);
-
+          let tokenDecimal = await tokenContract.decimals();
+          let tx_value = ethers.utils.parseUnits(value, tokenDecimal);
           let tx = await tokenContractSigner.transfer(asset_address, tx_value);
-          console.log(tx)
-        } catch (error) {
-          console.log(error);
-          this.txSent = false;
-          this.confirmDepositDialog = false;
-        }
-      } else {
-        const transactionParameters = {
-          from: ethers.utils.getAddress(await signer.getAddress()),
-          to: to_address,
-          value: tx_value,
-          chainId: 0x1,
-        };
-        try {
+          console.log(tx);
+        } else {
+          let tx_value = ethers.utils.parseEther(value);
+          const transactionParameters = {
+            from: ethers.utils.getAddress(await signer.getAddress()),
+            to: to_address,
+            value: tx_value,
+            chainId: 0x1,
+          };
+
           let tx = await provider
             .getSigner()
             .sendTransaction(transactionParameters);
           console.log(tx);
           this.txConfirmed = true;
           this.txSucceed = true;
-        } catch (error) {
-          if (error.code === "INSUFFICIENT_FUNDS") {
-            this.txErrorText = "Insufficient Balance.";
-          }
-          if (error.code === 4001) {
-            this.txErrorText = "Transaction rejected.";
-          }
-          this.txConfirmed = true;
-          this.txSucceed = false;
-          this.txSent = false;
-          this.confirmDepositDialog = false;
-          console.log(error);
         }
+      } catch (error) {
+        // if (error.code === "INSUFFICIENT_FUNDS") {
+        //   this.txErrorText = "Insufficient Balance.";
+        // }
+        // if (error.code === 4001) {
+        //   this.txErrorText = "Transaction rejected.";
+        // }
+        // this.txConfirmed = true;
+        // this.txSucceed = false;
+        this.txSent = false;
+        this.confirmDepositDialog = false;
+        console.log(error);
       }
     },
   },

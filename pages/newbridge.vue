@@ -144,7 +144,10 @@
 import { ethers } from "ethers";
 import bridge from "~/static/bridge.png";
 import { NewClient } from "@/helpers/mixin";
+import DAIABI from "../assets/daiABI.json";
 import ERC20ABI from "../assets/erc20.json";
+import USDCABI from "../assets/usdcABI.json";
+import TetherABI from "../assets/tetherABI.json";
 import { useOnboard } from "@web3-onboard/vue";
 import selectFromToken from "~/components/selectFromToken.vue";
 import selectFromNetwork from "~/components/selectFromNetwork.vue";
@@ -307,14 +310,23 @@ export default {
         return;
       }
 
+      let ABI;
+      if (this.selectedToken.symbol.includes('USDC')) {
+        ABI = USDCABI;
+      } 
+      if (!ABI) {
+        ABI = ERC20ABI;
+      }
+
       // console.log("Selected ERC20 token")
       let tokenContract = new ethers.Contract(
         this.selectedToken.asset_key,
-        ERC20ABI,
+        ABI,
         provider
       );
       let tokenBalance = await tokenContract.balanceOf(userAddr);
-      let balance = ethers.utils.formatEther(tokenBalance);
+      let tokenDecimal = await tokenContract.decimals();
+      let balance = ethers.utils.formatUnits(tokenBalance, tokenDecimal);
       this.fromBalance = balance;
       this.fetchingBalance = false;
       this.fromBalanceVisble = true;

@@ -311,9 +311,9 @@ export default {
       }
 
       let ABI;
-      if (this.selectedToken.symbol.includes('USDC')) {
-        ABI = USDCABI;
-      } 
+      // if (this.selectedToken.symbol.includes('USDC')) {
+      //   ABI = USDCABI;
+      // } 
       if (!ABI) {
         ABI = ERC20ABI;
       }

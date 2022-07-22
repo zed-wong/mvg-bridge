@@ -131,7 +131,7 @@
             >
               <span class="mb-2">
                 Withdrawal Fee: {{ txEstimatedFee }}
-                {{ selectedNetwork.symbol }}
+                {{ selectedToken.symbol }}
               </span>
             </div>
           </v-sheet>
@@ -153,7 +153,7 @@
           >
             <span> {{ giantBtnText }} </span>
           </v-btn>
-          <withdraw-dialog :to-amount="toAmount" :fee="txEstimatedFee" />
+          <withdraw-dialog :to-amount="toAmount" :total-amount="totalPayAmount" :fee="txEstimatedFee" />
         </v-col>
       </v-row>
     </v-sheet>
@@ -208,14 +208,9 @@ export default {
             this.btnErrorMsg = "Invalid Amount";
             return false;
           }
-          // Check Fee Balance
-          if (this.txFeeAssetBalance < this.txEstimatedFee) {
-            this.btnErrorMsg = "Insufficient Fee Balance";
-            return false;
-          }
         
           // Check Asset Balance
-          if (value > this.toBalance) {
+          if (Number(value) + Number(this.txEstimatedFee) > this.fixedToBalance) {
             this.btnErrorMsg = "Insufficient Balance";
             return false;
           }
@@ -248,10 +243,10 @@ export default {
       return this.$store.state.toToken;
     },
     fixedToBalance() {
-      if (Number(this.toBalance) == 0) return 0;
-      if (Number(this.toBalance).toFixed(8) > 0.00000001)
-        return Number(this.toBalance).toFixed(8);
-      return 0;
+      return Number(this.toBalance)
+    },
+    totalPayAmount() {
+      return Number(this.toAmount)+Number(this.txEstimatedFee)
     },
 
     selectNetworkDialog: {
@@ -291,7 +286,6 @@ export default {
   watch: {
     async selectedToken(o, n) {
       this.getMvmtoBalance();
-      this.getMvmFeeBalance();
       this.estimateTxFee();
       if (!this.connected) return
       this.$nextTick(() => {
@@ -299,7 +293,6 @@ export default {
       });
     },
     async selectedNetwork(o, n) {
-      this.getMvmFeeBalance();
       this.estimateTxFee();
       if (!this.connected) return
       this.$nextTick(() => {
@@ -308,11 +301,9 @@ export default {
     },
     async connected(o, n) {
       await this.getMvmtoBalance();
-      await this.getMvmFeeBalance();
     },
     async network_id(o, n) {
       await this.getMvmtoBalance();
-      await this.getMvmFeeBalance();
     },
   },
 
@@ -321,8 +312,6 @@ export default {
     this.getMvmtoBalance();
 
     this.estimateTxFee();
-
-    this.getMvmFeeBalance();
 
     this.setDefaultToNetwork();
 
@@ -340,9 +329,7 @@ export default {
     },
 
     async getMvmtoBalance() {
-      // get mvm asset balance
       if (!this.connected) {
-        // console.error("[Error] Please connect wallet first.");
         return;
       }
 
@@ -380,33 +367,6 @@ export default {
         console.log(error);
         this.toBalanceVisble = false;
         this.fetchingBalance = false;
-      }
-    },
-
-    async getMvmFeeBalance() {
-      // get mvm asset balance
-      if (!this.connected) {
-        return;
-      }
-
-      const { connectedWallet } = useOnboard();      
-      const provider = new ethers.providers.Web3Provider(
-        connectedWallet.value.provider,
-        "any"
-      );
-      let signer = provider.getSigner();
-      let userAddr = await signer.getAddress();
-
-      // ERC20
-      try {
-        let assetAddr = await fetchAssetContract(this.selectedToken.chain_id);
-
-        let tokenContract = new ethers.Contract(assetAddr, ASSETABI, provider);
-        let tokenBalance = await tokenContract.balanceOf(userAddr);
-        let balance = ethers.utils.formatUnits(tokenBalance, 8);
-        this.txFeeAssetBalance = balance;
-      } catch (error) {
-        console.log(error);
       }
     },
 
@@ -464,14 +424,30 @@ export default {
       this.txEstimatedFee = await this.getTxFee();
 
       this.txGettingFee = false;
-      this.txEstimatedFeeVisible = true;
+      this.txEstimatedFee == 0 ? this.txEstimatedFeeVisible = false : this.txEstimatedFeeVisible = true;
     },
     async getTxFee() {
       if (this.selectedNetwork.asset_id === XINUUID) return 0;
 
       let fee = await MixinClient.readAssetFee(this.selectedToken.asset_id);
-      return fee.amount;
+      if (this.selectedToken.asset_id === this.selectedToken.chain_id) return fee.amount
+      return await this.get4swapPrice(this.selectedToken.asset_id, this.selectedToken.chain_id, fee.amount)
     },
+    async get4swapPrice(from, to, amount) {
+      const plusAmount = (Number(amount) + Number(amount)*0.01).toLocaleString()
+      if (plusAmount == "NaN") {
+        return 0
+      }
+      let result = await this.$axios.post("https://api.4swap.org/api/orders/pre", {
+        pay_asset_id: from,
+        fill_asset_id: to,
+        amount: plusAmount
+      })
+      if (result.data != undefined) {
+        return result.data.data.pay_amount
+      }
+      return 0
+    }
   },
 };
 </script>

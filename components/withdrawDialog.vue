@@ -15,29 +15,49 @@
           </v-btn>
         </v-col>
         <v-col>
-          <div class="py-0" v-for="(item, i) in rows" :key="i">
-            <div v-if="item.subtitle">
+          <div class="py-0" >
+            <div> 
               <span class="subtitle-css">
-                {{ item.subtitle }}
+                To
               </span>
-
+              
               <div
                 class="d-flex flex-row align-center pt-1 mb-5"
-                v-if="!item.input"
               >
                 <v-img
-                  v-if="item.haveIcon"
-                  :src="item.icon"
+                  :src="selectedNetwork.icon_url"
                   max-height="20px"
                   max-width="20px"
                   class="mr-2"
                 />
                 <span class="main-title-css">
-                  {{ item.name }}
+                  {{ selectedNetwork.name }} Mainnet
                 </span>
               </div>
             </div>
           </div>
+          <div class="py-0" >
+            <div> 
+              <span class="subtitle-css">
+                Token
+              </span>
+              
+              <div
+                class="d-flex flex-row align-center pt-1 mb-5"
+              >
+                <v-img
+                  :src="selectedToken.icon_url"
+                  max-height="20px"
+                  max-width="20px"
+                  class="mr-2"
+                />
+                <span class="main-title-css">
+                  {{ totalAmount }} {{ selectedToken.symbol }}
+                </span>
+              </div>
+            </div>
+          </div>
+
           <div class="d-flex flex-column mb-2">
             <span class="subtitle-css">
               {{ this.txToMixin ? "User ID" : "Address" }}
@@ -87,7 +107,7 @@
             <v-avatar size="24px">
               <v-img :src="MetamaskLogo" />
             </v-avatar>
-            <span class="ml-1"> Withdraw to Metamask</span>
+            <span class="ml-1"> Withdraw to current wallet</span>
           </v-btn>
         </v-col>
       </v-row>
@@ -128,7 +148,7 @@ export default {
       txErrorText: "",
     };
   },
-  props: ["toAmount", "fee"],
+  props: ["toAmount", "totalAmount", "fee"],
   computed: {
     confirmWithdrawDialog: {
       get() {
@@ -159,24 +179,6 @@ export default {
     txToMixin() {
       return this.selectedNetwork.asset_id === XINUUID;
     },
-    rows: {
-      get() {
-        return [
-          {
-            subtitle: "To",
-            haveIcon: true,
-            icon: this.selectedNetwork.icon_url,
-            name: this.selectedNetwork.name + " Mainnet",
-          },
-          {
-            subtitle: "Token",
-            haveIcon: true,
-            icon: this.selectedToken.icon_url,
-            name: this.toAmount + " " + this.selectedToken.symbol,
-          },
-        ];
-      },
-    },
     inputPlaceHolder() {
       return [
         this.txToMixin
@@ -202,15 +204,14 @@ export default {
         }
         if (type == "metamask") {
           this.txType2Sent = true;
-          let trace = await this.externalWithdraw("metamask", 0, "");
-          await this.externalWithdraw("metamask", 1, trace);
+          await this.externalWithdraw("metamask");
           this.txType2Sent = false;
           return;
         }
         this.txType1Sent = true;
-        let trace = await this.externalWithdraw("", 0, "");
-        await this.externalWithdraw("", 1, trace);
+        await this.externalWithdraw("")
         this.txType1Sent = false;
+        this.confirmWithdrawDialog = false;
       } catch (error) {
         console.log(error);
         this.txType1Sent = false;
@@ -219,14 +220,6 @@ export default {
       }
     },
     async mixinWithdraw() {
-      // 1. construct mixin extra payload   (user_id, memo, threshold, extra)
-      // 1.1 if (user_id is uuid) get user_id
-      // 1.2 get api, return extra
-      // 2. construct metamask transfer payload  (asset_contract, user_contract, extra, amount)
-      // 2.1 init asset and bridge contract
-      // 3. call contract
-      // 3.1 if (asset_id == xinuuid) call bridge contract
-      // 3.2 call asset contract
       const { connectedWallet } = useOnboard();
       const provider = new ethers.providers.Web3Provider(
         connectedWallet.value.provider,
@@ -244,9 +237,7 @@ export default {
 
       let userContractAddr = await this.getUserProxyContract(this.userAddress);
 
-      // console.log(bridgeAddress, BRIDGEABI, signer, userContractAddr)
       let txResult;
-      // try {
       if (this.selectedToken.asset_id === XINUUID) {
         let tokenContract = new ethers.Contract(
           bridgeAddress,
@@ -277,65 +268,34 @@ export default {
       this.confirmWithdrawDialog = false;
     },
 
-    async externalWithdraw(type, step, oldTrace) {
-      // 0. Open transfer withdraw asset dialog
-      // 1. call bridge or asset, transfer withdrawal asset (trace:A)
-      // 2. Open transfer withdraw fee dialog
-      // 3. call bridge or asset, transfer fee asset (trace:B)
-
+    async externalWithdraw(type) {
       const { connectedWallet } = useOnboard();
       const provider = new ethers.providers.Web3Provider(
         connectedWallet.value.provider,
         "any"
       );
       let signer = provider.getSigner();
-      console.log(connectedWallet, signer);
-      // try {
-      let txaddr =
-        type == "metamask" ? await signer.getAddress() : this.txAddress;
-      let txAmount = formatAmount(this.toAmount, this.selectedToken.asset_id);
-      let traceID = step === 0 ? uuidV4() : oldTrace;
-      let ma = await this.getExternalExtra(txaddr, this.txMemo, traceID + ":A");
+      let txaddr = type == "metamask" ? await signer.getAddress() : this.txAddress;
+      let extra = await this.getExternalExtra(
+        txaddr,
+        this.txMemo,
+        this.toAmount
+      );
+      let txAmount = formatAmount(this.totalAmount, this.selectedToken.asset_id);
+      let userContractAddr = await this.getUserProxyContract(this.userAddress);
       let txResult;
 
-      if (step == 1) {
-        let feeAmount = formatAmount(this.fee, this.selectedToken.chain_id);
-        let mb = await this.getExternalExtra(
-          txaddr,
-          this.txMemo,
-          traceID + ":B"
-        );
-
-        let assetContractAddr = await getContractByAssetID(
-          this.selectedToken.chain_id
-        );
-        let tokenContract = new ethers.Contract(
-          assetContractAddr,
-          ASSETABI,
-          signer
-        );
-
-        txResult = await tokenContract.transferWithExtra(
-          assetContractAddr,
-          feeAmount,
-          mb
-        );
-        console.log(txResult);
-      }
-
-      // If step 0
       if (this.selectedToken.asset_id === XINUUID) {
         let tokenContract = new ethers.Contract(
           bridgeAddress,
           BRIDGEABI,
           signer
         );
-        txResult = await tokenContract.release(txaddr, ma, {
+        txResult = await tokenContract.release(userContractAddr, extra, {
           value: txAmount,
           gasLimit: 350000,
         });
         console.log(txResult);
-        return traceID;
       } else {
         let assetContractAddr = await getContractByAssetID(
           this.selectedToken.asset_id
@@ -347,16 +307,12 @@ export default {
         );
 
         txResult = await tokenContract.transferWithExtra(
-          assetContractAddr,
+          userContractAddr,
           txAmount,
-          ma
+          extra
         );
         console.log(txResult);
-        return traceID;
       }
-      // } catch (error) {
-      //   console.log(error);
-      // }
     },
 
     async getMixinExtra(user_id, memo) {
@@ -379,15 +335,17 @@ export default {
       );
       return "0x" + mixinExtra.data.extra;
     },
-    async getExternalExtra(destination, tag, extra) {
-      let payload = {
-        destination: destination,
-        tag: tag,
-        extra: extra,
-      };
+    async getExternalExtra(to, memo, amount) {
+      let withdrawPayload = JSON.stringify({"t":to,"m":memo,"a":amount})
+      let payloads = {
+        receivers: [process.env.WITHDRAWAL_GATEWAY_BOT_ID],
+        threshold: 1,
+        extra: btoa(withdrawPayload),
+      }
+      console.log(payloads, withdrawPayload)
       let externalExtra = await this.$axios.post(
         "https://bridge.mvm.dev/extra",
-        payload
+        payloads
       );
       return "0x" + externalExtra.data.extra;
     },

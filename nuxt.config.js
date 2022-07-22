@@ -90,6 +90,7 @@ export default {
     }
   },
   env: {
-    INFURA_KEY: process.env.INFURA_KEY
+    INFURA_KEY: process.env.INFURA_KEY,
+    WITHDRAWAL_GATEWAY_BOT_ID: process.env.WITHDRAWAL_GATEWAY_BOT_ID
   }
 }

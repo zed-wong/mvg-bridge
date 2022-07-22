@@ -131,12 +131,7 @@ export default {
             params: [{ chainId: "0x120c7" }],
           });
         } catch (error) {
-          if (error.code === 4902) {
-            await window.ethereum.request({
-              method: "wallet_addEthereumChain",
-              params: chain,
-            });
-          }
+          console.log(error)
         }
       }
     },

@@ -47,16 +47,3 @@ export const web3Onboard = init({
     ]
   }
 })
-
-// const {
-//   wallets,
-//   connectWallet,
-//   disconnectConnectedWallet,
-//   connectedChain,
-//   connectedWallet,
-// } = useOnboard();
-
-// const provider = new ethers.providers.Web3Provider(
-//   connectedWallet.value.provider,
-//   "any"
-// );

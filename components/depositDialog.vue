@@ -101,9 +101,10 @@ import { v4 as uuidv4 } from "uuid";
 import ERC20ABI from "../assets/erc20.json";
 import { useOnboard } from "@web3-onboard/vue";
 import VueQrcode from "@chenfengyuan/vue-qrcode";
-import { readNetworkAsset } from "mixin-node-sdk";
+import { asset } from '@mixin.dev/mixin-node-sdk';
 import MetamaskLogo from "../static/metamask.png";
 import { getContractByAssetID } from "../helpers/registry";
+import MixinClient from '~/helpers/mixin';
 
 const XINUUID = "c94ac88f-4671-3976-b60a-09064f1811e8";
 const ETHUUID = "43d61dcd-e413-450d-80b8-101d5e903357";
@@ -175,9 +176,9 @@ export default {
       },
     },
     txQrUrl: {
-      get() {
+      async get() {
         if (this.selectedNetwork.asset_id == XINUUID)
-          return this.createMixinPayment();
+          return await this.createMixinPayment();
         if (this.selectedNetwork.asset_id != XINUUID)
           return this.depositAddr[0];
       },
@@ -243,19 +244,22 @@ export default {
       if (this.txShowQR == true) this.txQrBtnText = "Hide QR Code";
       if (this.txShowQR == false) this.txQrBtnText = "Show QR Code";
     },
-    createMixinPayment() {
+    async createMixinPayment() {
       let user = JSON.parse(localStorage.getItem("user"));
-      return `mixin://pay?recipient=${user.client_id}&asset=${
-        this.selectedToken.asset_id
-      }&amount=${this.fromAmount}&trace=${uuidv4()}`;
+      let payment = await MixinClient.payment.request({
+        asset_id: this.selectedToken.asset_id,
+        opponent_id: user.client_id,
+        amount:this.fromAmount,
+        trace_id: uuidv4(),
+      })
+      console.log(payment)
+      console.log(`mixin://codes/${payment.code_id}`)
+      return `mixin://codes/${payment.code_id}`;
     },
     async addToken() {
-      // if (window.ethereum == undefined) {
-      //   return;
-      // }
       let assetID = this.selectedToken.asset_id;
       if (assetID == XINUUID) return;
-      let asset = await readNetworkAsset(assetID);
+      let asset = await asset.fetch(assetID);
       let contractAddr = await getContractByAssetID(assetID);
       if (contractAddr === ethers.constants.AddressZero) return;
       try {
@@ -308,18 +312,6 @@ export default {
       } catch (error) {
         console.log(error);
       }
-
-      // if (this.selectedNetwork.evm_chain_id) {
-      //   if (this.network.id != this.selectedNetwork.chainid) {
-
-      //     let provider = new ethers.providers.Web3Provider(window.ethereum);
-      //     await provider.request({
-      //       method: "wallet_switchEthereumChain",
-      //       params: [{ chainId: this.selectedNetwork.evm_chain_id.toString(16) }],
-      //     });
-      //     return;
-      //   }
-      // }
     },
     async createTx(erc20, asset_address, to_address, value) {
       const { connectedWallet } = useOnboard();

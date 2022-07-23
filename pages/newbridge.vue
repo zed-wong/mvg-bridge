@@ -234,9 +234,7 @@ export default {
     },
     fixedFromBalance: {
       get() {
-        if (Number(this.fromBalance) == 0) return 0;
-        //  TODO
-        return Number(this.fromBalance).toFixed(6);
+        return Number(this.fromBalance).toLocaleString("en-US", { maximumFractionDigits: 8, minimumFractionDigits: 2 })
       },
     },
   },
@@ -339,7 +337,7 @@ export default {
           user.session_id,
           user.private_key
         );
-        let asset = await client.readAsset(asset_id);
+        let asset = await client.asset.fetch(asset_id);
         let dest = asset.deposit_entries[0].destination;
         let tag = asset.deposit_entries[0].tag;
         return [dest, tag];

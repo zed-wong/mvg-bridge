@@ -12,6 +12,7 @@
   "dependencies": {
     "@chenfengyuan/vue-qrcode": "^1.0.2",
     "@foxone/mixin-sdk-jsbridge": "^0.5.2",
+    "@mixin.dev/mixin-node-sdk": "^4.6.0",
     "@nuxtjs/axios": "^5.13.6",
     "@nuxtjs/proxy": "^2.1.0",
     "@vue/composition-api": "^1.7.0",
@@ -22,7 +23,6 @@
     "core-js": "^3.19.3",
     "ethers": "^5.6.9",
     "mathjs": "^10.6.1",
-    "mixin-node-sdk": "^3.0.33",
     "mixpayjs": "^2.1.0",
     "nuxt": "^2.15.8",
     "qrcode": "^1.5.0",

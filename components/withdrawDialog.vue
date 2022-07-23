@@ -15,15 +15,11 @@
           </v-btn>
         </v-col>
         <v-col>
-          <div class="py-0" >
-            <div> 
-              <span class="subtitle-css">
-                To
-              </span>
-              
-              <div
-                class="d-flex flex-row align-center pt-1 mb-5"
-              >
+          <div class="py-0">
+            <div>
+              <span class="subtitle-css"> To </span>
+
+              <div class="d-flex flex-row align-center pt-1 mb-5">
                 <v-img
                   :src="selectedNetwork.icon_url"
                   max-height="20px"
@@ -36,15 +32,10 @@
               </div>
             </div>
           </div>
-          <div class="py-0" >
-            <div> 
-              <span class="subtitle-css">
-                Token
-              </span>
-              
-              <div
-                class="d-flex flex-row align-center pt-1 mb-5"
-              >
+          <div class="py-0">
+            <div>
+              <span class="subtitle-css"> Token </span>
+              <div class="d-flex flex-row align-center pt-1 mb-5">
                 <v-img
                   :src="selectedToken.icon_url"
                   max-height="20px"
@@ -111,6 +102,8 @@
           </v-btn>
         </v-col>
       </v-row>
+      <tx-confirmed :link="txExplorerURL"/>
+      <tx-failed />
     </v-sheet>
   </v-dialog>
 </template>
@@ -129,10 +122,13 @@ import {
   bridgeAddress,
   getContractByAssetID,
 } from "../helpers/registry";
+import txConfirmed from './txConfirmed.vue';
 
 const XINUUID = "c94ac88f-4671-3976-b60a-09064f1811e8";
+const ExplorerBaseURL = "https://scan.mvm.dev/tx/"
 
 export default {
+  components: { txConfirmed },
   data() {
     return {
       MetamaskLogo,
@@ -145,6 +141,7 @@ export default {
       txType2Sent: false,
       txConfirmed: false,
       txSucceed: false,
+      txExplorerURL: "",
       txErrorText: "",
     };
   },
@@ -156,6 +153,22 @@ export default {
       },
       set(value) {
         this.$store.commit("toggleConfirmWithdraw", value);
+      },
+    },
+    txSucceedDialog: {
+      get() {
+        return this.$store.state.txSucceedDialog;
+      },
+      set(value) {
+        this.$store.commit("toggleTxSucceedDialog", value);
+      },
+    },
+    txFailedDialog: {
+      get() {
+        return this.$store.state.txFailedDialog;
+      },
+      set(value) {
+        this.$store.commit("toggleTxFailedDialog", value);
       },
     },
     selectedNetwork: {
@@ -190,33 +203,34 @@ export default {
   },
   methods: {
     async withdraw(type) {
-      // Check if To Network is mixin mainnet
-      // True, deposit to Mixin
-      //  call mixin withdraw
-      // False, Call withdrawal contract to withdraw
-      //  call external withdraw
       try {
         if (this.selectedNetwork.asset_id == XINUUID) {
           this.txType1Sent = true;
           await this.mixinWithdraw();
           this.txType1Sent = false;
+          this.confirmWithdrawDialog = false;
+          this.txSucceedDialog = true;
           return;
         }
         if (type == "metamask") {
           this.txType2Sent = true;
           await this.externalWithdraw("metamask");
           this.txType2Sent = false;
+          this.confirmWithdrawDialog = false;
+          this.txSucceedDialog = true;
           return;
         }
         this.txType1Sent = true;
-        await this.externalWithdraw("")
+        await this.externalWithdraw("");
         this.txType1Sent = false;
         this.confirmWithdrawDialog = false;
+        this.txSucceedDialog = true;
       } catch (error) {
         console.log(error);
         this.txType1Sent = false;
         this.txType2Sent = false;
         this.confirmWithdrawDialog = false;
+        this.txFailedDialog = true;
       }
     },
     async mixinWithdraw() {
@@ -264,8 +278,7 @@ export default {
           mixinExtra
         );
       }
-      console.log(txResult);
-      this.confirmWithdrawDialog = false;
+      this.txExplorerURL = ExplorerBaseURL+txResult.hash
     },
 
     async externalWithdraw(type) {
@@ -275,13 +288,17 @@ export default {
         "any"
       );
       let signer = provider.getSigner();
-      let txaddr = type == "metamask" ? await signer.getAddress() : this.txAddress;
+      let txaddr =
+        type == "metamask" ? await signer.getAddress() : this.txAddress;
       let extra = await this.getExternalExtra(
         txaddr,
         this.txMemo,
         this.toAmount
       );
-      let txAmount = formatAmount(this.totalAmount, this.selectedToken.asset_id);
+      let txAmount = formatAmount(
+        this.totalAmount,
+        this.selectedToken.asset_id
+      );
       let userContractAddr = await this.getUserProxyContract(this.userAddress);
       let txResult;
 
@@ -296,6 +313,7 @@ export default {
           gasLimit: 350000,
         });
         console.log(txResult);
+        this.txExplorerURL = ExplorerBaseURL+txResult.hash
       } else {
         let assetContractAddr = await getContractByAssetID(
           this.selectedToken.asset_id
@@ -312,6 +330,7 @@ export default {
           extra
         );
         console.log(txResult);
+        this.txExplorerURL = ExplorerBaseURL+txResult.hash
       }
     },
 
@@ -336,13 +355,13 @@ export default {
       return "0x" + mixinExtra.data.extra;
     },
     async getExternalExtra(to, memo, amount) {
-      let withdrawPayload = JSON.stringify({"t":to,"m":memo,"a":amount})
+      let withdrawPayload = JSON.stringify({ t: to, m: memo, a: amount });
       let payloads = {
         receivers: [process.env.WITHDRAWAL_GATEWAY_BOT_ID],
         threshold: 1,
         extra: btoa(withdrawPayload),
-      }
-      console.log(payloads, withdrawPayload)
+      };
+      console.log(payloads, withdrawPayload);
       let externalExtra = await this.$axios.post(
         "https://bridge.mvm.dev/extra",
         payloads

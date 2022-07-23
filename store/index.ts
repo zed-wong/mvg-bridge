@@ -17,6 +17,8 @@ export const state = () => ({
   confirmDepositDialog: false,
   depositAddr: [],
   supportMetamaskNetworks: ["ETH"], //['BNB','AVAX'],
+  txSucceedDialog: false,
+  txFailedDialog: false,
 
   toNetwork: {},
   toToken: {},
@@ -49,6 +51,12 @@ export const mutations = {
   },
   toggleConfirmNetwork(state: any, open: boolean) {
     state.confirmNetworkDialog = open
+  },
+  toggleTxSucceedDialog(state: any, open: boolean) {
+    state.txSucceedDialog = open
+  },
+  toggleTxFailedDialog(state: any, open: boolean) {
+    state.txFailedDialog = open
   },
   setProvider(state: any, data: any) {
     state.provider = data

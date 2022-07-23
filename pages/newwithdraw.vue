@@ -57,9 +57,14 @@
               </v-btn>
               <select-to-token />
             </div>
-            <span v-if="toBalanceVisble" class="font-weight-light">
-              Balance: {{ fixedToBalance }} {{ selectedToken.symbol }}
-            </span>
+            <div v-if="toBalanceVisble">
+              <span class="font-weight-light">
+                Balance: {{ fixedToBalance }} {{ selectedToken.symbol }}
+              </span>
+              <a @click="setMaxAmount">
+                <span class="ml-1 max-text"> (Max) </span>
+              </a>
+            </div>
             <div v-if="fetchingBalance && connected">
               <v-progress-circular
                 width="1"
@@ -107,13 +112,7 @@
               </v-btn>
               <select-to-network />
             </div>
-            <div class="d-flex flex-column font-weight-light">
-              <span class="mb-2">
-                You will receive: {{ toAmount != 0 ? toAmount : 0 }}
-                {{ selectedToken.symbol }}
-              </span>
-            </div>
-            <div v-if="txGettingFee">
+            <div v-if="txGettingFee" class=" mb-2">
               <v-progress-circular
                 width="1"
                 size="10"
@@ -122,7 +121,7 @@
                 class="mr-2"
               ></v-progress-circular>
               <span class="font-weight-light" style="font-size"
-                >Loading Transaction Fee</span
+                >Loading Withdrawal Fee</span
               >
             </div>
             <div
@@ -131,6 +130,12 @@
             >
               <span class="mb-2">
                 Withdrawal Fee: {{ txEstimatedFee }}
+                {{ selectedToken.symbol }}
+              </span>
+            </div>
+            <div class="d-flex flex-column font-weight-light">
+              <span class="mb-2">
+                You will receive: {{ toAmount != 0 ? toAmount : 0 }}
                 {{ selectedToken.symbol }}
               </span>
             </div>
@@ -153,7 +158,11 @@
           >
             <span> {{ giantBtnText }} </span>
           </v-btn>
-          <withdraw-dialog :to-amount="toAmount" :total-amount="totalPayAmount" :fee="txEstimatedFee" />
+          <withdraw-dialog
+            :to-amount="toAmount"
+            :total-amount="totalPayAmount"
+            :fee="txEstimatedFee"
+          />
         </v-col>
       </v-row>
     </v-sheet>
@@ -208,9 +217,12 @@ export default {
             this.btnErrorMsg = "Invalid Amount";
             return false;
           }
-        
+
           // Check Asset Balance
-          if (Number(value) + Number(this.txEstimatedFee) > this.fixedToBalance) {
+          if (
+            Number(value) + Number(this.txEstimatedFee) >
+            Number(this.toBalance)
+          ) {
             this.btnErrorMsg = "Insufficient Balance";
             return false;
           }
@@ -243,10 +255,14 @@ export default {
       return this.$store.state.toToken;
     },
     fixedToBalance() {
-      return Number(this.toBalance)
+      return Number(this.toBalance).toLocaleString("en-US", { maximumFractionDigits: 8, minimumFractionDigits: 2 });
     },
     totalPayAmount() {
-      return Number(this.toAmount)+Number(this.txEstimatedFee)
+      return (Number(this.toAmount) + Number(this.txEstimatedFee)).toLocaleString("en-US", { maximumFractionDigits: 8, minimumFractionDigits: 0 });
+    },
+    maxPayAmount() {
+      let a = Number(this.toBalance) - Number(this.txEstimatedFee) 
+      return a > 0 ? a.toLocaleString("en-US", { maximumFractionDigits: 8, minimumFractionDigits: 2 }) : Number(this.toBalance)
     },
 
     selectNetworkDialog: {
@@ -287,20 +303,23 @@ export default {
     async selectedToken(o, n) {
       this.getMvmtoBalance();
       this.estimateTxFee();
-      if (!this.connected) return
+      if (!this.connected) return;
       this.$nextTick(() => {
         this.$refs.form.validate();
       });
     },
     async selectedNetwork(o, n) {
       this.estimateTxFee();
-      if (!this.connected) return
+      if (!this.connected) return;
       this.$nextTick(() => {
         this.$refs.form.validate();
       });
     },
     async connected(o, n) {
+      let {connectedChain} = useOnboard()
+      console.log(connectedChain.value.id)
       await this.getMvmtoBalance();
+      
     },
     async network_id(o, n) {
       await this.getMvmtoBalance();
@@ -308,7 +327,6 @@ export default {
   },
 
   mounted() {
-
     this.getMvmtoBalance();
 
     this.estimateTxFee();
@@ -335,7 +353,7 @@ export default {
 
       this.fetchingBalance = true;
       this.toBalanceVisble = false;
-      
+
       const { connectedWallet } = useOnboard();
       const provider = new ethers.providers.Web3Provider(
         connectedWallet.value.provider,
@@ -364,7 +382,7 @@ export default {
         this.toBalanceVisble = true;
         this.fetchingBalance = false;
       } catch (error) {
-        console.log(error);
+        console.log(error, this.selectedToken.asset_id);
         this.toBalanceVisble = false;
         this.fetchingBalance = false;
       }
@@ -424,29 +442,45 @@ export default {
       this.txEstimatedFee = await this.getTxFee();
 
       this.txGettingFee = false;
-      this.txEstimatedFee == 0 ? this.txEstimatedFeeVisible = false : this.txEstimatedFeeVisible = true;
+      this.txEstimatedFee == 0
+        ? (this.txEstimatedFeeVisible = false)
+        : (this.txEstimatedFeeVisible = true);
     },
     async getTxFee() {
       if (this.selectedNetwork.asset_id === XINUUID) return 0;
 
       let fee = await MixinClient.readAssetFee(this.selectedToken.asset_id);
-      if (this.selectedToken.asset_id === this.selectedToken.chain_id) return fee.amount
-      return await this.get4swapPrice(this.selectedToken.asset_id, this.selectedToken.chain_id, fee.amount)
+      if (this.selectedToken.asset_id === this.selectedToken.chain_id)
+        return fee.amount;
+      return await this.get4swapPrice(
+        this.selectedToken.asset_id,
+        this.selectedToken.chain_id,
+        fee.amount
+      );
     },
     async get4swapPrice(from, to, amount) {
-      const plusAmount = (Number(amount) + Number(amount)*0.01).toLocaleString()
+      const plusAmount = (
+        Number(amount) +
+        Number(amount) * 0.01
+      ).toLocaleString();
       if (plusAmount == "NaN") {
-        return 0
+        return 0;
       }
-      let result = await this.$axios.post("https://api.4swap.org/api/orders/pre", {
-        pay_asset_id: from,
-        fill_asset_id: to,
-        amount: plusAmount
-      })
+      let result = await this.$axios.post(
+        "https://api.4swap.org/api/orders/pre",
+        {
+          pay_asset_id: from,
+          fill_asset_id: to,
+          amount: plusAmount,
+        }
+      );
       if (result.data != undefined) {
-        return result.data.data.pay_amount
+        return result.data.data.pay_amount;
       }
-      return 0
+      return 0;
+    },
+    setMaxAmount(){
+      this.toAmount = this.maxPayAmount
     }
   },
 };
@@ -476,6 +510,9 @@ export default {
 .border-width {
   border-width: 0.8px;
   border-left-width: 0px;
+}
+.max-text {
+  color: #5959d8;
 }
 .v-dialog {
   border-radius: 16px !important;

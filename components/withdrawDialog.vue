@@ -125,7 +125,7 @@ import {
 import txConfirmed from './txConfirmed.vue';
 
 const XINUUID = "c94ac88f-4671-3976-b60a-09064f1811e8";
-const ExplorerBaseURL = "https://scan.mvm.dev/tx/"
+const ExplorerBaseURL = process.env.EXPLORER_BASEURL
 
 export default {
   components: { txConfirmed },
@@ -278,7 +278,7 @@ export default {
           mixinExtra
         );
       }
-      this.txExplorerURL = ExplorerBaseURL+txResult.hash
+      this.txExplorerURL = ExplorerBaseURL+"tx/"+txResult.hash
     },
 
     async externalWithdraw(type) {
@@ -313,7 +313,7 @@ export default {
           gasLimit: 350000,
         });
         console.log(txResult);
-        this.txExplorerURL = ExplorerBaseURL+txResult.hash
+        this.txExplorerURL = ExplorerBaseURL+"tx/"+txResult.hash
       } else {
         let assetContractAddr = await getContractByAssetID(
           this.selectedToken.asset_id
@@ -330,7 +330,7 @@ export default {
           extra
         );
         console.log(txResult);
-        this.txExplorerURL = ExplorerBaseURL+txResult.hash
+        this.txExplorerURL = ExplorerBaseURL+"tx/"+txResult.hash
       }
     },
 

@@ -44,7 +44,7 @@
                   placeholder="0.0"
                   hide-details="true"
                   v-model="fromAmount"
-                  class="from-form my-3 border-width"
+                  class="from-form my-3"
                 ></v-text-field>
               </v-form>
               <v-btn
@@ -386,6 +386,7 @@ export default {
   font-weight: 500;
 }
 .from-form {
+  background-color: white;
   border-radius: 12px 0 0 12px;
 }
 .selected-network {
@@ -396,18 +397,23 @@ export default {
   color: #5959d8 !important;
 }
 .select-token-btn {
+  color: dark;
   min-height: 56px;
+  background-color: white;
   border-radius: 0 12px 12px 0;
 }
 .border-width {
-  border-width: 0.8px;
-  border-left-width: 0px;
+  border-style: solid;
+  border: 1px solid currentColor !important;
+  border-width: 0.1px !important;
+  border-left-width: 0px !important;
 }
 .v-dialog {
   border-radius: 16px !important;
 }
-.v-text-field--outlined {
-  border-color: rgba(192, 0, 250, 0.986);
+.v-text-field--outlined fieldset {
+  color: dark !important;
+  border: thin solid currentColor !important;
 }
 .v-btn {
   text-indent: 0;

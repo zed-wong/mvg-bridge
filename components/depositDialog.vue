@@ -91,6 +91,7 @@
           </div>
         </v-col>
       </v-row>
+      <tx-confirmed :link="txExplorerURL" />
     </v-sheet>
   </v-dialog>
 </template>
@@ -103,10 +104,11 @@ import { useOnboard } from "@web3-onboard/vue";
 import VueQrcode from "@chenfengyuan/vue-qrcode";
 import MetamaskLogo from "../static/metamask.png";
 import { getContractByAssetID } from "../helpers/registry";
-import { MixinClient } from "~/helpers/mixin";
+import { NewClient, MixinClient } from "~/helpers/mixin";
 
 const XINUUID = "c94ac88f-4671-3976-b60a-09064f1811e8";
 const ETHUUID = "43d61dcd-e413-450d-80b8-101d5e903357";
+const ExplorerBaseURL = process.env.EXPLORER_BASEURL;
 let trace = uuidv4();
 
 export default {
@@ -120,6 +122,7 @@ export default {
       txSent: false,
       txConfirmed: false,
       txSucceed: false,
+      txExplorerURL: "",
       txErrorText: "",
     };
   },
@@ -134,6 +137,14 @@ export default {
       },
       set(value) {
         this.$store.commit("toggleConfirmDeposit", value);
+      },
+    },
+    txSucceedDialog: {
+      get() {
+        return this.$store.state.txSucceedDialog;
+      },
+      set(value) {
+        this.$store.commit("toggleTxSucceedDialog", value);
       },
     },
     selectedNetwork: {
@@ -166,7 +177,9 @@ export default {
         return true;
       },
     },
-
+    userAddress(){
+      return this.$store.state.userAddress
+    },
     txQrHelpText: {
       get() {
         if (this.selectedNetwork.asset_id == XINUUID)
@@ -238,12 +251,10 @@ export default {
       },
     },
   },
-  async mounted(){
-    await this.getPaymentState()
-  },
   methods: {
     toggleQR() {
       this.txShowQR = !this.txShowQR;
+      if (this.selectedNetwork.asset_id == XINUUID) this.getPaymentState();
       if (this.txShowQR == true) this.txQrBtnText = "Hide QR Code";
       if (this.txShowQR == false) this.txQrBtnText = "Show QR Code";
     },
@@ -254,13 +265,26 @@ export default {
     },
     async getPaymentState() {
       while (true) {
-        console.log("getPaymentState");
+        if (this.txShowQR == false) return;
         if (this.txQrUrl == undefined) return;
-        let x = await MixinClient.transfer.fetch(trace).catch((error) => {
+        let user = JSON.parse(localStorage.getItem("user"));
+        let client = NewClient(
+          user.client_id,
+          user.session_id,
+          user.private_key
+        );
+        let x = await client.transfer.fetch(trace).catch((error) => {
           console.log("Trace ID not found");
         });
         console.log(x);
-        await new Promise((resolve) => setTimeout(resolve, 3000));
+        if (x.type == "transfer") {
+          this.confirmDepositDialog = false;
+          this.txSucceedDialog = true;
+          this.txExplorerURL = ExplorerBaseURL + "address/"+ this.userAddress + "/token-transfers"
+          trace = uuidv4()
+          return;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 1000));
       }
     },
     async addToken() {
@@ -290,7 +314,6 @@ export default {
       navigator.clipboard.writeText(value);
     },
     async deposit() {
-      // Tx
       try {
         if (this.supportsMetamask) {
           if (!this.selectedToken.asset_key.includes("0x")) {
@@ -327,47 +350,32 @@ export default {
       );
       let signer = provider.getSigner();
 
-      this.txSent = true;
-      try {
-        if (erc20) {
-          let tokenContract = new ethers.Contract(
-            asset_address,
-            ERC20ABI,
-            provider
-          );
-          let tokenContractSigner = tokenContract.connect(signer);
-          let tokenDecimal = await tokenContract.decimals();
-          let tx_value = ethers.utils.parseUnits(value, tokenDecimal);
-          let tx = await tokenContractSigner.transfer(asset_address, tx_value);
-          console.log(tx);
-        } else {
-          let tx_value = ethers.utils.parseEther(value);
-          const transactionParameters = {
-            from: ethers.utils.getAddress(await signer.getAddress()),
-            to: to_address,
-            value: tx_value,
-            chainId: 0x1,
-          };
+      if (erc20) {
+        let tokenContract = new ethers.Contract(
+          asset_address,
+          ERC20ABI,
+          provider
+        );
+        let tokenContractSigner = tokenContract.connect(signer);
+        let tokenDecimal = await tokenContract.decimals();
+        let tx_value = ethers.utils.parseUnits(value, tokenDecimal);
+        let tx = await tokenContractSigner.transfer(asset_address, tx_value);
+        console.log(tx);
+        this.txExplorerURL = ExplorerBaseURL+"tx/"+txResult.hash
+      } else {
+        let tx_value = ethers.utils.parseEther(value);
+        const transactionParameters = {
+          from: ethers.utils.getAddress(await signer.getAddress()),
+          to: to_address,
+          value: tx_value,
+          chainId: 0x1,
+        };
 
-          let tx = await provider
-            .getSigner()
-            .sendTransaction(transactionParameters);
-          console.log(tx);
-          this.txConfirmed = true;
-          this.txSucceed = true;
-        }
-      } catch (error) {
-        // if (error.code === "INSUFFICIENT_FUNDS") {
-        //   this.txErrorText = "Insufficient Balance.";
-        // }
-        // if (error.code === 4001) {
-        //   this.txErrorText = "Transaction rejected.";
-        // }
-        // this.txConfirmed = true;
-        // this.txSucceed = false;
-        this.txSent = false;
-        this.confirmDepositDialog = false;
-        console.log(error);
+        let tx = await provider
+          .getSigner()
+          .sendTransaction(transactionParameters);
+        console.log(tx);
+        this.txExplorerURL = ExplorerBaseURL+"tx/"+txResult.hash
       }
     },
   },

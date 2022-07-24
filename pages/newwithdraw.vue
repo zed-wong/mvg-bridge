@@ -34,7 +34,7 @@
                   placeholder="0.0"
                   hide-details="true"
                   v-model="toAmount"
-                  class="from-form my-3 border-width"
+                  class="from-form my-3"
                 ></v-text-field>
               </v-form>
               <v-btn
@@ -112,7 +112,7 @@
               </v-btn>
               <select-to-network />
             </div>
-            <div v-if="txGettingFee" class=" mb-2">
+            <div v-if="txGettingFee" class="mb-2">
               <v-progress-circular
                 width="1"
                 size="10"
@@ -185,6 +185,11 @@ import selectToNetowrk from "~/components/selectToNetwork.vue";
 
 const XINUUID = "c94ac88f-4671-3976-b60a-09064f1811e8";
 
+function formatBalance(balance) {
+  if (balance <= 0) return balance
+  return Math.floor(Number(balance)*100000000)/100000000
+}
+
 export default {
   components: {
     selectToToken,
@@ -218,13 +223,19 @@ export default {
             return false;
           }
 
-          // Check Asset Balance
           if (
             Number(value) + Number(this.txEstimatedFee) >
             Number(this.toBalance)
           ) {
             this.btnErrorMsg = "Insufficient Balance";
             return false;
+          }
+
+          if (this.selectedNetwork.asset_id != XINUUID) {
+            if (Number(value) * 10000 < 1) {
+              this.btnErrorMsg = "Minimum Amount: 0.0001";
+              return false;
+            }
           }
           return true;
         },
@@ -255,14 +266,31 @@ export default {
       return this.$store.state.toToken;
     },
     fixedToBalance() {
-      return Number(this.toBalance).toLocaleString("en-US", { maximumFractionDigits: 8, minimumFractionDigits: 2 });
+      return formatBalance(this.toBalance).toLocaleString("en-US", {
+        maximumFractionDigits: 8,
+        minimumFractionDigits: 2,
+      });
     },
     totalPayAmount() {
-      return (Number(this.toAmount) + Number(this.txEstimatedFee)).toLocaleString("en-US", { maximumFractionDigits: 8, minimumFractionDigits: 0 });
+      return (
+        Number(this.toAmount) + Number(this.txEstimatedFee)
+      ).toLocaleString("en-US", {
+        maximumFractionDigits: 8,
+        minimumFractionDigits: 0,
+      });
     },
     maxPayAmount() {
-      let a = Number(this.toBalance) - Number(this.txEstimatedFee) 
-      return a > 0 ? a.toLocaleString("en-US", { maximumFractionDigits: 8, minimumFractionDigits: 2 }) : Number(this.toBalance)
+      let a = formatBalance(Number(this.toBalance) - Number(this.txEstimatedFee));
+      if (a <= 0) return Number(this.toBalance);
+      return this.selectedNetwork.asset_id == XINUUID
+        ? a.toLocaleString("en-US", {
+            maximumFractionDigits: 8,
+            minimumFractionDigits: 2,
+          })
+        : a.toLocaleString("en-US", {
+            maximumFractionDigits: 4,
+            minimumFractionDigits: 2,
+          });
     },
 
     selectNetworkDialog: {
@@ -316,10 +344,8 @@ export default {
       });
     },
     async connected(o, n) {
-      let {connectedChain} = useOnboard()
-      console.log(connectedChain.value.id)
+      let { connectedChain } = useOnboard();
       await this.getMvmtoBalance();
-      
     },
     async network_id(o, n) {
       await this.getMvmtoBalance();
@@ -449,7 +475,9 @@ export default {
     async getTxFee() {
       if (this.selectedNetwork.asset_id === XINUUID) return 0;
 
-      let fee = await MixinClient.network.fetchAsset(this.selectedToken.asset_id);
+      let fee = await MixinClient.network.fetchAsset(
+        this.selectedToken.asset_id
+      );
       if (this.selectedToken.asset_id === this.selectedToken.chain_id)
         return fee.fee;
       return await this.get4swapPrice(
@@ -475,13 +503,17 @@ export default {
         }
       );
       if (result.data != undefined) {
-        return result.data.data.pay_amount;
+        let payAmount = result.data.data.pay_amount;
+        if (Number(payAmount) * 10000 > 1) {
+          return Math.ceil(payAmount * 10000) / 10000;
+        }
+        return Number(payAmount);
       }
       return 0;
     },
-    setMaxAmount(){
-      this.toAmount = this.maxPayAmount
-    }
+    setMaxAmount() {
+      this.toAmount = this.maxPayAmount;
+    },
   },
 };
 </script>
@@ -494,6 +526,7 @@ export default {
   font-weight: 500;
 }
 .from-form {
+  background-color: white;
   border-radius: 12px 0 0 12px;
 }
 .selected-network {
@@ -504,12 +537,16 @@ export default {
   color: #5959d8 !important;
 }
 .select-token-btn {
+  color: dark;
   min-height: 56px;
+  background-color: white;
   border-radius: 0 12px 12px 0;
 }
 .border-width {
-  border-width: 0.8px;
-  border-left-width: 0px;
+  border-style: solid;
+  border: 1px solid currentColor !important;
+  border-width: 0.1px !important;
+  border-left-width: 0px !important;
 }
 .max-text {
   color: #5959d8;
@@ -517,8 +554,9 @@ export default {
 .v-dialog {
   border-radius: 16px !important;
 }
-.v-text-field--outlined {
-  border-color: rgba(192, 0, 250, 0.986);
+.v-text-field--outlined fieldset {
+  color: dark !important;
+  border: thin solid currentColor !important;
 }
 .v-btn {
   text-indent: 0;

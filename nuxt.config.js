@@ -91,6 +91,7 @@ export default {
   },
   env: {
     INFURA_KEY: process.env.INFURA_KEY,
-    WITHDRAWAL_GATEWAY_BOT_ID: process.env.WITHDRAWAL_GATEWAY_BOT_ID
+    WITHDRAWAL_GATEWAY_BOT_ID: process.env.WITHDRAWAL_GATEWAY_BOT_ID,
+    EXPLORER_BASEURL: "https://scan.mvm.dev/",
   }
 }

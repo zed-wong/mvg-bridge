@@ -88,7 +88,7 @@
 // This page is totally a copy of https://github.com/liuzemei/mvm-mvm/blob/master/src/components/mvm/brige/index.vue
 import assets from "../assets/assets.json";
 import { getContractByAssetID } from "../helpers/registry";
-import { asset } from '@mixin.dev/mixin-node-sdk';
+import { MixinClient } from "../helpers/mixin"
 
 // const getAssetIDBySearch = async (searchAsset: string): Promise<string> => {
 //     const t = await searchNetworkAsset(searchAsset);
@@ -145,7 +145,7 @@ export default {
         this.loader = "selectTokenLoading";
       }
       try {
-        let asset = await asset.fetch(assetID);
+        let asset = await MixinClient.asset.fetch(assetID);
         let contractAddr = await getContractByAssetID(assetID);
         let decimal = 8;
         if (contractAddr === "0x0000000000000000000000000000000000000000") {

@@ -449,13 +449,13 @@ export default {
     async getTxFee() {
       if (this.selectedNetwork.asset_id === XINUUID) return 0;
 
-      let fee = await MixinClient.readAssetFee(this.selectedToken.asset_id);
+      let fee = await MixinClient.network.fetchAsset(this.selectedToken.asset_id);
       if (this.selectedToken.asset_id === this.selectedToken.chain_id)
-        return fee.amount;
+        return fee.fee;
       return await this.get4swapPrice(
         this.selectedToken.asset_id,
         this.selectedToken.chain_id,
-        fee.amount
+        fee.fee
       );
     },
     async get4swapPrice(from, to, amount) {

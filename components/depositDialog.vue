@@ -101,13 +101,13 @@ import { v4 as uuidv4 } from "uuid";
 import ERC20ABI from "../assets/erc20.json";
 import { useOnboard } from "@web3-onboard/vue";
 import VueQrcode from "@chenfengyuan/vue-qrcode";
-import { asset } from '@mixin.dev/mixin-node-sdk';
 import MetamaskLogo from "../static/metamask.png";
 import { getContractByAssetID } from "../helpers/registry";
-import MixinClient from '~/helpers/mixin';
+import { MixinClient } from "~/helpers/mixin";
 
 const XINUUID = "c94ac88f-4671-3976-b60a-09064f1811e8";
 const ETHUUID = "43d61dcd-e413-450d-80b8-101d5e903357";
+let trace = uuidv4();
 
 export default {
   data() {
@@ -176,9 +176,9 @@ export default {
       },
     },
     txQrUrl: {
-      async get() {
+      get() {
         if (this.selectedNetwork.asset_id == XINUUID)
-          return await this.createMixinPayment();
+          return this.createMixinPayment();
         if (this.selectedNetwork.asset_id != XINUUID)
           return this.depositAddr[0];
       },
@@ -238,28 +238,35 @@ export default {
       },
     },
   },
+  async mounted(){
+    await this.getPaymentState()
+  },
   methods: {
     toggleQR() {
       this.txShowQR = !this.txShowQR;
       if (this.txShowQR == true) this.txQrBtnText = "Hide QR Code";
       if (this.txShowQR == false) this.txQrBtnText = "Show QR Code";
     },
-    async createMixinPayment() {
+    createMixinPayment() {
       let user = JSON.parse(localStorage.getItem("user"));
-      let payment = await MixinClient.payment.request({
-        asset_id: this.selectedToken.asset_id,
-        opponent_id: user.client_id,
-        amount:this.fromAmount,
-        trace_id: uuidv4(),
-      })
-      console.log(payment)
-      console.log(`mixin://codes/${payment.code_id}`)
-      return `mixin://codes/${payment.code_id}`;
+      let link = `mixin://pay?recipient=${user.client_id}&asset=${this.selectedToken.asset_id}&amount=${this.fromAmount}&trace=${trace}`;
+      return link;
+    },
+    async getPaymentState() {
+      while (true) {
+        console.log("getPaymentState");
+        if (this.txQrUrl == undefined) return;
+        let x = await MixinClient.transfer.fetch(trace).catch((error) => {
+          console.log("Trace ID not found");
+        });
+        console.log(x);
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+      }
     },
     async addToken() {
       let assetID = this.selectedToken.asset_id;
       if (assetID == XINUUID) return;
-      let asset = await asset.fetch(assetID);
+      let asset = await MixinClient.asset.fetch(assetID);
       let contractAddr = await getContractByAssetID(assetID);
       if (contractAddr === ethers.constants.AddressZero) return;
       try {
@@ -282,7 +289,6 @@ export default {
     copyAddr(value) {
       navigator.clipboard.writeText(value);
     },
-
     async deposit() {
       // Tx
       try {

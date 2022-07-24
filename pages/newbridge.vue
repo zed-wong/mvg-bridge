@@ -133,7 +133,10 @@
           >
             <span> Deposit </span>
           </v-btn>
-          <deposit-dialog :from-amount="fromAmount" :from-balance="fromBalance" />
+          <deposit-dialog
+            :from-amount="fromAmount"
+            :from-balance="fromBalance"
+          />
         </v-col>
       </v-row>
     </v-sheet>
@@ -173,8 +176,8 @@ export default {
       depositing: false,
 
       rules: [
-        (value) => !!value || 'Value is required',
-        (value) => value > 0 || 'Value must bigger than 0',
+        (value) => !!value || "Value is required",
+        (value) => value > 0 || "Value must bigger than 0",
       ],
       valueValid: false,
     };
@@ -234,7 +237,10 @@ export default {
     },
     fixedFromBalance: {
       get() {
-        return Number(this.fromBalance).toLocaleString("en-US", { maximumFractionDigits: 8, minimumFractionDigits: 2 })
+        return Number(this.fromBalance).toLocaleString("en-US", {
+          maximumFractionDigits: 8,
+          minimumFractionDigits: 2,
+        });
       },
     },
   },
@@ -309,7 +315,7 @@ export default {
       let ABI;
       // if (this.selectedToken.symbol.includes('USDC')) {
       //   ABI = USDCABI;
-      // } 
+      // }
       if (!ABI) {
         ABI = ERC20ABI;
       }
@@ -329,18 +335,22 @@ export default {
     },
 
     async getDepositAddress(asset_id) {
-      let suser = localStorage.getItem("user");
-      if (suser) {
-        let user = JSON.parse(suser);
-        let client = NewClient(
-          user.client_id,
-          user.session_id,
-          user.private_key
-        );
-        let asset = await client.asset.fetch(asset_id);
-        let dest = asset.deposit_entries[0].destination;
-        let tag = asset.deposit_entries[0].tag;
-        return [dest, tag];
+      try {
+        let suser = localStorage.getItem("user");
+        if (suser) {
+          let user = JSON.parse(suser);
+          let client = NewClient(
+            user.client_id,
+            user.session_id,
+            user.private_key
+          );
+          let asset = await client.asset.fetch(asset_id);
+          let dest = asset.deposit_entries[0].destination;
+          let tag = asset.deposit_entries[0].tag;
+          return [dest, tag];
+        }
+      } catch (error) {
+        console.log(error);
       }
     },
     checkNetwork(chain_symbol) {

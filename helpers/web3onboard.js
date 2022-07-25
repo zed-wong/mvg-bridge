@@ -97,7 +97,7 @@ export const web3Onboard = init({
         },
         switchChain: {
           heading: "切換網絡",
-          paragraph1: "{app} 需要您切換到 {nextNetworkName} 網絡以繼續",
+          paragraph1: "{app} 需要您在您的錢包中切換到 {nextNetworkName} 網絡以繼續。",
           paragraph2: "*某些錢包可能不支持切換網絡. 如您不能切換網絡，您可能需要考慮更換一個能夠切換網絡的錢包。"
         },
         confirmDisconnectAll: {

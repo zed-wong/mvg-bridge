@@ -8,6 +8,10 @@ import newbridge from "~/components/newbridge.vue"
 import newwithdraw from "~/components/newwithdraw.vue"
 
 export default {
+  asyncData(context){
+    if (navigator.language.includes('zh')) context.app.i18n.locale = "zh"
+    if (navigator.language.includes('en')) context.app.i18n.locale = "en"
+  },
   components: { newbridge,newwithdraw },
   computed:{
     mode: {
@@ -19,9 +23,6 @@ export default {
       }
     }
   },
-  // validate(){
-  //   if (navigator.language.includes('zh')) this.$router.push('/zh')
-  // },
   layout: 'index'
 }
 </script>

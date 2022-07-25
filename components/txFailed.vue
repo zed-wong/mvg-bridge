@@ -8,7 +8,7 @@
     <v-sheet class="align-self-start px-9 py-8" height="400px">
       <v-row class="d-flex flex-column mb-0">
         <v-col class="align-center d-flex flex-row pr-0 mb-2">
-          <h1 class="title-css">Transaction Failed</h1>
+          <h1 class="title-css">{{$t('transaction_failed')}}</h1>
           <v-spacer />
           <v-btn icon @click="txFailedDialog = false">
             <v-icon> mdi-close </v-icon>
@@ -29,7 +29,7 @@
             @click="txFailedDialog = false"
             class="border-rounded main-btn white--text"
           >
-            Close
+            {{ $t('close') }}
           </v-btn>
         </v-col>
       </v-row>

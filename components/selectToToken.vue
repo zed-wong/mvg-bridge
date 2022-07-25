@@ -3,7 +3,7 @@
     <v-sheet class="align-self-start px-9 pt-8">
       <v-row class="d-flex flex-column mb-0">
         <v-col class="align-center d-flex flex-row pr-0">
-          <h1 class="select-token-css">Select token</h1>
+          <h1 class="select-token-css">{{ $t("select_token") }}</h1>
           <v-spacer />
           <v-btn icon @click="selectTokenDialog = false">
             <v-icon> mdi-close </v-icon>
@@ -17,7 +17,7 @@
             hide-details="true"
             class="search-border"
             prepend-inner-icon="mdi-magnify"
-            placeholder="Search token name"
+            :placeholder="$t('search_token_name')"
           />
         </v-col>
         <v-col class="pt-2 px-0">

@@ -100,7 +100,7 @@
                 @click.stop="selectNetworkDialog = true"
               >
                 <v-img
-                  class="ml-2"
+                  class="ml-3"
                   max-width="20px"
                   max-height="20px"
                   :src="selectedNetwork.icon_url"
@@ -217,7 +217,7 @@ export default {
       rules: [
         (value) => {
           if (value <= 0) {
-            this.btnErrorMsg = "Invalid Amount";
+            this.btnErrorMsg = this.$t("invalid_amount");
             return false;
           }
 
@@ -225,13 +225,13 @@ export default {
             Number(value) + Number(this.txEstimatedFee) >
             Number(this.toBalance)
           ) {
-            this.btnErrorMsg = "Insufficient Balance";
+            this.btnErrorMsg = this.$t("insufficient_balance");
             return false;
           }
 
           if (this.selectedNetwork.asset_id != XINUUID) {
             if (Number(value) * 10000 < 1) {
-              this.btnErrorMsg = "Minimum Amount: 0.0001";
+              this.btnErrorMsg = this.$t("minimum_amount");
               return false;
             }
           }
@@ -256,7 +256,7 @@ export default {
     giantBtnText: {
       get() {
         if (!this.valueValid) return this.btnErrorMsg;
-        return "Withdraw";
+        return this.$t("withdraw");
       },
     },
     connected() {

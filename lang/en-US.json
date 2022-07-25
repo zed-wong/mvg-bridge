@@ -6,6 +6,7 @@
   "to": "To",
   "amount":"Amount",
   "max": "Max",
+  "add": "Add",
   "mainnet": "Mainnet",
   "balance": "Balance",
   "loading_balance": "Loading Balance",
@@ -13,6 +14,11 @@
   "mvm_mainnet": "MVM Mainnet",
   "withdrawal_fee": "Withdrawal Fee",
   "will_receive": "You will receive",
+
+  "select_token": "Select Token",
+  "select_network": "Select Network",
+  "search_token_name": "Search token name",
+  "search_network_name": "Search network name",
 
   "confirm_deposit": "Confirm Deposit",
   "confirm_withdraw": "Confirm Withdraw",
@@ -30,5 +36,14 @@
   "please_enter_your_wallet_address": "Please enter your wallet address",
   "optional":"Optional",
   "show_qrcode": "Show QR Code",
-  "hide_qrcode": "Hide QR Code"
+  "hide_qrcode": "Hide QR Code",
+
+  "insufficient_balance": "Insufficient Balance",
+  "invalid_amount": "Invalid Amount",
+  "minimum_amount": "Minimum Amount: 0.0001",
+
+  "confirmed": "Confirmed",
+  "transaction_failed": "Transaction Failed",
+  "view_on_explorer": "View On Explorer",
+  "close": "Close"
 }

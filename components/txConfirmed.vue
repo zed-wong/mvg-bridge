@@ -3,28 +3,36 @@
     v-model="txSucceedDialog"
     class="dialog-css"
     max-width="450px"
-    overlay-opacity="0.8"
+    overlay-opacity="0.5"
   >
-    <v-sheet class="align-self-start px-9 py-8" height="400px">
+    <v-sheet class="align-self-start px-9 py-6" >
       <v-row class="d-flex flex-column mb-0">
         <v-col class="align-center d-flex flex-row pr-0 mb-2">
-          <h1 class="title-css">Confirmed</h1>
+          <h1 class="title-css">{{ $t("confirmed") }}</h1>
           <v-spacer />
           <v-btn icon @click="txSucceedDialog = false">
             <v-icon> mdi-close </v-icon>
           </v-btn>
         </v-col>
         <v-col class="d-flex justify-center my-2">
-          <v-icon size="128px" color="green"> 
-            mdi-check-circle
-          </v-icon>
+          <v-icon size="128px" color="green"> mdi-check-circle </v-icon>
         </v-col>
-        <v-col class="d-flex justify-center pb-0 py-1">
-          <a :href="link" target="_blank" click="window.open(link)" style="text-decoration: none;"> 
-            <span> View On Expolrer </span> 
+        <v-col class="d-flex justify-center pt-0 pb-2">
+          <a
+            :href="link"
+            target="_blank"
+            click="window.open(link)"
+            style="text-decoration: none"
+          >
+            <span> {{ $t("view_on_explorer") }} </span>
           </a>
         </v-col>
-        <v-col class="mt-2">
+        <v-col class="d-flex justify-center py-0" v-if="symbol">
+          <v-btn rounded depressed elevation="0" class="my-3" color="#f4f7fa" @click="addToken" :loading="addingToken"> 
+            {{ $t('add') }} {{ symbol }}
+          </v-btn>
+        </v-col>
+        <v-col>
           <v-btn
             block
             x-large
@@ -34,7 +42,7 @@
             @click="txSucceedDialog = false"
             class="border-rounded main-btn white--text"
           >
-            Close
+            {{ $t("close") }}
           </v-btn>
         </v-col>
       </v-row>
@@ -43,8 +51,19 @@
 </template>
 
 <script>
+import { ethers } from "ethers";
+import { MixinClient } from "~/helpers/mixin";
+import { getContractByAssetID } from "../helpers/registry";
+
+const XINUUID = "c94ac88f-4671-3976-b60a-09064f1811e8";
+
 export default {
-  props: ['link'],
+  data(){
+    return {
+      addingToken: false,
+    }
+  },
+  props: ["link", "assetid", "symbol"],
   computed: {
     txSucceedDialog: {
       get() {
@@ -55,5 +74,34 @@ export default {
       },
     },
   },
+  methods: {
+    async addToken() {
+      if (window.ethereum == undefined) return;
+      if (this.assetid == "") return;
+      if (this.assetid == XINUUID) return;
+      this.addingToken = true;
+      let asset = await MixinClient.asset.fetch(this.assetid);
+      let contractAddr = await getContractByAssetID(this.assetid);
+      if (contractAddr === ethers.constants.AddressZero) return;
+      try {
+        await window.ethereum.request({
+          method: "wallet_watchAsset",
+          params: {
+            type: "ERC20",
+            options: {
+              address: contractAddr,
+              symbol: asset.symbol,
+              decimals: 8,
+              image: asset.icon_url,
+            },
+          },
+        });
+        this.addingToken = false;
+      } catch (error) {
+        console.log(error);
+        this.addingToken = false;
+      }
+    },
+  }
 };
 </script>

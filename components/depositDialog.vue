@@ -80,18 +80,22 @@
             class="d-flex justify-center mt-5 pa-4 align-center qr-area"
             v-if="txShowQR"
           >
-            <span class="font-weight-light help-text">
-              {{ txQrHelpText }}
-            </span>
-            <vue-qrcode
-              :value="txQrUrl"
-              :options="{ margin: 0, width: 100 }"
-              class="mr-1"
-            />
+            <v-col class="d-flex flex-grow-1">
+              <span class="font-weight-light help-text">
+                {{ txQrHelpText }}
+              </span>
+            </v-col>
+            <v-col class="d-flex flex-grow-0">
+              <vue-qrcode
+                :value="txQrUrl"
+                :options="{ margin: 0, width: 100 }"
+                class="mr-1"
+              />
+            </v-col>
           </div>
         </v-col>
       </v-row>
-      <tx-confirmed :link="txExplorerURL" />
+      <tx-confirmed :link="txExplorerURL" :symbol="selectedToken.symbol" :assetid="selectedToken.asset_id"/>
     </v-sheet>
   </v-dialog>
 </template>
@@ -136,6 +140,7 @@ export default {
         return this.$store.state.confirmDepositDialog;
       },
       set(value) {
+        this.txShowQR == false;
         this.$store.commit("toggleConfirmDeposit", value);
       },
     },
@@ -177,8 +182,8 @@ export default {
         return true;
       },
     },
-    userAddress(){
-      return this.$store.state.userAddress
+    userAddress() {
+      return this.$store.state.userAddress;
     },
     txQrHelpText: {
       get() {
@@ -255,8 +260,8 @@ export default {
     toggleQR() {
       this.txShowQR = !this.txShowQR;
       if (this.selectedNetwork.asset_id == XINUUID) this.getPaymentState();
-      if (this.txShowQR == true) this.txQrBtnText = this.$t("show_qrcode");
-      if (this.txShowQR == false) this.txQrBtnText = this.$t("hide_qrcode");
+      if (this.txShowQR == true) this.txQrBtnText = this.$t("hide_qrcode");
+      if (this.txShowQR == false) this.txQrBtnText = this.$t("show_qrcode");
     },
     createMixinPayment() {
       let user = JSON.parse(localStorage.getItem("user"));
@@ -280,14 +285,20 @@ export default {
         if (x.type == "transfer") {
           this.confirmDepositDialog = false;
           this.txSucceedDialog = true;
-          this.txExplorerURL = ExplorerBaseURL + "address/"+ this.userAddress + "/token-transfers"
-          trace = uuidv4()
+          this.txExplorerURL =
+            ExplorerBaseURL +
+            "address/" +
+            this.userAddress +
+            "/token-transfers";
+          trace = uuidv4();
+          this.txShowQR = false;
           return;
         }
         await new Promise((resolve) => setTimeout(resolve, 1000));
       }
     },
     async addToken() {
+      if (window.ethereum == undefined) return;
       let assetID = this.selectedToken.asset_id;
       if (assetID == XINUUID) return;
       let asset = await MixinClient.asset.fetch(assetID);
@@ -361,7 +372,7 @@ export default {
         let tx_value = ethers.utils.parseUnits(value, tokenDecimal);
         let tx = await tokenContractSigner.transfer(asset_address, tx_value);
         console.log(tx);
-        this.txExplorerURL = ExplorerBaseURL+"tx/"+txResult.hash
+        this.txExplorerURL = ExplorerBaseURL + "tx/" + txResult.hash;
       } else {
         let tx_value = ethers.utils.parseEther(value);
         const transactionParameters = {
@@ -375,7 +386,7 @@ export default {
           .getSigner()
           .sendTransaction(transactionParameters);
         console.log(tx);
-        this.txExplorerURL = ExplorerBaseURL+"tx/"+txResult.hash
+        this.txExplorerURL = ExplorerBaseURL + "tx/" + txResult.hash;
       }
     },
   },

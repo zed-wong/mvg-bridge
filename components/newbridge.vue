@@ -103,7 +103,7 @@
                 :src="bridge"
                 max-height="21px"
                 max-width="19px"
-                class="ml-2"
+                class="ml-3"
               >
               </v-img>
               <span class="ml-2 font-weight-500"> {{ $t("mvm_mainnet") }} </span>
@@ -264,7 +264,7 @@ export default {
   },
   async mounted() {
     this.getFromBalance();
-    this.ethBydefault();
+    // this.ethBydefault();
   },
 
 

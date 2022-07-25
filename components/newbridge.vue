@@ -3,9 +3,9 @@
     <v-sheet elevation="2" class="pa-9 mt-15 border-rounded" max-width="552px">
       <v-row class="d-flex flex-column" no-gutters>
         <v-col class="mb-6 px-0" style="font-size: 24px">
-          <a class="pr-6 font-weight-bold"><span> Deposit </span></a>
-          <a style="color: #68778d; text-decoration: none" :href="withdraw_url"
-            ><span> Withdraw </span></a
+          <a class="pr-6 font-weight-bold"><span> {{ $t("deposit") }} </span></a>
+          <a style="color: #68778d; text-decoration: none" @click="mode=1"
+            ><span> {{ $t("withdraw") }} </span></a
           >
         </v-col>
 
@@ -15,7 +15,7 @@
             class="px-5 py-4 border-rounded"
           >
             <div class="d-flex align-center">
-              <span class="mr-1 font-weight-light"> From </span>
+              <span class="mr-1 font-weight-light"> {{ $t("from") }} </span>
               <v-btn
                 small
                 depressed
@@ -29,7 +29,7 @@
                   :src="selectedNetwork.icon_url"
                 />
                 <span class="ml-2 selected-network font-weight-500">
-                  {{ selectedNetwork.name }} Mainnet
+                  {{ selectedNetwork.name }} {{ $t("mainnet") }}
                 </span>
                 <v-icon small> mdi-menu-down </v-icon>
               </v-btn>
@@ -69,7 +69,7 @@
               <select-from-token />
             </div>
             <span v-if="fromBalanceVisble" class="font-weight-light">
-              Balance: {{ fixedFromBalance }} {{ selectedToken.symbol }}
+              {{ $t("balance") }}: {{ fixedFromBalance }} {{ selectedToken.symbol }}
             </span>
             <div v-if="fetchingBalance && connected">
               <v-progress-circular
@@ -80,14 +80,14 @@
                 class="mr-2"
               ></v-progress-circular>
               <span class="font-weight-light" style="font-size"
-                >Loading Balance</span
+                >{{ $t("loading_balance") }}</span
               >
             </div>
           </v-sheet>
         </v-col>
 
         <v-col class="text-center pa-0 py-1">
-          <v-btn icon :href="withdraw_url">
+          <v-btn icon @click="mode=1">
             <v-icon class="arrow-down py-1"> mdi-arrow-down </v-icon>
           </v-btn>
         </v-col>
@@ -98,7 +98,7 @@
             class="px-5 py-4 border-rounded"
           >
             <div class="d-flex flex-row mb-2">
-              <span class="font-weight-light"> To </span>
+              <span class="font-weight-light"> {{ $t("to") }} </span>
               <v-img
                 :src="bridge"
                 max-height="21px"
@@ -106,11 +106,11 @@
                 class="ml-2"
               >
               </v-img>
-              <span class="ml-2 font-weight-500"> MVM Mainnet </span>
+              <span class="ml-2 font-weight-500"> {{ $t("mvm_mainnet") }} </span>
             </div>
             <div class="d-flex flex-column font-weight-light">
               <span class="mb-1">
-                You will receive: {{ fromAmount != 0 ? fromAmount : 0 }}
+                {{ $t("will_receive") }}: {{ fromAmount != 0 ? fromAmount : 0 }}
                 {{ selectedToken.symbol }}
               </span>
             </div>
@@ -131,7 +131,7 @@
             :disabled="!valueValid"
             class="border-rounded main-btn white--text"
           >
-            <span> Deposit </span>
+            <span> {{ $t("deposit") }} </span>
           </v-btn>
           <deposit-dialog
             :from-amount="fromAmount"
@@ -167,8 +167,6 @@ export default {
     return {
       bridge,
 
-      withdraw_url: "/newwithdraw",
-
       fromAmount: "0",
       fromBalance: "",
       fromBalanceVisble: false,
@@ -183,6 +181,14 @@ export default {
     };
   },
   computed: {
+    mode: {
+      get(){
+        return this.$store.state.mode
+      },
+      set(value){
+        this.$store.commit('setMode', value)
+      }
+    },
     selectNetworkDialog: {
       get() {
         return this.$store.state.selectNetworkDialog;
@@ -261,7 +267,6 @@ export default {
     this.ethBydefault();
   },
 
-  layout: "newbridge",
 
   methods: {
     async deposit() {

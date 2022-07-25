@@ -1,4 +1,5 @@
 export const state = () => ({
+  mode: 0,
   connected: false,
   connectWalletDialog: false,
   provider: undefined,
@@ -57,6 +58,9 @@ export const mutations = {
   },
   toggleTxFailedDialog(state: any, open: boolean) {
     state.txFailedDialog = open
+  },
+  setMode(state: any, data: number) {
+    state.mode = data
   },
   setProvider(state: any, data: any) {
     state.provider = data

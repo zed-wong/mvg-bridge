@@ -8,7 +8,7 @@
       class="ml-3 connect-wallet"
       @click="connect"
     >
-      <span style="color: white"> Connect Wallet</span>
+      <span style="color: white"> {{ $t("connect_wallet") }}</span>
     </v-btn>
     <v-btn
       block
@@ -20,7 +20,7 @@
       @click="connect"
       class="border-rounded main-btn white--text"
     >
-      <span> Connect Wallet </span>
+      <span> {{ $t("connect_wallet") }} </span>
     </v-btn>
   </div>
 </template>
@@ -53,11 +53,6 @@ export default {
             id: connectedChain.value.id,
           });
 
-          // Use in other component
-          // import { useOnboard } from "@web3-onboard/vue";
-          // const { connectedWallet } = useOnboard();
-          // const provider = new ethers.providers.Web3Provider(connectedWallet.value.provider, "any")
-          // const signer = provider.getSigner()
         }
       } catch (error) {
         console.log(error);

@@ -3,10 +3,10 @@
     <v-sheet elevation="2" class="pa-9 mt-15 border-rounded" max-width="552px">
       <v-row class="d-flex flex-column" no-gutters>
         <v-col class="mb-6 px-0" style="font-size: 24px">
-          <a style="color: #68778d; text-decoration: none" :href="deposit_url"
-            ><span> Deposit </span></a
+          <a style="color: #68778d; text-decoration: none" @click="mode=0"
+            ><span> {{ $t("deposit") }} </span></a
           >
-          <a class="pl-6 font-weight-bold"><span> Withdraw </span></a>
+          <a class="pl-6 font-weight-bold"><span> {{ $t("withdraw") }} </span></a>
         </v-col>
 
         <v-col style="font-size: 14px" class="pa-0">
@@ -15,7 +15,7 @@
             class="px-5 py-4 border-rounded"
           >
             <div class="d-flex align-center">
-              <span class="mr-1 font-weight-light"> From </span>
+              <span class="mr-1 font-weight-light"> {{ $t("from") }} </span>
               <v-img
                 :src="bridge"
                 max-height="21px"
@@ -23,7 +23,7 @@
                 class="ml-2"
               >
               </v-img>
-              <span class="ml-2 font-weight-500"> MVM Mainnet </span>
+              <span class="ml-2 font-weight-500"> {{ $t("mvm_mainnet") }} </span>
             </div>
 
             <div class="d-flex flex-row align-center">
@@ -59,10 +59,10 @@
             </div>
             <div v-if="toBalanceVisble">
               <span class="font-weight-light">
-                Balance: {{ fixedToBalance }} {{ selectedToken.symbol }}
+                {{ $t("balance") }}: {{ fixedToBalance }} {{ selectedToken.symbol }}
               </span>
               <a @click="setMaxAmount">
-                <span class="ml-1 max-text"> (Max) </span>
+                <span class="ml-1 max-text"> ({{ $t("max") }}) </span>
               </a>
             </div>
             <div v-if="fetchingBalance && connected">
@@ -74,14 +74,14 @@
                 class="mr-2"
               ></v-progress-circular>
               <span class="font-weight-light" style="font-size"
-                >Loading Balance</span
+                >{{ $t("loading_balance") }}</span
               >
             </div>
           </v-sheet>
         </v-col>
 
         <v-col class="text-center pa-0 py-1">
-          <v-btn icon :href="deposit_url">
+          <v-btn icon @click="mode=0">
             <v-icon class="arrow-down py-1"> mdi-arrow-down </v-icon>
           </v-btn>
         </v-col>
@@ -92,7 +92,7 @@
             class="px-5 py-4 border-rounded"
           >
             <div class="d-flex align-center mb-2">
-              <span class="font-weight-light"> To </span>
+              <span class="font-weight-light"> {{ $t("to") }} </span>
               <v-btn
                 small
                 depressed
@@ -106,7 +106,7 @@
                   :src="selectedNetwork.icon_url"
                 />
                 <span class="ml-2 selected-network font-weight-500">
-                  {{ selectedNetwork.name }} Mainnet
+                  {{ selectedNetwork.name }} {{ $t("mainnet") }}
                 </span>
                 <v-icon small> mdi-menu-down </v-icon>
               </v-btn>
@@ -121,7 +121,7 @@
                 class="mr-2"
               ></v-progress-circular>
               <span class="font-weight-light" style="font-size"
-                >Loading Withdrawal Fee</span
+                >{{ $t("loading_withdrawal_fee") }}</span
               >
             </div>
             <div
@@ -129,13 +129,13 @@
               v-if="txEstimatedFeeVisible"
             >
               <span class="mb-2">
-                Withdrawal Fee: {{ txEstimatedFee }}
+                {{ $t("withdrawal_fee") }}: {{ txEstimatedFee }}
                 {{ selectedToken.symbol }}
               </span>
             </div>
             <div class="d-flex flex-column font-weight-light">
               <span class="mb-2">
-                You will receive: {{ toAmount != 0 ? toAmount : 0 }}
+                {{ $t("will_receive") }}: {{ toAmount != 0 ? toAmount : 0 }}
                 {{ selectedToken.symbol }}
               </span>
             </div>
@@ -201,8 +201,6 @@ export default {
     return {
       bridge,
 
-      deposit_url: "/newbridge",
-
       toAmount: 0,
       toBalance: "",
       toBalanceVisble: false,
@@ -244,6 +242,14 @@ export default {
     };
   },
   computed: {
+    mode: {
+      get(){
+        return this.$store.state.mode
+      },
+      set(value){
+        this.$store.commit('setMode', value)
+      }
+    },
     assets() {
       return assets.assets;
     },
@@ -281,7 +287,7 @@ export default {
     },
     maxPayAmount() {
       let a = formatBalance(Number(this.toBalance) - Number(this.txEstimatedFee));
-      if (a <= 0) return Number(this.toBalance);
+      if (a <= 0) return 0;
       return this.selectedNetwork.asset_id == XINUUID
         ? a.toLocaleString("en-US", {
             maximumFractionDigits: 8,
@@ -361,8 +367,6 @@ export default {
 
     this.mvmBydefault();
   },
-
-  layout: "newbridge",
 
   methods: {
     async withdraw() {

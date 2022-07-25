@@ -1,4 +1,5 @@
 import colors from 'vuetify/es5/util/colors'
+import i18n from './i18n'
 
 export default {
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
@@ -9,8 +10,8 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: 'MVM Bridge',
-    title: 'MVM Bridge',
+    titleTemplate: 'MVG',
+    title: 'MVG',
     htmlAttrs: {
       lang: 'en'
     },
@@ -50,6 +51,26 @@ export default {
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
     '@nuxtjs/proxy',
+    [
+      '@nuxtjs/i18n',
+      {
+        locales: [
+          {
+            code: "en",
+            iso: "en-US",
+            file: "en-US.json"
+          },
+          {
+            code: "zh",
+            iso: "zh-TW",
+            file: "zh-TW.json"
+          }
+        ],
+        langDir: 'lang/',
+        defaultLocale: "en",
+        vueI18n: i18n,
+      }
+    ]
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios

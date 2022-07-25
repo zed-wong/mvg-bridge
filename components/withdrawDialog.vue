@@ -8,7 +8,7 @@
     <v-sheet class="align-self-start px-9 py-8">
       <v-row class="d-flex flex-column mb-0">
         <v-col class="align-center d-flex flex-row pr-0 mb-2">
-          <h1 class="title-css">Confirm Withdraw</h1>
+          <h1 class="title-css">{{ $t("confirm_withdraw") }}</h1>
           <v-spacer />
           <v-btn icon @click="confirmWithdrawDialog = false">
             <v-icon> mdi-close </v-icon>
@@ -17,7 +17,7 @@
         <v-col>
           <div class="py-0">
             <div>
-              <span class="subtitle-css"> To </span>
+              <span class="subtitle-css"> {{ $t("to") }} </span>
 
               <div class="d-flex flex-row align-center pt-1 mb-5">
                 <v-img
@@ -27,14 +27,14 @@
                   class="mr-2"
                 />
                 <span class="main-title-css">
-                  {{ selectedNetwork.name }} Mainnet
+                  {{ selectedNetwork.name }} {{ $t("mainnet") }}
                 </span>
               </div>
             </div>
           </div>
           <div class="py-0">
             <div>
-              <span class="subtitle-css"> Token </span>
+              <span class="subtitle-css"> {{ $t("token") }} </span>
               <div class="d-flex flex-row align-center pt-1 mb-5">
                 <v-img
                   :src="selectedToken.icon_url"
@@ -51,7 +51,7 @@
 
           <div class="d-flex flex-column mb-2">
             <span class="subtitle-css">
-              {{ this.txToMixin ? "User ID" : "Address" }}
+              {{ this.txToMixin ? $t("user_id") : $t("address") }}
             </span>
             <v-text-field
               rounded
@@ -61,7 +61,7 @@
               class="my-3 withdraw-addr"
               :placeholder="inputPlaceHolder[0]"
             />
-            <span class="subtitle-css"> Memo </span>
+            <span class="subtitle-css"> {{ $t("memo") }} </span>
             <v-text-field
               rounded
               clearable
@@ -82,8 +82,8 @@
             class="deposit-btn mt-2"
             @click="withdraw"
           >
-            <span v-if="!txToMixin"> Withdraw to address</span>
-            <span v-else> Withdraw to Mixin</span>
+            <span v-if="!txToMixin"> {{ $t("withdraw_to_address") }}</span>
+            <span v-else> {{ $t("withdraw_to_mixin") }}</span>
           </v-btn>
 
           <v-btn
@@ -98,7 +98,7 @@
             <v-avatar size="24px">
               <v-img :src="MetamaskLogo" />
             </v-avatar>
-            <span class="ml-1"> Withdraw to current wallet</span>
+            <span class="ml-1"> {{ $t("withdraw_to_current_wallet") }}</span>
           </v-btn>
         </v-col>
       </v-row>
@@ -195,9 +195,9 @@ export default {
     inputPlaceHolder() {
       return [
         this.txToMixin
-          ? "Please enter recipient's Mixin User ID"
-          : "Please enter your wallet address",
-        "Optional",
+          ? this.$t("please_enter_recipient_user_id")
+          : this.$t("please_enter_your_wallet_address"),
+        this.$t("optional"),
       ];
     },
   },
@@ -338,7 +338,7 @@ export default {
       let userID = String(user_id).trim();
 
       if (!validateUUID(userID)) {
-        let user = await MixinClient.searchUser(userID);
+        let user = await MixinClient.user.search(userID);
         console.log(user);
         userID = user.user_id;
       }

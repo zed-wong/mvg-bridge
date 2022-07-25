@@ -5,7 +5,6 @@
         elevation="0"
         color="#ffffff"
         class="px-6 bar-css"
-        v-if="!isMobile"
         height="90px"
       >
         <v-img
@@ -20,7 +19,7 @@
           style="font-size: 18px"
           @click="redirect('https://scan.mvm.dev')"
         >
-          Bridge
+          MVG
         </span>
         <v-spacer />
         <connect-wallet :small="true" v-if="!connected"/>
@@ -51,16 +50,6 @@ export default {
       bridge,
       githublogo,
       isMobile: false,
-      links: [
-        { name: "Register", to: "/register" },
-        { name: "Deposit", to: "/deposit" },
-        { name: "Withdraw", to: "/withdraw" },
-        { name: "Query", to: "/query" },
-        { name: "Add Token", to: "/addtoken" },
-        { name: "Deposit By Address", to: "/anydeposit" },
-        { name: "Deposit From Other Network", to: "/bridge" },
-      ],
-      githuburl: "https://github.com/zed-wong/zed-wong.github.io",
     };
   },
   computed: {

@@ -37,7 +37,7 @@ export const web3Onboard = init({
     }
   ],
   appMetadata: {
-    name: 'MVM Bridge',
+    name: 'MVG',
     description: 'Mixin Virtual Machine Bridge',
     icon: "https://mvm.dev/logo.svg",
     logo: "https://mvm.dev/logo.svg",
@@ -45,5 +45,19 @@ export const web3Onboard = init({
       { name: "MetaMask", url: "https://metamask.io" },
       { name: "Coinbase", url: "https://wallet.coinbase.com/" }
     ]
-  }
+  },
+  // i18n: {
+  //   en: {
+  //     connect: {
+  //       selectingWallet: {
+  //         header: "Available Wallets",
+  //         sidebar: {
+  //           heading: "Welcome",
+  //           subheading: "Connect your wallet",
+  //           paragraph: "Connecting your wallet to MVG to bridge your asset from any network into MVM mainnet or withdraw from MVM mainnet to any network."
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 })

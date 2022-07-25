@@ -8,7 +8,7 @@
     <v-sheet class="align-self-start px-9 py-8">
       <v-row class="d-flex flex-column mb-0">
         <v-col class="align-center d-flex flex-row pr-0 mb-2">
-          <h1 class="title-css">Confirm Deposit</h1>
+          <h1 class="title-css">{{ $t("confirm_deposit") }}</h1>
           <v-spacer />
           <v-btn icon @click="confirmDepositDialog = false">
             <v-icon> mdi-close </v-icon>
@@ -74,7 +74,7 @@
             <v-avatar size="24">
               <v-img :src="MetamaskLogo" />
             </v-avatar>
-            <span class="ml-1"> Transfer With Metamask</span>
+            <span class="ml-1"> {{ $t("transfer_with_current_wallet") }}</span>
           </v-btn>
           <div
             class="d-flex justify-center mt-5 pa-4 align-center qr-area"
@@ -117,7 +117,7 @@ export default {
       search: "",
       MetamaskLogo,
       txShowQR: false,
-      txQrBtnText: "Show QR Code",
+      txQrBtnText: this.$t("show_qrcode"),
       // Metamask tx
       txSent: false,
       txConfirmed: false,
@@ -183,9 +183,9 @@ export default {
     txQrHelpText: {
       get() {
         if (this.selectedNetwork.asset_id == XINUUID)
-          return "Please scan this QR Code through your Mixin Messenger";
+          return this.$t("please_scan_qr_with_your_mixin_messenger");
         if (this.selectedNetwork.asset_id != XINUUID)
-          return "Please transfer to this address from exchange or your wallet";
+          return this.$t("please_transfer_to_this_address_from_your_wallet");
       },
     },
     txQrUrl: {
@@ -200,7 +200,7 @@ export default {
       get() {
         return [
           {
-            subtitle: "From",
+            subtitle: this.$t("from"),
             haveIcon: true,
             icon: this.selectedNetwork.icon_url,
             addtoken: false,
@@ -208,7 +208,7 @@ export default {
             name: this.selectedNetwork.name + " Mainnet",
           },
           {
-            subtitle: "Token",
+            subtitle: this.$t("token"),
             haveIcon: true,
             icon: this.selectedToken.icon_url,
             addtoken: this.selectedToken.asset_id == XINUUID ? false : true,
@@ -216,7 +216,7 @@ export default {
             name: this.selectedToken.symbol,
           },
           {
-            subtitle: "Amount",
+            subtitle: this.$t("amount"),
             haveIcon: false,
             icon: "",
             addtoken: false,
@@ -224,7 +224,7 @@ export default {
             name: this.fromAmount + " " + this.selectedToken.symbol,
           },
           {
-            subtitle: "Address",
+            subtitle: this.$t("address"),
             haveIcon: false,
             icon: "",
             addtoken: false,
@@ -235,7 +235,7 @@ export default {
                 : this.depositAddr[0],
           },
           {
-            subtitle: "Memo",
+            subtitle: this.$t("memo"),
             haveIcon: false,
             icon: "",
             addtoken: false,
@@ -255,8 +255,8 @@ export default {
     toggleQR() {
       this.txShowQR = !this.txShowQR;
       if (this.selectedNetwork.asset_id == XINUUID) this.getPaymentState();
-      if (this.txShowQR == true) this.txQrBtnText = "Hide QR Code";
-      if (this.txShowQR == false) this.txQrBtnText = "Show QR Code";
+      if (this.txShowQR == true) this.txQrBtnText = this.$t("show_qrcode");
+      if (this.txShowQR == false) this.txQrBtnText = this.$t("hide_qrcode");
     },
     createMixinPayment() {
       let user = JSON.parse(localStorage.getItem("user"));

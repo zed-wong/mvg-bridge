@@ -336,14 +336,14 @@ export default {
   watch: {
     async selectedToken(o, n) {
       this.getMvmtoBalance();
-      this.estimateTxFee();
+      await this.estimateTxFee();
       if (!this.connected) return;
       this.$nextTick(() => {
         this.$refs.form.validate();
       });
     },
     async selectedNetwork(o, n) {
-      this.estimateTxFee();
+      await this.estimateTxFee();
       if (!this.connected) return;
       this.$nextTick(() => {
         this.$refs.form.validate();

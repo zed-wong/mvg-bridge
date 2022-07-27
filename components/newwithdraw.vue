@@ -287,7 +287,7 @@ export default {
     },
     maxPayAmount() {
       let a = formatBalance(Number(this.toBalance) - Number(this.txEstimatedFee));
-      if (a <= 0) return 0;
+      if (a <= 0) return Number(this.toBalance);
       return this.selectedNetwork.asset_id == XINUUID
         ? a.toLocaleString("en-US", {
             maximumFractionDigits: 8,
@@ -469,19 +469,19 @@ export default {
       this.txGettingFee = true;
       this.txEstimatedFeeVisible = false;
 
+      if (this.selectedNetwork.asset_id == XINUUID) {
+        this.txEstimatedFeeVisible = false;
+        this.txEstimatedFee = 0;
+        this.txGettingFee = false;
+        return;
+      }
       this.txEstimatedFee = await this.getTxFee();
 
       this.txGettingFee = false;
-      if (this.selectedNetwork.asset_id == XINUUID) {
-        this.txEstimatedFeeVisible = false;
-        return;
-      }
-      this.txEstimatedFee == 0
-        ? (this.txEstimatedFeeVisible = false)
-        : (this.txEstimatedFeeVisible = true);
+      this.txEstimatedFeeVisible = true;
     },
     async getTxFee() {
-      if (this.selectedNetwork.asset_id === XINUUID) return 0;
+      // if (this.selectedNetwork.asset_id === XINUUID) return 0;
 
       let fee = await MixinClient.network.fetchAsset(
         this.selectedToken.asset_id

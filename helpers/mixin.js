@@ -1,10 +1,10 @@
 import { MixinApi } from '@mixin.dev/mixin-node-sdk'
 
-const keystore = {
-  "user_id": "e956d5e8-f532-3bdc-af42-be618d8601ee",
-  "session_id": "b39b3503-a781-47c1-829b-e2818b7b45bc",
-  "private_key": "M7h-C6yixsnt1FTtnW3rREnJQJinObSJdkSSeUj0rArqTr80Y3Ax3NgAJM-Y1CGx9SbDnYP5nI0dOWgyCVUCmw",
-  "pin_token": "ucirZrG9mFCJmZj6qEoZ/J3sYkslVxTIRg5ZKqYl1Dk=",
+export const keystore = {
+  "user_id": "26f7a72f-df5f-3f19-9e5c-2f0ea4871967",
+  "session_id": "c6fe5c19-2928-4f72-9437-d1bceca37c65",
+  "private_key": "uWa1wuXaqcIo7VGQ1ZXYqTs121yipe6CEHwlNwU4aQVUEKlwDlceAiSoHNhF9S6MQOeDhuAnbXOXCB_o7k25Sw",
+  "pin_token": "ik77iOYeuuwbI6RNKkOmp1sWFqUHU63MrIZDeEUILU8=",
   "pin": "832376"
 }
 

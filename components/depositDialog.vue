@@ -71,10 +71,7 @@
             class="metamask-pay-btn mt-4"
             @click="deposit"
           >
-            <v-avatar size="24">
-              <v-img :src="MetamaskLogo" />
-            </v-avatar>
-            <span class="ml-1"> {{ $t("transfer_with_current_wallet") }}</span>
+            <span class="ml-1" > {{ $t("transfer_with_current_wallet") }}</span>
           </v-btn>
           <div
             class="d-flex justify-center mt-5 pa-4 align-center qr-area"
@@ -140,7 +137,7 @@ export default {
         return this.$store.state.confirmDepositDialog;
       },
       set(value) {
-        this.txShowQR == false;
+        this.txShowQR = false;
         this.$store.commit("toggleConfirmDeposit", value);
       },
     },
@@ -422,6 +419,7 @@ export default {
 .metamask-pay-btn {
   color: white !important;
   background-color: #2979ff !important;
+  font-weight: 600;
   border-radius: 10px;
 }
 .qr-area {

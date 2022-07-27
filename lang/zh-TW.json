@@ -31,7 +31,7 @@
   "transfer_with_current_wallet": "使用當前錢包轉賬",
   "withdraw_to_current_wallet": "提現到當前地址",
   "please_scan_qr_with_your_mixin_messenger": "請使用 Mixin Messenger 掃描二維碼，操作完成後，請稍作等待。",
-  "please_transfer_to_this_address_from_your_wallet": "請通過使用交易所或您的錢包向該地址轉賬，操作完成後，請耐心等待。",
+  "please_transfer_to_this_address_from_your_wallet": "請通過使用交易所或您的錢包向該地址轉賬，操作完成後，大約需要5~10分鐘到帳，請耐心等待。",
   "please_enter_recipient_user_id": "請輸入接收者的UserID",
   "please_enter_your_wallet_address": "請輸入您的錢包地址",
   "optional":"選填",

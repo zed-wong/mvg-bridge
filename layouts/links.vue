@@ -93,9 +93,7 @@ export default {
         { name: "Query", to: "/query" },
         { name: "Add Token", to: "/addtoken" },
         { name: "Deposit By Address", to: "/anydeposit" },
-        { name: "Deposit From Other Network", to: "/bridge"},
-        // { name: "Withdraw To Address(WIP)", to: "/anywithdraw" },
-        // {name: "", to: ""},
+        { name: "Cross chain swap", to: "/mixpay"},
       ],
     };
   },

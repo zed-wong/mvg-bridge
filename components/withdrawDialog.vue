@@ -116,7 +116,7 @@ import { useOnboard } from "@web3-onboard/vue";
 import ASSETABI from "../assets/assetABI.json";
 import BRIDGEABI from "../assets/bridgeABI.json";
 import MetamaskLogo from "../static/metamask.png";
-import { validate as validateUUID, v4 as uuidV4 } from "uuid";
+import { validate as validateUUID } from "uuid";
 import {
   DECIMAL,
   bridgeAddress,

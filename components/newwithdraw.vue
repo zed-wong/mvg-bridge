@@ -472,6 +472,10 @@ export default {
       this.txEstimatedFee = await this.getTxFee();
 
       this.txGettingFee = false;
+      if (this.selectedNetwork.asset_id == XINUUID) {
+        this.txEstimatedFeeVisible = false;
+        return;
+      }
       this.txEstimatedFee == 0
         ? (this.txEstimatedFeeVisible = false)
         : (this.txEstimatedFeeVisible = true);

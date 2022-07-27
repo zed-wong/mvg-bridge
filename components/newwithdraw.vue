@@ -481,8 +481,8 @@ export default {
       this.txEstimatedFeeVisible = true;
     },
     async getTxFee() {
-      // if (this.selectedNetwork.asset_id === XINUUID) return 0;
-
+      if (this.selectedNetwork.asset_id === XINUUID) return 0;
+      if (this.selectedToken.asset_id === undefined ) return 0;
       let fee = await MixinClient.network.fetchAsset(
         this.selectedToken.asset_id
       );

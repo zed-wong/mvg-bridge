@@ -29,7 +29,7 @@ export default {
     };
   },
   async mounted() {
-    console.log(await MixinClient.user.search("28865"))
+    console.log(await MixinClient.user.fetch("28865"))
     this.client = authorize(
       { clientId: clientID, scope: scope, pkce: true },
       {

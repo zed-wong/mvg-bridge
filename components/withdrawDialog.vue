@@ -338,7 +338,7 @@ export default {
       let userID = String(user_id).trim();
 
       if (!validateUUID(userID)) {
-        let user = await MixinClient.user.search(userID);
+        let user = await MixinClient.user.fetch(userID);
         console.log(user);
         userID = user.user_id;
       }

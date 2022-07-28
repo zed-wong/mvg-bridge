@@ -482,9 +482,9 @@ export default {
       this.txEstimatedFeeVisible = false;
 
       if (this.selectedNetwork.asset_id == XINUUID) {
-        this.txEstimatedFeeVisible = false;
         this.txEstimatedFee = 0;
         this.txGettingFee = false;
+        this.txEstimatedFeeVisible = false;
         return;
       }
       try {
@@ -493,6 +493,12 @@ export default {
         console.log(error);
       }
 
+      if (this.selectedNetwork.asset_id == XINUUID){
+        this.txEstimatedFee = 0;
+        this.txGettingFee = false;
+        this.txEstimatedFeeVisible = false;
+        return;
+      }
       this.txGettingFee = false;
       this.txEstimatedFeeVisible = true;
     },

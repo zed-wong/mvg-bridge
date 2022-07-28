@@ -202,6 +202,11 @@ export default {
     withdrawDialog,
     selectToNetowrk,
   },
+  head() {
+    return {
+      title: "Withdraw"
+    }
+  },
   data() {
     return {
       bridge,

@@ -9,14 +9,14 @@
       >
         <v-img
           :src="bridge"
-          max-width="24px"
-          max-height="26px"
+          max-width="30px"
+          max-height="32px"
           class="ml-3"
           @click="redirect('https://scan.mvm.dev')"
         />
         <span
-          class="font-weight-bold ml-3"
-          style="font-size: 18px"
+          class="font-weight-bold ml-4"
+          style="font-size: 22px"
           @click="redirect('https://scan.mvm.dev')"
         >
           MVG

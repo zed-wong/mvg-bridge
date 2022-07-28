@@ -10,15 +10,17 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: 'MVG',
-    title: 'MVG',
+    titleTemplate: '%s - MVG',
+    title: 'MVG - Mixin Virtual Machine Bridge',
     htmlAttrs: {
       lang: 'en'
     },
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: '' },
+      { hid: 'og:title', name: 'og:title', content: 'MVG - Mixin Virtual Machine Bridge' },
+      { hid: 'Deposit', name: 'Deposit', content: "Deposit from anywhere into MVM Mainnet" },
+      { hid: 'Withdrawal', name: 'Withdrawal', content: "Withdraw to anywhere from MVM Mainnet" },
       { name: 'format-detection', content: 'telephone=no' }
     ],
     link: [

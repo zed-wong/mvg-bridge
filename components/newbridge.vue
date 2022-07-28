@@ -168,6 +168,11 @@ export default {
     ConnectWallet,
     DepositDialog,
   },
+  head() {
+    return {
+      title: "Deposit"
+    }
+  },
   data() {
     return {
       bridge,

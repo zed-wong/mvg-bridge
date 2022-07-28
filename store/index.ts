@@ -59,6 +59,9 @@ export const mutations = {
   toggleTxFailedDialog(state: any, open: boolean) {
     state.txFailedDialog = open
   },
+  setConnected(state: any, connect: boolean){
+    state.connected = connect
+  },
   setMode(state: any, data: number) {
     state.mode = data
   },

@@ -3,8 +3,10 @@
     <v-sheet elevation="2" class="pa-9 mt-15 border-rounded" max-width="552px">
       <v-row class="d-flex flex-column" no-gutters>
         <v-col class="mb-6 px-0" style="font-size: 24px">
-          <a class="pr-6 font-weight-bold"><span> {{ $t("deposit") }} </span></a>
-          <a style="color: #68778d; text-decoration: none" @click="mode=1"
+          <a class="pr-6 font-weight-bold"
+            ><span> {{ $t("deposit") }} </span></a
+          >
+          <a style="color: #68778d; text-decoration: none" @click="mode = 1"
             ><span> {{ $t("withdraw") }} </span></a
           >
         </v-col>
@@ -69,7 +71,8 @@
               <select-from-token />
             </div>
             <span v-if="fromBalanceVisble" class="font-weight-light">
-              {{ $t("balance") }}: {{ fixedFromBalance }} {{ selectedToken.symbol }}
+              {{ $t("balance") }}: {{ fixedFromBalance }}
+              {{ selectedToken.symbol }}
             </span>
             <div v-if="fetchingBalance && connected">
               <v-progress-circular
@@ -79,15 +82,15 @@
                 color="dark"
                 class="mr-2"
               ></v-progress-circular>
-              <span class="font-weight-light" style="font-size"
-                >{{ $t("loading_balance") }}</span
-              >
+              <span class="font-weight-light" style="font-size">{{
+                $t("loading_balance")
+              }}</span>
             </div>
           </v-sheet>
         </v-col>
 
         <v-col class="text-center pa-0 py-1">
-          <v-btn icon @click="mode=1">
+          <v-btn icon @click="mode = 1">
             <v-icon class="arrow-down py-1"> mdi-arrow-down </v-icon>
           </v-btn>
         </v-col>
@@ -106,7 +109,9 @@
                 class="ml-3"
               >
               </v-img>
-              <span class="ml-2 font-weight-500"> {{ $t("mvm_mainnet") }} </span>
+              <span class="ml-2 font-weight-500">
+                {{ $t("mvm_mainnet") }}
+              </span>
             </div>
             <div class="d-flex flex-column font-weight-light">
               <span class="mb-1">
@@ -182,12 +187,12 @@ export default {
   },
   computed: {
     mode: {
-      get(){
-        return this.$store.state.mode
+      get() {
+        return this.$store.state.mode;
       },
-      set(value){
-        this.$store.commit('setMode', value)
-      }
+      set(value) {
+        this.$store.commit("setMode", value);
+      },
     },
     selectNetworkDialog: {
       get() {
@@ -255,18 +260,10 @@ export default {
     selectedToken(o, n) {
       this.getFromBalance();
     },
-    connected(o, n) {
-      this.getFromBalance();
-    },
-    network_id(o, n) {
-      this.getFromBalance();
-    },
   },
   async mounted() {
-    this.getFromBalance();
-    // this.ethBydefault();
+    await this.getFromBalance();
   },
-
 
   methods: {
     async deposit() {
@@ -278,10 +275,7 @@ export default {
     },
 
     async getFromBalance() {
-      if (!this.connected) {
-        // console.error("[Error] Please connect wallet first.");
-        return;
-      }
+      if (!this.connected) return;
 
       if (!this.checkNetwork(this.selectedNetwork.symbol)) {
         // console.log("Chain balance is not supported");
@@ -293,6 +287,11 @@ export default {
       this.fetchingBalance = true;
       this.fromBalanceVisble = false;
       const { connectedWallet } = useOnboard();
+      if (connectedWallet.value == null) {
+        this.fetchingBalance = false;
+        this.fromBalanceVisble = false;
+        return;
+      }
       const provider = new ethers.providers.Web3Provider(
         connectedWallet.value.provider,
         "any"
@@ -301,7 +300,6 @@ export default {
       let userAddr = await signer.getAddress();
 
       if (this.selectedToken.asset_id === ETHUUID) {
-        // console.log("Selected ETH")
         let addr = ethers.utils.getAddress(userAddr);
         let balance = ethers.utils.formatEther(await provider.getBalance(addr));
         this.fromBalance = balance;
@@ -311,21 +309,16 @@ export default {
       }
 
       if (!this.selectedToken.asset_key.includes("0x")) {
-        // console.log("Not ERC20 Token");
         this.fetchingBalance = false;
         this.fromBalanceVisble = false;
         return;
       }
 
       let ABI;
-      // if (this.selectedToken.symbol.includes('USDC')) {
-      //   ABI = USDCABI;
-      // }
       if (!ABI) {
         ABI = ERC20ABI;
       }
 
-      // console.log("Selected ERC20 token")
       let tokenContract = new ethers.Contract(
         this.selectedToken.asset_key,
         ABI,

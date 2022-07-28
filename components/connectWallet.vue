@@ -35,9 +35,25 @@ export default {
   methods: {
     async connect() {
       try {
+        this.$store.commit("setConnected", true)
         await web3Onboard.connectWallet();
         const { connectedChain, connectedWallet } = useOnboard();
         if (connectedWallet.value) {
+          var seen = [];
+          let value = JSON.stringify(
+            connectedWallet.value,
+            function (key, val) {
+              if (val != null && typeof val == "object") {
+                if (seen.indexOf(val) >= 0) {
+                  return;
+                }
+                seen.push(val);
+              }
+              return val;
+            }
+          );
+          localStorage.setItem("connectedWallet", value);
+
           const provider = new ethers.providers.Web3Provider(
             connectedWallet.value.provider,
             "any"
@@ -46,13 +62,12 @@ export default {
           const userAddr = await signer.getAddress();
           const userAddress = ethers.utils.getAddress(userAddr);
           await this.register(userAddr);
-          
+
           this.$store.commit("connect", {
             address: userAddress,
             name: "",
             id: connectedChain.value.id,
           });
-
         }
       } catch (error) {
         console.log(error);

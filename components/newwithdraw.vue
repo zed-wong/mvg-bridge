@@ -3,10 +3,12 @@
     <v-sheet elevation="2" class="pa-9 mt-15 border-rounded" max-width="552px">
       <v-row class="d-flex flex-column" no-gutters>
         <v-col class="mb-6 px-0" style="font-size: 24px">
-          <a style="color: #68778d; text-decoration: none" @click="mode=0"
+          <a style="color: #68778d; text-decoration: none" @click="mode = 0"
             ><span> {{ $t("deposit") }} </span></a
           >
-          <a class="pl-6 font-weight-bold"><span> {{ $t("withdraw") }} </span></a>
+          <a class="pl-6 font-weight-bold"
+            ><span> {{ $t("withdraw") }} </span></a
+          >
         </v-col>
 
         <v-col style="font-size: 14px" class="pa-0">
@@ -23,7 +25,9 @@
                 class="ml-2"
               >
               </v-img>
-              <span class="ml-2 font-weight-500"> {{ $t("mvm_mainnet") }} </span>
+              <span class="ml-2 font-weight-500">
+                {{ $t("mvm_mainnet") }}
+              </span>
             </div>
 
             <div class="d-flex flex-row align-center">
@@ -59,7 +63,8 @@
             </div>
             <div v-if="toBalanceVisble">
               <span class="font-weight-light">
-                {{ $t("balance") }}: {{ fixedToBalance }} {{ selectedToken.symbol }}
+                {{ $t("balance") }}: {{ fixedToBalance }}
+                {{ selectedToken.symbol }}
               </span>
               <a @click="setMaxAmount">
                 <span class="ml-1 max-text"> ({{ $t("max") }}) </span>
@@ -73,15 +78,15 @@
                 color="dark"
                 class="mr-2"
               ></v-progress-circular>
-              <span class="font-weight-light" style="font-size"
-                >{{ $t("loading_balance") }}</span
-              >
+              <span class="font-weight-light" style="font-size">{{
+                $t("loading_balance")
+              }}</span>
             </div>
           </v-sheet>
         </v-col>
 
         <v-col class="text-center pa-0 py-1">
-          <v-btn icon @click="mode=0">
+          <v-btn icon @click="mode = 0">
             <v-icon class="arrow-down py-1"> mdi-arrow-down </v-icon>
           </v-btn>
         </v-col>
@@ -120,9 +125,9 @@
                 color="dark"
                 class="mr-2"
               ></v-progress-circular>
-              <span class="font-weight-light" style="font-size"
-                >{{ $t("loading_withdrawal_fee") }}</span
-              >
+              <span class="font-weight-light" style="font-size">{{
+                $t("loading_withdrawal_fee")
+              }}</span>
             </div>
             <div
               class="d-flex flex-column font-weight-light"
@@ -186,8 +191,8 @@ import selectToNetowrk from "~/components/selectToNetwork.vue";
 const XINUUID = "c94ac88f-4671-3976-b60a-09064f1811e8";
 
 function formatBalance(balance) {
-  if (balance <= 0) return balance
-  return Math.floor(Number(balance)*100000000)/100000000
+  if (balance <= 0) return balance;
+  return Math.floor(Number(balance) * 100000000) / 100000000;
 }
 
 export default {
@@ -243,12 +248,12 @@ export default {
   },
   computed: {
     mode: {
-      get(){
-        return this.$store.state.mode
+      get() {
+        return this.$store.state.mode;
       },
-      set(value){
-        this.$store.commit('setMode', value)
-      }
+      set(value) {
+        this.$store.commit("setMode", value);
+      },
     },
     assets() {
       return assets.assets;
@@ -286,8 +291,14 @@ export default {
       });
     },
     maxPayAmount() {
-      let a = formatBalance(Number(this.toBalance) - Number(this.txEstimatedFee));
-      if (a <= 0) return Number(this.toBalance);
+      let a = formatBalance(
+        Number(this.toBalance) - Number(this.txEstimatedFee)
+      );
+      if (a <= 0)
+        return this.toBalance.toLocaleString("en-US", {
+          maximumFractionDigits: 8,
+          minimumFractionDigits: 2,
+        });
       return this.selectedNetwork.asset_id == XINUUID
         ? a.toLocaleString("en-US", {
             maximumFractionDigits: 8,
@@ -349,12 +360,8 @@ export default {
         this.$refs.form.validate();
       });
     },
-    async connected(o, n) {
-      let { connectedChain } = useOnboard();
-      await this.getMvmtoBalance();
-    },
-    async network_id(o, n) {
-      await this.getMvmtoBalance();
+    txGettingFee(o, n) {
+      n == true ? (this.valueValid = false) : (this.valueValid = false);
     },
   },
 
@@ -475,14 +482,18 @@ export default {
         this.txGettingFee = false;
         return;
       }
-      this.txEstimatedFee = await this.getTxFee();
+      try {
+        this.txEstimatedFee = await this.getTxFee();
+      } catch (error) {
+        console.log(error);
+      }
 
       this.txGettingFee = false;
       this.txEstimatedFeeVisible = true;
     },
     async getTxFee() {
       if (this.selectedNetwork.asset_id === XINUUID) return 0;
-      if (this.selectedToken.asset_id === undefined ) return 0;
+      if (this.selectedToken.asset_id === undefined) return 0;
       let fee = await MixinClient.network.fetchAsset(
         this.selectedToken.asset_id
       );

@@ -26,9 +26,9 @@ Deposit to proxy mainnet user.
 
 1. to Mixin Mainnet
 
-For assets other than XIN, Call the `asset` contract's `transferWithExtra` method with extra constructed by MVM's `/extra` API.
+For assets other than ETH, Call the `asset` contract's `transferWithExtra` method with extra constructed by MVM's `/extra` API.
 
-For XIN, Call the `bridge` contract's `release` method.
+For ETH, Call the `bridge` contract's `release` method.
 
 2. to Other Network
 

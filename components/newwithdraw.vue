@@ -303,16 +303,16 @@ export default {
         return this.toBalance.toLocaleString("en-US", {
           maximumFractionDigits: 8,
           minimumFractionDigits: 2,
-        });
+        }).replaceAll(',','');
       return this.selectedNetwork.asset_id == XINUUID
         ? a.toLocaleString("en-US", {
             maximumFractionDigits: 8,
             minimumFractionDigits: 2,
-          })
+          }).replaceAll(',','')
         : a.toLocaleString("en-US", {
             maximumFractionDigits: 4,
             minimumFractionDigits: 2,
-          });
+          }).replaceAll(',','');
     },
 
     selectNetworkDialog: {

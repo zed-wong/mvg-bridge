@@ -56,7 +56,6 @@
 <script>
 import assets from "../assets/assets.json";
 import chains from "../assets/chainlist.json"
-// const XINUUID = 'c94ac88f-4671-3976-b60a-09064f1811e8'
 
 export default {
   data() {

@@ -213,7 +213,7 @@ export default {
             subtitle: this.$t("token"),
             haveIcon: true,
             icon: this.selectedToken.icon_url,
-            addtoken: this.selectedToken.asset_id == XINUUID ? false : true,
+            addtoken: this.selectedToken.asset_id == ETHUUID ? false : true,
             copyable: false,
             name: this.selectedToken.symbol,
           },
@@ -297,7 +297,7 @@ export default {
     async addToken() {
       if (window.ethereum == undefined) return;
       let assetID = this.selectedToken.asset_id;
-      if (assetID == XINUUID) return;
+      if (assetID == ETHUUID) return;
       let asset = await MixinClient.asset.fetch(assetID);
       let contractAddr = await getContractByAssetID(assetID);
       if (contractAddr === ethers.constants.AddressZero) return;

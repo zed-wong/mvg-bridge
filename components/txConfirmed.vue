@@ -56,6 +56,7 @@ import { MixinClient } from "~/helpers/mixin";
 import { getContractByAssetID } from "../helpers/registry";
 
 const XINUUID = "c94ac88f-4671-3976-b60a-09064f1811e8";
+const ETHUUID = "43d61dcd-e413-450d-80b8-101d5e903357";
 
 export default {
   data(){
@@ -78,7 +79,7 @@ export default {
     async addToken() {
       if (window.ethereum == undefined) return;
       if (this.assetid == "") return;
-      if (this.assetid == XINUUID) return;
+      if (this.assetid == ETHUUID) return;
       this.addingToken = true;
       let asset = await MixinClient.asset.fetch(this.assetid);
       let contractAddr = await getContractByAssetID(this.assetid);

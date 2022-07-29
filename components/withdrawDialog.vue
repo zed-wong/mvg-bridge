@@ -125,6 +125,7 @@ import {
 import txConfirmed from './txConfirmed.vue';
 
 const XINUUID = "c94ac88f-4671-3976-b60a-09064f1811e8";
+const ETHUUID = "43d61dcd-e413-450d-80b8-101d5e903357";
 const ExplorerBaseURL = process.env.EXPLORER_BASEURL
 
 export default {
@@ -252,7 +253,7 @@ export default {
       let userContractAddr = await this.getUserProxyContract(this.userAddress);
 
       let txResult;
-      if (this.selectedToken.asset_id === XINUUID) {
+      if (this.selectedToken.asset_id === ETHUUID) {
         let tokenContract = new ethers.Contract(
           bridgeAddress,
           BRIDGEABI,
@@ -302,7 +303,7 @@ export default {
       let userContractAddr = await this.getUserProxyContract(this.userAddress);
       let txResult;
 
-      if (this.selectedToken.asset_id === XINUUID) {
+      if (this.selectedToken.asset_id === ETHUUID) {
         let tokenContract = new ethers.Contract(
           bridgeAddress,
           BRIDGEABI,
@@ -378,7 +379,7 @@ export default {
 };
 
 function formatAmount(amount, asset_id) {
-  if (asset_id === XINUUID) {
+  if (asset_id === ETHUUID) {
     return ethers.utils.parseEther(Number(amount).toFixed(8));
   }
   return round(multiply(amount, DECIMAL));

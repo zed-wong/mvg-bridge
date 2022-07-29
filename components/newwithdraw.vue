@@ -189,6 +189,7 @@ import withdrawDialog from "~/components/withdrawDialog.vue";
 import selectToNetowrk from "~/components/selectToNetwork.vue";
 
 const XINUUID = "c94ac88f-4671-3976-b60a-09064f1811e8";
+const ETHUUID = "43d61dcd-e413-450d-80b8-101d5e903357";
 
 function formatBalance(balance) {
   if (balance <= 0) return balance;
@@ -404,8 +405,8 @@ export default {
       let signer = provider.getSigner();
       let userAddr = await signer.getAddress();
 
-      // XIN
-      if (this.selectedToken.asset_id === XINUUID) {
+      // ETH
+      if (this.selectedToken.asset_id === ETHUUID) {
         let addr = ethers.utils.getAddress(userAddr);
         let balance = ethers.utils.formatEther(await provider.getBalance(addr));
         this.toBalance = balance;

@@ -159,7 +159,7 @@ import selectFromNetwork from "~/components/selectFromNetwork.vue";
 import ConnectWallet from "~/components/connectWallet.vue";
 import DepositDialog from "~/components/depositDialog.vue";
 
-let ETHUUID = "43d61dcd-e413-450d-80b8-101d5e903357";
+const ETHUUID = "43d61dcd-e413-450d-80b8-101d5e903357";
 
 export default {
   components: {

@@ -10,7 +10,7 @@
         <v-img
           :src="bridge"
           max-width="30px"
-          max-height="32px"
+          max-height="33px"
           class="ml-3"
           @click="redirect('https://scan.mvm.dev')"
         />

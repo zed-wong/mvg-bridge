@@ -35,7 +35,6 @@ export default {
   methods: {
     async connect() {
       try {
-        this.$store.commit("setConnected", true)
         await web3Onboard.connectWallet();
         const { connectedChain, connectedWallet } = useOnboard();
         if (connectedWallet.value) {

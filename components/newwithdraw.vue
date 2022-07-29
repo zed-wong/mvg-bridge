@@ -548,8 +548,8 @@ export default {
 };
 </script>
 
-<style>
-.border-rounded {
+<style scoped>
+/* .border-rounded {
   border-radius: 12px;
 }
 .font-weight-500 {
@@ -606,5 +606,5 @@ export default {
   font-size: 18px;
   font-weight: 700;
   height: 60px !important;
-}
+} */
 </style>

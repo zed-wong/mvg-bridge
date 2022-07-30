@@ -71,7 +71,7 @@
             class="metamask-pay-btn mt-4"
             @click="deposit"
           >
-            <span class="ml-1" > {{ $t("transfer_with_current_wallet") }}</span>
+            <span class="ml-1"> {{ $t("transfer_with_current_wallet") }}</span>
           </v-btn>
           <div
             class="d-flex justify-center mt-5 pa-4 align-center qr-area"
@@ -92,7 +92,11 @@
           </div>
         </v-col>
       </v-row>
-      <tx-confirmed :link="txExplorerURL" :symbol="selectedToken.symbol" :assetid="selectedToken.asset_id"/>
+      <tx-confirmed
+        :link="txExplorerURL"
+        :symbol="selectedToken.symbol"
+        :assetid="selectedToken.asset_id"
+      />
     </v-sheet>
   </v-dialog>
 </template>
@@ -174,6 +178,9 @@ export default {
           return false;
         }
         if (this.fromBalance < this.fromAmount) {
+          return false;
+        }
+        if (this.selectedNetwork.evm_chain_id != this.$store.state.chainId) {
           return false;
         }
         return true;

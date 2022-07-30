@@ -5,25 +5,21 @@
         elevation="0"
         color="#ffffff"
         class="px-6 bar-css"
-        height="90px"
+        height="72px"
       >
-        <v-img
-          :src="bridge"
-          max-width="30px"
-          max-height="33px"
-          class="ml-3"
-          @click="redirect('https://scan.mvm.dev')"
-        />
-        <span
-          class="font-weight-bold ml-4"
-          style="font-size: 22px"
-          @click="redirect('https://scan.mvm.dev')"
-        >
-          MVG
-        </span>
+        <a href="https://scan.mvm.dev">
+          <v-img
+            :src="bridge"
+            max-width="26px"
+            max-height="30px"
+            class="ml-3"
+          />
+        </a>
+        <span class="font-weight-bold ml-2 logo-text"> MVG </span>
         <v-spacer />
-        <connect-wallet :small="true" v-if="!connected"/>
-
+        <connect-wallet :small="true" v-if="!connected" />
+        <!-- <current-network v-if="connected && !isMobile" /> -->
+        <connected-wallet v-if="connected" />
       </v-app-bar>
       <v-container
         fluid
@@ -38,17 +34,19 @@
 
 <script>
 import bridge from "../static/bridge.png";
-import githublogo from "../static/github.png";
-import connectWallet from "../components/connectWallet.vue"
+import connectWallet from "../components/connectWallet.vue";
+import currentNetwork from "../components/currentNetwork.vue";
+import connectedWallet from "../components/connectedWallet.vue";
 
 export default {
   components: {
-    connectWallet
+    connectWallet,
+    currentNetwork,
+    connectedWallet,
   },
   data() {
     return {
       bridge,
-      githublogo,
       isMobile: false,
     };
   },
@@ -68,42 +66,26 @@ export default {
       },
       set(value) {
         this.$store.commit("toggleConnectWallet", value);
-      }
-    }
+      },
+    },
   },
   mounted() {
     this.isMobile = this.checkMobile();
     window.addEventListener("resize", this.checkMobile, { passive: true });
   },
   methods: {
-    redirect(to) {
-      window.location.href = to;
-    },
     checkMobile() {
       return window.innerWidth < 600;
-    },
-    getAvatar(length) {
-      if (localStorage.getItem("avatar_url")) {
-        return localStorage.getItem("avatar_url");
-      }
-      var result = "";
-      var characters =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-      var charactersLength = characters.length;
-      for (var i = 0; i < length; i++) {
-        result += characters.charAt(
-          Math.floor(Math.random() * charactersLength)
-        );
-      }
-      let url = "https://avatars.dicebear.com/api/identicon/" + result + ".png";
-      localStorage.setItem("avatar_url", url);
-      return url;
     },
   },
 };
 </script>
 
 <style>
+.logo-text {
+  font-size: 18px;
+  font-family: "Maven Pro", sans-serif;
+}
 .v-btn {
   text-transform: none !important;
 }
@@ -125,6 +107,6 @@ export default {
   border-bottom-color: rgba(0, 0, 0, 0.12) !important;
 }
 .content {
-  height: calc(100vh - 90px);
+  height: calc(100vh - 72px);
 }
 </style>

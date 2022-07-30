@@ -42,7 +42,7 @@
     "confirmations": 16,
     "capitalization": 76612517.47222038,
     "liquidity": "70935.54574615554535350644408921",
-    "evm_chain_id": "1"
+    "evm_chain_id": "0x1"
   },
   {
     "type": "asset",
@@ -65,7 +65,7 @@
     "confirmations": 16,
     "capitalization": 97337004.38645542,
     "liquidity": "624794.633325414",
-    "evm_chain_id": "73927"
+    "evm_chain_id": "0x120C7"
   },
   {
     "type": "asset",

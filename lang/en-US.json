@@ -45,5 +45,9 @@
   "confirmed": "Confirmed",
   "transaction_failed": "Transaction Failed",
   "view_on_explorer": "View On Explorer",
-  "close": "Close"
+  "close": "Close",
+
+  "copy_address": "Copy Address",
+  "copied": "✔️ copied!",
+  "disconnect": "Disconnect"
 }

@@ -104,8 +104,8 @@
               <span class="font-weight-light"> {{ $t("to") }} </span>
               <v-img
                 :src="bridge"
-                max-height="21px"
-                max-width="19px"
+                max-height="23px"
+                max-width="20px"
                 class="ml-3"
               >
               </v-img>
@@ -170,7 +170,7 @@ export default {
   },
   head() {
     return {
-      title: "Deposit"
+      title: this.$t("deposit")
     }
   },
   data() {
@@ -265,6 +265,9 @@ export default {
     selectedToken(o, n) {
       this.getFromBalance();
     },
+    connected(o, n){
+      this.getFromBalance();
+    }
   },
   async mounted() {
     await this.getFromBalance();

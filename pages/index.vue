@@ -5,7 +5,6 @@
 
 <script>
 import { ethers } from "ethers";
-import { useOnboard } from "@web3-onboard/vue";
 import { web3Onboard } from "../helpers/web3onboard";
 import newbridge from "~/components/newbridge.vue";
 import newwithdraw from "~/components/newwithdraw.vue";

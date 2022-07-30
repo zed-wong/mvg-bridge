@@ -45,5 +45,9 @@
   "confirmed": "已確認",
   "transaction_failed": "轉賬失敗",
   "view_on_explorer": "在瀏覽器查看",
-  "close": "關閉"
+  "close": "關閉",
+
+  "copy_address": "複製地址",
+  "copied": "✔️ 已複製!",
+  "disconnect": "斷開鏈接"
 }

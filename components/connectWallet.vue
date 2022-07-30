@@ -25,48 +25,41 @@
   </div>
 </template>
 
-<script lang="">
-import { useOnboard } from "@web3-onboard/vue";
+<script >
 import { web3Onboard } from "../helpers/web3onboard";
 import { ethers } from "ethers";
+
+function fmt(wallet) {
+  var seen = [];
+  let value = JSON.stringify(wallet, function (key, val) {
+    if (val != null && typeof val == "object") {
+      if (seen.indexOf(val) >= 0) {
+        return;
+      }
+      seen.push(val);
+    }
+    return val;
+  });
+  return value
+}
 
 export default {
   props: ["small", "huge"],
   methods: {
     async connect() {
       try {
-        await web3Onboard.connectWallet();
-        const { connectedChain, connectedWallet } = useOnboard();
-        if (connectedWallet.value) {
-          var seen = [];
-          let value = JSON.stringify(
-            connectedWallet.value,
-            function (key, val) {
-              if (val != null && typeof val == "object") {
-                if (seen.indexOf(val) >= 0) {
-                  return;
-                }
-                seen.push(val);
-              }
-              return val;
-            }
-          );
-          localStorage.setItem("connectedWallet", value);
-
-          const provider = new ethers.providers.Web3Provider(
-            connectedWallet.value.provider,
-            "any"
-          );
-          const signer = provider.getSigner();
-          const userAddr = await signer.getAddress();
-          const userAddress = ethers.utils.getAddress(userAddr);
-          await this.register(userAddr);
+        const c = await web3Onboard.connectWallet();
+        if (c.length > 0) {
+          localStorage.setItem("connectedWallet", fmt(c[0]));
+          const userAddress = c[0].accounts[0].address;
+          const userChain = c[0].chains[0].id;
 
           this.$store.commit("connect", {
             address: userAddress,
-            name: "",
-            id: connectedChain.value.id,
+            name: c[0].label,
+            id: userChain,
           });
+          await this.register(userAddress);
         }
       } catch (error) {
         console.log(error);

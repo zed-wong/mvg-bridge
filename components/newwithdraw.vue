@@ -20,8 +20,8 @@
               <span class="mr-1 font-weight-light"> {{ $t("from") }} </span>
               <v-img
                 :src="bridge"
-                max-height="21px"
-                max-width="19px"
+                max-height="23px"
+                max-width="20px"
                 class="ml-2"
               >
               </v-img>
@@ -205,8 +205,8 @@ export default {
   },
   head() {
     return {
-      title: "Withdraw"
-    }
+      title: this.$t("withdraw")
+    };
   },
   data() {
     return {
@@ -301,19 +301,25 @@ export default {
         Number(this.toBalance) - Number(this.txEstimatedFee)
       );
       if (a <= 0)
-        return this.toBalance.toLocaleString("en-US", {
-          maximumFractionDigits: 8,
-          minimumFractionDigits: 2,
-        }).replaceAll(',','');
-      return this.selectedNetwork.asset_id == XINUUID
-        ? a.toLocaleString("en-US", {
+        return this.toBalance
+          .toLocaleString("en-US", {
             maximumFractionDigits: 8,
             minimumFractionDigits: 2,
-          }).replaceAll(',','')
-        : a.toLocaleString("en-US", {
-            maximumFractionDigits: 4,
-            minimumFractionDigits: 2,
-          }).replaceAll(',','');
+          })
+          .replaceAll(",", "");
+      return this.selectedNetwork.asset_id == XINUUID
+        ? a
+            .toLocaleString("en-US", {
+              maximumFractionDigits: 8,
+              minimumFractionDigits: 2,
+            })
+            .replaceAll(",", "")
+        : a
+            .toLocaleString("en-US", {
+              maximumFractionDigits: 4,
+              minimumFractionDigits: 2,
+            })
+            .replaceAll(",", "");
     },
 
     selectNetworkDialog: {
@@ -356,14 +362,22 @@ export default {
       await this.estimateTxFee();
       if (!this.connected) return;
       this.$nextTick(() => {
-        this.$refs.form.validate();
+        try {
+          this.$refs.form.validate();
+        } catch (error) {
+          console.log(error);
+        }
       });
     },
     async selectedNetwork(o, n) {
       await this.estimateTxFee();
       if (!this.connected) return;
       this.$nextTick(() => {
-        this.$refs.form.validate();
+        try {
+          this.$refs.form.validate();
+        } catch (error) {
+          console.log(error);
+        }
       });
     },
     txGettingFee(o, n) {
@@ -494,7 +508,7 @@ export default {
         console.log(error);
       }
 
-      if (this.selectedNetwork.asset_id == XINUUID){
+      if (this.selectedNetwork.asset_id == XINUUID) {
         this.txEstimatedFee = 0;
         this.txGettingFee = false;
         this.txEstimatedFeeVisible = false;

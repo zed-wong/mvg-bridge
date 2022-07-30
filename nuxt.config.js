@@ -10,7 +10,7 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: '%s - MVG',
+    titleTemplate: '%s | MVG',
     title: 'MVG - Mixin Virtual Machine Bridge',
     htmlAttrs: {
       lang: 'en'

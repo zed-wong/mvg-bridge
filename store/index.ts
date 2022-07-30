@@ -2,11 +2,12 @@ export const state = () => ({
   mode: 0,
   connected: false,
   connectWalletDialog: false,
+  accountDialog: false,
   provider: undefined,
   signer: undefined,
   
   userAddress: "",
-  networkName: "",
+  walletName: "",
   chainId: "",
 
   network: "",
@@ -31,12 +32,21 @@ export const state = () => ({
 export const mutations = {
   connect(state: any, data:{address: string, name: string, id: string}) {
     state.userAddress = data.address
-    state.networkName = data.name
+    state.walletName = data.name
     state.chainId = data.id
     state.connected = true
   },
+  disconnect(state:any){
+    state.userAddress = ""
+    state.walletName = ""
+    state.chainId = ""
+    state.connected = false
+  },
   toggleConnectWallet(state: any, open: boolean) {
     state.connectWalletDialog = open
+  },
+  toggleAccount(state: any, open: boolean) {
+    state.accountDialog = open
   },
   toggleSelectNetwork(state: any, open: boolean) {
     state.selectNetworkDialog = open

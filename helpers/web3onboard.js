@@ -29,7 +29,7 @@ export const web3Onboard = init({
     {
       id: '0x120C7',
       namespace: 'evm',
-      token: 'XIN',
+      token: 'ETH',
       label: 'MVM Mainnet',
       rpcUrl: MVMRPCURL,
       blockExplorerUrl: MVMSCANURL,
@@ -124,5 +124,13 @@ export const web3Onboard = init({
         copyAddress: "複製錢包地址"
       },
     }
-  }
+  },
+  accountCenter: {
+    desktop: {
+      enabled: false,
+    },
+    mobile: {
+      enabled: false,
+    }
+  },
 })

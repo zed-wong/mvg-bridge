@@ -261,6 +261,7 @@ export default {
         );
         txResult = await tokenContract.release(userContractAddr, mixinExtra, {
           value: txValue,
+          gasPrice: 10000000,  // 0.01 Gwei
           gasLimit: 350000,
         });
       } else {
@@ -311,6 +312,7 @@ export default {
         );
         txResult = await tokenContract.release(userContractAddr, extra, {
           value: txAmount,
+          gasPrice: 10000000,  // 0.01 Gwei
           gasLimit: 350000,
         });
         console.log(txResult);

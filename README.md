@@ -53,3 +53,9 @@ Route: /toolbox
 
 Toolbox for developers.
 ```
+
+## Known issues
+
+1. Unable to deposit tokens not registered by registry contract
+
+The deposit would be refunded automatically.

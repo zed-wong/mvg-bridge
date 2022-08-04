@@ -11,7 +11,9 @@
   "balance": "餘額",
   "loading_balance": "正在加載餘額...",
   "loading_withdrawal_fee": "正在加載提現手續費...",
+  "ethereum_mainnet": "Ethereum 主網",
   "mvm_mainnet": "MVM 主網",
+  "unsupported_network": "不支持的网络",
   "withdrawal_fee": "提現手續費",
   "will_receive": "您將收到",
 

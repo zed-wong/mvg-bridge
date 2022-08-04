@@ -11,7 +11,9 @@
   "balance": "Balance",
   "loading_balance": "Loading Balance",
   "loading_withdrawal_fee": "Loading Withdrawal Fee",
+  "ethereum_mainnet": "Ethereum Mainnet",
   "mvm_mainnet": "MVM Mainnet",
+  "unsupported_network": "Unsupported Network",
   "withdrawal_fee": "Withdrawal Fee",
   "will_receive": "You will receive",
 

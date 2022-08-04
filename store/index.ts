@@ -42,6 +42,9 @@ export const mutations = {
     state.chainId = ""
     state.connected = false
   },
+  updateChainId(state: any, chainid: string){
+    state.chainId = chainid
+  },
   toggleConnectWallet(state: any, open: boolean) {
     state.connectWalletDialog = open
   },

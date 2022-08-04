@@ -92,11 +92,8 @@
           </div>
         </v-col>
       </v-row>
-      <tx-confirmed
-        :link="txExplorerURL"
-        :symbol="selectedToken.symbol"
-        :assetid="selectedToken.asset_id"
-      />
+      <tx-confirmed :link="txExplorerURL" />
+      <tx-failed />
     </v-sheet>
   </v-dialog>
 </template>
@@ -114,6 +111,7 @@ import { NewClient, MixinClient } from "~/helpers/mixin";
 const XINUUID = "c94ac88f-4671-3976-b60a-09064f1811e8";
 const ETHUUID = "43d61dcd-e413-450d-80b8-101d5e903357";
 const ExplorerBaseURL = process.env.EXPLORER_BASEURL;
+const EtherscanURL = "https://etherscan.io/";
 let trace = uuidv4();
 
 export default {
@@ -125,10 +123,7 @@ export default {
       txQrBtnText: this.$t("show_qrcode"),
       // Metamask tx
       txSent: false,
-      txConfirmed: false,
-      txSucceed: false,
       txExplorerURL: "",
-      txErrorText: "",
     };
   },
   components: {
@@ -151,6 +146,14 @@ export default {
       },
       set(value) {
         this.$store.commit("toggleTxSucceedDialog", value);
+      },
+    },
+    txFailedDialog: {
+      get() {
+        return this.$store.state.txFailedDialog;
+      },
+      set(value) {
+        this.$store.commit("toggleTxFailedDialog", value);
       },
     },
     selectedNetwork: {
@@ -331,68 +334,104 @@ export default {
     async deposit() {
       try {
         if (this.supportsMetamask) {
+          this.txSent = true;
           if (!this.selectedToken.asset_key.includes("0x")) {
-            // console.log("[ERROR] No asset contract address");
             return;
           }
-
+          const { connectedWallet } = useOnboard();
+          const provider = new ethers.providers.Web3Provider(
+            connectedWallet.value.provider,
+            "any"
+          );
+          let signer = provider.getSigner();
           // transfer ETH
           if (this.selectedToken.symbol === "ETH") {
-            this.createTx(false, "", this.depositAddr[0], this.fromAmount);
+            let tx_value = ethers.utils.parseEther(this.fromAmount);
+            const transactionParameters = {
+              from: ethers.utils.getAddress(await signer.getAddress()),
+              to: this.depositAddr[0],
+              value: tx_value,
+              chainId: 0x1,
+            };
+
+            let txResult = await provider
+              .getSigner()
+              .sendTransaction(transactionParameters);
+            console.log(txResult);
+            this.txExplorerURL = EtherscanURL + "tx/" + txResult.hash;
+            this.txSent = false;
+            this.confirmDepositDialog = false;
+            this.txSucceedDialog = true;
             return;
           }
 
           // transfer Erc20 tokens
           if (this.selectedToken.chain_id === ETHUUID) {
-            this.createTx(
-              true,
+            let tokenContract = new ethers.Contract(
               this.selectedToken.asset_key,
-              this.depositAddr[0],
-              this.fromAmount
+              ERC20ABI,
+              provider
             );
-            return;
+            let tokenContractSigner = tokenContract.connect(signer);
+            let tokenDecimal = await tokenContract.decimals();
+            let tx_value = ethers.utils.parseUnits(
+              this.fromAmount,
+              tokenDecimal
+            );
+            let txResult = await tokenContractSigner.transfer(
+              this.depositAddr[0],
+              tx_value
+            );
+            console.log(txResult);
+            this.txExplorerURL = EtherscanURL + "tx/" + txResult.hash;
           }
         }
+        this.txSent = false;
+        this.confirmDepositDialog = false;
+        this.txSucceedDialog = true;
       } catch (error) {
+        this.txSent = false;
+        this.confirmDepositDialog = false;
+        this.txFailedDialog = true;
         console.log(error);
       }
     },
-    async createTx(erc20, asset_address, to_address, value) {
-      const { connectedWallet } = useOnboard();
-      const provider = new ethers.providers.Web3Provider(
-        connectedWallet.value.provider,
-        "any"
-      );
-      let signer = provider.getSigner();
+    // async createTx(erc20, asset_address, to_address, value) {
+    //   const { connectedWallet } = useOnboard();
+    //   const provider = new ethers.providers.Web3Provider(
+    //     connectedWallet.value.provider,
+    //     "any"
+    //   );
+    //   let signer = provider.getSigner();
 
-      if (erc20) {
-        let tokenContract = new ethers.Contract(
-          asset_address,
-          ERC20ABI,
-          provider
-        );
-        let tokenContractSigner = tokenContract.connect(signer);
-        let tokenDecimal = await tokenContract.decimals();
-        let tx_value = ethers.utils.parseUnits(value, tokenDecimal);
-        let tx = await tokenContractSigner.transfer(asset_address, tx_value);
-        console.log(tx);
-        this.txExplorerURL = ExplorerBaseURL + "tx/" + txResult.hash;
-      } else {
-        let tx_value = ethers.utils.parseEther(value);
-        const transactionParameters = {
-          from: ethers.utils.getAddress(await signer.getAddress()),
-          to: to_address,
-          value: tx_value,
-          chainId: 0x1,
-        };
+    //   if (erc20) {
+    //     let tokenContract = new ethers.Contract(
+    //       asset_address,
+    //       ERC20ABI,
+    //       provider
+    //     );
+    //     let tokenContractSigner = tokenContract.connect(signer);
+    //     let tokenDecimal = await tokenContract.decimals();
+    //     let tx_value = ethers.utils.parseUnits(value, tokenDecimal);
+    //     let tx = await tokenContractSigner.transfer(asset_address, tx_value);
+    //     console.log(tx);
+    //     this.txExplorerURL = ExplorerBaseURL + "tx/" + txResult.hash;
+    //   } else {
+    //     let tx_value = ethers.utils.parseEther(value);
+    //     const transactionParameters = {
+    //       from: ethers.utils.getAddress(await signer.getAddress()),
+    //       to: to_address,
+    //       value: tx_value,
+    //       chainId: 0x1,
+    //     };
 
-        let tx = await provider
-          .getSigner()
-          .sendTransaction(transactionParameters);
-        console.log(tx);
-        this.txExplorerURL = ExplorerBaseURL + "tx/" + txResult.hash;
-      }
-    },
+    //     let tx = await provider
+    //       .getSigner()
+    //       .sendTransaction(transactionParameters);
+    //     console.log(tx);
+    //     this.txExplorerURL = ExplorerBaseURL + "tx/" + txResult.hash;
+    //   }
+    // },
   },
 };
 </script>

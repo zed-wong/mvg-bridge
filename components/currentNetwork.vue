@@ -14,7 +14,6 @@
 </template>
 
 <script>
-import { ethers } from "ethers";
 import { useOnboard } from "@web3-onboard/vue";
 
 export default {
@@ -37,6 +36,9 @@ export default {
     toToken() {
       return this.$store.state.toToken;
     },
+    confirmDepositDialog(){
+      return this.$store.state.confirmDepositDialog;
+    }
   },
   async mounted() {
     await this.check();
@@ -54,37 +56,28 @@ export default {
     toToken(o, n) {
       this.check();
     },
-    connected(o, n) {
-      const { connectedWallet } = useOnboard();
-      if (connectedWallet.value == null) return;
-      const provider = new ethers.providers.Web3Provider(
-        connectedWallet.value.provider,
-        "any"
-      );
-      provider.on("network", (o, n) => {
-        if (o) {
-          window.location.reload();
-        }
-      });
+    confirmDepositDialog(o, n) {
+      this.check();
     },
   },
   methods: {
     async check() {
-      await this.sleep(200);
+      await this.sleep(1000);
       const { connectedChain } = useOnboard();
       const network_id = connectedChain.value?.id;
+      this.$store.commit('updateChainId', network_id);
       switch (network_id) {
         case "0x1":
-          this.btnText = `Ethereum Mainnet`;
+          this.btnText = this.$t('ethereum_mainnet');
           this.networkIcon =
             "https://mixin-images.zeromesh.net/zVDjOxNTQvVsA8h2B4ZVxuHoCF3DJszufYKWpd9duXUSbSapoZadC7_13cnWBqg0EmwmRcKGbJaUpA8wFfpgZA=s128";
           return;
         case "0x120c7":
-          this.btnText = `MVM Mainnet`;
+          this.btnText = this.$t('mvm_mainnet');
           this.networkIcon = "https://mvm.dev/logo.svg";
           return;
       }
-      this.btnText = "Unsupported Network";
+      this.btnText = this.$t('unsupported_network');
       this.networkIcon = "";
       return false;
     },

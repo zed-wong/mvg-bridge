@@ -221,11 +221,6 @@ export default {
         return this.$store.state.connected;
       },
     },
-    network_id: {
-      get() {
-        return this.$store.state.chainId;
-      },
-    },
     selectedNetwork: {
       get() {
         return this.$store.state.fromNetwork;
@@ -284,7 +279,12 @@ export default {
     },
 
     async getFromBalance() {
-      if (!this.connected) return;
+      if (!this.connected) {
+        await this.sleep(500)
+      };
+      if (!this.connected) {
+        return;
+      }
 
       if (!this.checkNetwork(this.selectedNetwork.symbol)) {
         // console.log("Chain balance is not supported");
@@ -322,14 +322,9 @@ export default {
         return;
       }
 
-      let ABI;
-      if (!ABI) {
-        ABI = ERC20ABI;
-      }
-
       let tokenContract = new ethers.Contract(
         this.selectedToken.asset_key,
-        ABI,
+        ERC20ABI,
         provider
       );
       let tokenBalance = await tokenContract.balanceOf(userAddr);
@@ -379,6 +374,9 @@ export default {
       } catch (error) {
         console.error(error);
       }
+    },
+    sleep(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
     },
   },
 };

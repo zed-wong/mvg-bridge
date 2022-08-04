@@ -112,6 +112,7 @@ export default {
       const { disconnectConnectedWallet } = useOnboard()
       disconnectConnectedWallet()
       localStorage.removeItem("connectedWallet")
+      localStorage.removeItem("avatar_url")
       this.$store.commit("disconnect");
       this.accountDialog = false;
     }

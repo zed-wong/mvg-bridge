@@ -1,5 +1,4 @@
 <template>
-<!-- Doesn't work for now. -->
   <v-btn
     height="40px"
     elevation="0"
@@ -25,42 +24,36 @@ export default {
       networkIcon: "",
     };
   },
-  mounted() {
-    this.check();
-  },
   computed: {
-    selectedNetwork: {
-      get() {
-        return this.$store.state.fromNetwork;
-      },
+    fromNetwork() {
+      return this.$store.state.fromNetwork;
+    },
+    toNetwork() {
+      return this.$store.state.toNetwork;
+    },
+    fromToken() {
+      return this.$store.state.fromToken;
+    },
+    toToken() {
+      return this.$store.state.toToken;
     },
   },
+  async mounted() {
+    await this.check();
+  },
   watch: {
-    selectedNetwork(o, n) {
+    fromNetwork(o, n) {
       this.check();
     },
-  },
-  methods: {
-    check() {
-      console.log(this.$store.state.chainId)
-      switch (this.$store.state.chainId) {
-        case '0x1':
-          this.btnText = `Ethereum Mainnet`;
-          this.networkIcon = 'https://mixin-images.zeromesh.net/zVDjOxNTQvVsA8h2B4ZVxuHoCF3DJszufYKWpd9duXUSbSapoZadC7_13cnWBqg0EmwmRcKGbJaUpA8wFfpgZA=s128';
-          return;
-        case '0x120c7':
-          this.btnText = `MVM Mainnet`;
-          this.networkIcon = 'https://mixin-images.zeromesh.net/UasWtBZO0TZyLTLCFQjvE_UYekjC7eHCuT_9_52ZpzmCC-X-NPioVegng7Hfx0XmIUavZgz5UL-HIgPCBECc-Ws=s128';
-          return;
-        default:
-
-      }
-      this.btnText = "Unsupported Network";
-      this.networkIcon = "";
-      return false;
+    toNetwork(o, n) {
+      this.check();
     },
-  },
-  watch: {
+    fromToken(o, n) {
+      this.check();
+    },
+    toToken(o, n) {
+      this.check();
+    },
     connected(o, n) {
       const { connectedWallet } = useOnboard();
       if (connectedWallet.value == null) return;
@@ -73,6 +66,33 @@ export default {
           window.location.reload();
         }
       });
+    },
+  },
+  methods: {
+    async check() {
+      await this.sleep(200);
+      const { connectedChain } = useOnboard();
+      const network_id = connectedChain.value?.id;
+      switch (network_id) {
+        case "0x1":
+          this.btnText = `Ethereum Mainnet`;
+          this.networkIcon =
+            "https://mixin-images.zeromesh.net/zVDjOxNTQvVsA8h2B4ZVxuHoCF3DJszufYKWpd9duXUSbSapoZadC7_13cnWBqg0EmwmRcKGbJaUpA8wFfpgZA=s128";
+          return;
+        case "0x120c7":
+          this.btnText = `MVM Mainnet`;
+          this.networkIcon = "https://mvm.dev/logo.svg";
+          return;
+      }
+      this.btnText = "Unsupported Network";
+      this.networkIcon = "";
+      return false;
+    },
+    loopCheck() {
+      setTimeout(this.check(), 3000);
+    },
+    sleep(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
     },
   },
 };

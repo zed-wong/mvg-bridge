@@ -18,7 +18,7 @@
         <span class="font-weight-bold ml-2 logo-text"> MVG </span>
         <v-spacer />
         <connect-wallet :small="true" v-if="!connected" />
-        <!-- <current-network v-if="connected && !isMobile" /> -->
+        <current-network v-if="connected && !isMobile" />
         <connected-wallet v-if="connected" />
       </v-app-bar>
       <v-container

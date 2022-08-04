@@ -154,6 +154,7 @@ import bridge from "~/static/bridge.png";
 import { NewClient } from "@/helpers/mixin";
 import ERC20ABI from "../assets/erc20.json";
 import { useOnboard } from "@web3-onboard/vue";
+import { getEthBalance } from '../helpers/etherscan';
 import selectFromToken from "~/components/selectFromToken.vue";
 import selectFromNetwork from "~/components/selectFromNetwork.vue";
 import ConnectWallet from "~/components/connectWallet.vue";
@@ -306,10 +307,9 @@ export default {
       );
       let signer = provider.getSigner();
       let userAddr = await signer.getAddress();
-
       if (this.selectedToken.asset_id === ETHUUID) {
         let addr = ethers.utils.getAddress(userAddr);
-        let balance = ethers.utils.formatEther(await provider.getBalance(addr));
+        let balance = await getEthBalance(addr);
         this.fromBalance = balance;
         this.fetchingBalance = false;
         this.fromBalanceVisble = true;

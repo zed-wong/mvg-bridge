@@ -115,6 +115,7 @@ export default {
   env: {
     INFURA_KEY: process.env.INFURA_KEY,
     WITHDRAWAL_GATEWAY_BOT_ID: process.env.WITHDRAWAL_GATEWAY_BOT_ID,
+    NFT_OAUTH_BOT_ID: process.env.WITHDRAWAL_GATEWAY_BOT_ID,
     EXPLORER_BASEURL: "https://scan.mvm.dev/",
     BLAZE_BASEURL: "wss://blaze.mixin.one/",
     MIXIN_API_BASEURL: "https://api.mixin.one/",

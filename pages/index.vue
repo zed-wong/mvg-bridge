@@ -4,8 +4,6 @@
 </template>
 
 <script>
-import { ethers } from "ethers";
-import { web3Onboard } from "../helpers/web3onboard";
 import newbridge from "~/components/newbridge.vue";
 import newwithdraw from "~/components/newwithdraw.vue";
 
@@ -25,39 +23,6 @@ export default {
       },
     },
   },
-  async mounted() {
-    await this.autoConnectWallet();
-  },
   layout: "index",
-  methods: {
-    async autoConnectWallet() {
-      try {
-        if (localStorage.getItem("connectedWallet")) {
-          const previouslyConnectedWallet = JSON.parse(
-            localStorage.getItem("connectedWallet")
-          );
-          if (previouslyConnectedWallet) {
-            this.$store.commit("setConnected", true)
-            await web3Onboard.connectWallet({
-              autoSelect: {
-                label: previouslyConnectedWallet.label,
-                disableModals: true,
-              },
-            });
-
-            this.$store.commit("connect", {
-              address: ethers.utils.getAddress(
-                previouslyConnectedWallet.accounts[0].address
-              ),
-              name: "",
-              id: "0x1",
-            });
-          }
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    },
-  },
 };
 </script>

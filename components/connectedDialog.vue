@@ -90,7 +90,7 @@ export default {
           Math.floor(Math.random() * charactersLength)
         );
       }
-      let url = "https://avatars.dicebear.com/api/identicon/" + result + ".svg";
+      let url = "https://api.multiavatar.com/" + result + ".svg";
       localStorage.setItem("avatar_url", url);
       return url;
     },
@@ -111,8 +111,6 @@ export default {
     disconnect(){
       const { disconnectConnectedWallet } = useOnboard()
       disconnectConnectedWallet()
-      localStorage.removeItem("connectedWallet")
-      localStorage.removeItem("avatar_url")
       this.$store.commit("disconnect");
       this.accountDialog = false;
     }

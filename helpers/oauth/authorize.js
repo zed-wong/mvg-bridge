@@ -50,7 +50,7 @@ export default function authorize(
 
   const handler = (resp) => {
     const data = resp.data;
-
+    // console.log(data, params)
     if (resp?.error?.code === 400 || resp?.error?.code === 10002) {
       callbacks.onError?.(resp?.error);
 
@@ -74,7 +74,6 @@ export default function authorize(
           )
           .then((data) => {
             let token = data?.data?.data?.access_token;
-
             if (token) {
               callbacks.onSuccess?.(token);
             } else {
@@ -89,7 +88,6 @@ export default function authorize(
       } else {
         callbacks.onSuccess?.(data.authorization_code);
       }
-
       return true;
     }
 

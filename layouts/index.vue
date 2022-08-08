@@ -7,7 +7,7 @@
         class="px-6 bar-css"
         height="72px"
       >
-        <a href="https://scan.mvm.dev">
+        <a href="/">
           <v-img
             :src="bridge"
             max-width="26px"
@@ -16,6 +16,34 @@
           />
         </a>
         <span class="font-weight-bold ml-2 logo-text"> MVG </span>
+        <div
+          v-if="!isMobile"
+          class="ml-10 d-flex align-center"
+          style="height: 100%"
+        >
+          <nuxt-link to="/">
+            <v-btn
+              elevation="0"
+              :class="currentRoute === '/' ? 'highlighted-btn' : 'section-btns'"
+              color="transparent"
+              height="100%"
+            >
+              {{ $t("token") }}
+            </v-btn>
+          </nuxt-link>
+          <nuxt-link to="/nft">
+            <v-btn
+              elevation="0"
+              :class="
+                currentRoute === '/nft' ? 'highlighted-btn' : 'section-btns'
+              "
+              color="transparent"
+              height="100%"
+            >
+              {{ $t("nft") }}
+            </v-btn>
+          </nuxt-link>
+        </div>
         <v-spacer />
         <connect-wallet :small="true" v-if="!connected" />
         <current-network v-if="connected && !isMobile" />
@@ -33,6 +61,8 @@
 </template>
 
 <script>
+import { ethers } from "ethers";
+import { web3Onboard } from "../helpers/web3onboard";
 import bridge from "../static/bridge.png";
 import connectWallet from "../components/connectWallet.vue";
 import currentNetwork from "../components/currentNetwork.vue";
@@ -68,12 +98,44 @@ export default {
         this.$store.commit("toggleConnectWallet", value);
       },
     },
+    currentRoute() {
+      return this.$route.path;
+    },
   },
-  mounted() {
+  async mounted() {
     this.isMobile = this.checkMobile();
     window.addEventListener("resize", this.checkMobile, { passive: true });
+    await this.autoConnectWallet();
   },
   methods: {
+    async autoConnectWallet() {
+      try {
+        if (localStorage.getItem("connectedWallet")) {
+          const previouslyConnectedWallet = JSON.parse(
+            localStorage.getItem("connectedWallet")
+          );
+          if (previouslyConnectedWallet) {
+            this.$store.commit("setConnected", true);
+            await web3Onboard.connectWallet({
+              autoSelect: {
+                label: previouslyConnectedWallet.label,
+                disableModals: true,
+              },
+            });
+
+            this.$store.commit("connect", {
+              address: ethers.utils.getAddress(
+                previouslyConnectedWallet.accounts[0].address
+              ),
+              name: "",
+              id: "0x1",
+            });
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
     checkMobile() {
       return window.innerWidth < 600;
     },
@@ -81,25 +143,26 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+a {
+  text-decoration: none;
+}
+.section-btns {
+  color: #68778d;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+}
+.highlighted-btn {
+  color: #5959d8;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+}
 .logo-text {
-  font-size: 18px;
+  font-size: 20px;
   font-family: "Maven Pro", sans-serif;
 }
 .v-btn {
   text-transform: none !important;
-}
-.connect-wallet {
-  align-items: center;
-  border-radius: 100px;
-  font-size: 14px;
-  font-weight: 700;
-  text-overflow: ellipsis;
-  margin: 0 6px;
-  padding: 0 12px;
-}
-.connect-wallet:hover {
-  background-color: #1976d2 !important;
 }
 .bar-css {
   border-width: 0 0 thin;

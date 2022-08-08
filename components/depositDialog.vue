@@ -121,7 +121,6 @@ export default {
       MetamaskLogo,
       txShowQR: false,
       txQrBtnText: this.$t("show_qrcode"),
-      // Metamask tx
       txSent: false,
       txExplorerURL: "",
     };

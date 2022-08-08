@@ -102,7 +102,7 @@
           </v-btn>
         </v-col>
       </v-row>
-      <tx-confirmed :link="txExplorerURL"/>
+      <tx-confirmed :link="txExplorerURL" />
       <tx-failed />
     </v-sheet>
   </v-dialog>
@@ -122,11 +122,11 @@ import {
   bridgeAddress,
   getContractByAssetID,
 } from "../helpers/registry";
-import txConfirmed from './txConfirmed.vue';
+import txConfirmed from "./txConfirmed.vue";
 
 const XINUUID = "c94ac88f-4671-3976-b60a-09064f1811e8";
 const ETHUUID = "43d61dcd-e413-450d-80b8-101d5e903357";
-const ExplorerBaseURL = process.env.EXPLORER_BASEURL
+const ExplorerBaseURL = process.env.EXPLORER_BASEURL;
 
 export default {
   components: { txConfirmed },
@@ -261,7 +261,7 @@ export default {
         );
         txResult = await tokenContract.release(userContractAddr, mixinExtra, {
           value: txValue,
-          gasPrice: 10000000,  // 0.01 Gwei
+          gasPrice: 10000000, // 0.01 Gwei
           gasLimit: 350000,
         });
       } else {
@@ -277,10 +277,11 @@ export default {
         txResult = await tokenContract.transferWithExtra(
           userContractAddr,
           txValue,
-          mixinExtra
+          mixinExtra,
+          { gasPrice: 10000000 }
         );
       }
-      this.txExplorerURL = ExplorerBaseURL+"tx/"+txResult.hash
+      this.txExplorerURL = ExplorerBaseURL + "tx/" + txResult.hash;
     },
 
     async externalWithdraw(type) {
@@ -312,11 +313,11 @@ export default {
         );
         txResult = await tokenContract.release(userContractAddr, extra, {
           value: txAmount,
-          gasPrice: 10000000,  // 0.01 Gwei
+          gasPrice: 10000000, // 0.01 Gwei
           gasLimit: 350000,
         });
         console.log(txResult);
-        this.txExplorerURL = ExplorerBaseURL+"tx/"+txResult.hash
+        this.txExplorerURL = ExplorerBaseURL + "tx/" + txResult.hash;
       } else {
         let assetContractAddr = await getContractByAssetID(
           this.selectedToken.asset_id
@@ -333,7 +334,7 @@ export default {
           extra
         );
         console.log(txResult);
-        this.txExplorerURL = ExplorerBaseURL+"tx/"+txResult.hash
+        this.txExplorerURL = ExplorerBaseURL + "tx/" + txResult.hash;
       }
     },
 

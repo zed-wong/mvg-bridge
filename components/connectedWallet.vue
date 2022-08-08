@@ -18,11 +18,16 @@
 </template>
 
 <script>
+import ConnectedDialog from './connectedDialog.vue'
+
 export default {
   data() {
     return {
       avatarURL: "",
     };
+  },
+  components: {
+    ConnectedDialog
   },
   computed: {
     userAddress() {
@@ -46,7 +51,7 @@ export default {
           Math.floor(Math.random() * charactersLength)
         );
       }
-      let url = "https://avatars.dicebear.com/api/identicon/" + result + ".svg";
+      let url = "https://api.multiavatar.com/" + result + ".svg";
       localStorage.setItem("avatar_url", url);
       return url;
     },

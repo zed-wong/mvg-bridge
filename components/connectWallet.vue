@@ -78,7 +78,19 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+.connect-wallet {
+  align-items: center;
+  border-radius: 100px !important;
+  font-size: 14px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  margin: 0 6px;
+  padding: 0 12px;
+}
+.connect-wallet:hover {
+  background-color: #1976d2 !important;
+}
 /* .connect-text {
   color: var(--input-text-color);
   font-size: 24px;

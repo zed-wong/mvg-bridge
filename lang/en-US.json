@@ -1,5 +1,7 @@
 {
   "connect_wallet": "Connect Wallet",
+  "connect_to_mixin": "Connect to Mixin",
+  "nft": "NFT",
   "deposit": "Deposit",
   "withdraw": "Withdraw",
   "from": "From",
@@ -16,7 +18,10 @@
   "unsupported_network": "Unsupported Network",
   "withdrawal_fee": "Withdrawal Fee",
   "will_receive": "You will receive",
+  "transaction_fee": "Transaction Fee",
 
+  "select_nft": "Select NFT",
+  "select_a_nft": "Select a NFT",
   "select_token": "Select Token",
   "select_network": "Select Network",
   "search_token_name": "Search token name",

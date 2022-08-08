@@ -41,6 +41,10 @@ export const mutations = {
     state.walletName = ""
     state.chainId = ""
     state.connected = false
+    localStorage.removeItem("connectedWallet")
+    localStorage.removeItem("avatar_url")
+    localStorage.removeItem("tokens")
+    localStorage.removeItem("user")
   },
   updateChainId(state: any, chainid: string){
     state.chainId = chainid

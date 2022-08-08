@@ -50,7 +50,7 @@ export default function authorize(
 
   const handler = (resp) => {
     const data = resp.data;
-    // console.log(data, params)
+
     if (resp?.error?.code === 400 || resp?.error?.code === 10002) {
       callbacks.onError?.(resp?.error);
 
@@ -61,7 +61,6 @@ export default function authorize(
 
     if (data.authorization_code.length > 16) {
       if (params.pkce) {
-        console.log("calling /oauth/token")
         axios
           .post(
             "/oauth/token",

@@ -56,7 +56,6 @@ export async function getFormatedTokens(token, outputs) {
       const t = await getNFTToken(token, outputs[i].token_id);
       outputs[i].token_info = t
       l.push(outputs[i]);
-      // console.log(outputs[i])
     }
   }
   return l;
@@ -68,8 +67,7 @@ export async function getNFTsByToken(token) {
   return await getFormatedTokens(token, outputs);
 }
 
-export async function getSignedByToken(token) {
-  const userID = await getUserID(token);
+export async function getSignedByToken(token, userID) {
   return await getSignedOutputs(token, [userID]);
 }
 

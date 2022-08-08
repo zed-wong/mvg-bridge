@@ -251,12 +251,6 @@ export default {
       this.depositDialog = true;
     },
   },
-  // mounted() {
-  //   if (localStorage.getItem("tokens")) {
-  //     this.tokens = JSON.parse(localStorage.getItem("tokens"));
-  //     this.nftsLoaded = true;
-  //   }
-  // },
 };
 </script>
 
@@ -264,6 +258,7 @@ export default {
 .select-nft-btn {
   border: 0.1px solid;
   width: 266px;
+  padding-left: 0px;
   background-color: white;
   border-radius: 12px !important;
 }
@@ -273,7 +268,7 @@ export default {
   font-weight: 400;
 }
 .selected-nft-text {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 500;
 }
 </style>

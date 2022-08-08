@@ -127,21 +127,4 @@ export default {
   
   },
 };
-// function getOutputByToken(tokenid) {
-//   try {
-//     let return_value = {};
-//     let outputs = localStorage.getItem("outputs");
-//     if (outputs) {
-//       outputs = JSON.parse(outputs);
-//       outputs.forEach((element) => {
-//         if (element.token_id == tokenid) {
-//           return_value = element;
-//         }
-//       });
-//     }
-//     return return_value;
-//   } catch (error) {
-//     console.log(error);
-//   }
-// }
 </script>

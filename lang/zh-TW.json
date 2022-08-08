@@ -19,6 +19,7 @@
   "withdrawal_fee": "提現手續費",
   "will_receive": "您將收到",
   "transaction_fee": "轉賬費用",
+  "waiting_for_transaction": "等待轉賬中...",
 
   "select_nft": "選擇 NFT",
   "select_a_nft": "選擇 NFT",

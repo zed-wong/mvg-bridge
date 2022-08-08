@@ -19,6 +19,7 @@
   "withdrawal_fee": "Withdrawal Fee",
   "will_receive": "You will receive",
   "transaction_fee": "Transaction Fee",
+  "waiting_for_transaction": "Waiting for transaction",
 
   "select_nft": "Select NFT",
   "select_a_nft": "Select a NFT",

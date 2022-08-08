@@ -5,7 +5,7 @@
     max-width="500px"
     overlay-opacity="0.95"
   >
-    <v-sheet class="align-self-start px-9 py-8">
+    <v-sheet class="align-self-start px-9 py-8 nft-background">
       <v-row class="d-flex flex-column mb-0">
         <v-col class="align-center d-flex flex-row pr-0 mb-2">
           <h1 class="title-css">{{ $t("confirm_deposit") }}</h1>
@@ -50,6 +50,20 @@
             <v-col class="d-flex flex-grow-1" v-if="txLoaded">
               <span class="font-weight-light help-text">
                 {{ txQrHelpText }}
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-progress-circular
+                      indeterminate
+                      color="primary"
+                      size="14"
+                      width="2"
+                      class="ml-1"
+                      v-bind="attrs"
+                      v-on="on"
+                    />
+                  </template>
+                  <span> {{ $t("waiting_for_transaction") }} </span>
+                </v-tooltip>
               </span>
             </v-col>
             <v-col class="d-flex flex-grow-0" v-if="txLoaded">
@@ -65,17 +79,19 @@
           </div>
         </v-col>
       </v-row>
+      <tx-confirmed :link="txExplorerURL" />
     </v-sheet>
   </v-dialog>
 </template>
 
 <script>
 import { OldClient } from "../helpers/mixin";
-import { getSignedByToken } from "../helpers/nft";
+import { getSignedByToken, getUserID } from "../helpers/nft";
 import { createCollectibleRequest } from "mixin-node-sdk";
 import VueQrcode from "@chenfengyuan/vue-qrcode";
 
 const XINUUID = "c94ac88f-4671-3976-b60a-09064f1811e8";
+const ExplorerBaseURL = process.env.EXPLORER_BASEURL;
 
 export default {
   components: {
@@ -113,6 +129,13 @@ export default {
         return this.$store.state.userAddress;
       },
     },
+    txExplorerURL: {
+      get() {
+        return (
+          ExplorerBaseURL + "address/" + this.userAddress + "/token-transfers"
+        );
+      },
+    },
     txQrHelpText: {
       get() {
         if (this.selectedNetwork.asset_id == XINUUID)
@@ -121,28 +144,44 @@ export default {
           return this.$t("please_transfer_to_this_address_from_your_wallet");
       },
     },
+    txSucceedDialog: {
+      get() {
+        return this.$store.state.txSucceedDialog;
+      },
+      set(value) {
+        this.$store.commit("toggleTxSucceedDialog", value);
+      },
+    },
+    tokens: {
+      get() {
+        return this.$store.state.nft.nfts;
+      },
+      set(n) {
+        this.$store.commit("nft/setNFTs", n);
+      }
+    }
   },
   watch: {
-    depositDialog(o, n){
+    depositDialog(o, n) {
       if (n == false) {
         this.txShowQR = false;
         this.txLoaded = false;
         this.txQrBtnText = this.$t("show_qrcode");
       }
-    }
+    },
   },
   methods: {
     async toggleQR() {
       this.txShowQR = !this.txShowQR;
       if (this.txShowQR == true) this.txQrBtnText = this.$t("hide_qrcode");
-      if (this.txShowQR == false) { 
+      if (this.txShowQR == false) {
         this.txQrBtnText = this.$t("show_qrcode");
         return;
-      };
+      }
       this.txLoaded = false;
       try {
         this.txQrUrl = await this.createTx(this.selectedToken);
-        const promise = this.loopPaymentState(this.selectedToken);
+        this.loopPaymentState(this.selectedToken);
       } catch (error) {
         console.error(error);
         return;
@@ -167,29 +206,33 @@ export default {
         signedTx
       );
       const url = `https://mixin.one/codes/${createRes.code_id}`;
-      console.log(url)
+      console.log(url);
       return url;
     },
-    async getPaymentState(output){
-      const accessToken = localStorage.getItem("access_token");
-      if (!accessToken) return;
-      const outputs = await getSignedByToken(accessToken);
+    async getPaymentState(output, userID, accessToken) {
+      const outputs = await getSignedByToken(accessToken, userID);
       if (outputs.length == 0) return;
-      outputs.forEach(async element => {
+      outputs.forEach(async (element) => {
+        await OldClient.sendRawTransaction(element.signed_tx);
         if (element.output_id === output.output_id) {
-          await OldClient.sendRawTransaction(element.signedTx);
+          this.depositDialog = false;
+          this.txSucceedDialog = true;
+          // TODO: refresh token list
           return;
         }
       });
     },
-    async loopPaymentState(output){
-      while(true) {
-        console.log('looping')
+    async loopPaymentState(output) {
+      const accessToken = localStorage.getItem("access_token");
+      if (!accessToken) return;
+      const userID = await getUserID(accessToken);
+      while (true) {
         if (!this.txShowQR) return;
-        await this.getPaymentState(output)
+        if (!this.depositDialog) return;
+        await this.getPaymentState(output, userID, accessToken);
         await new Promise((resolve) => setTimeout(resolve, 1000));
       }
-    }
+    },
   },
 };
 </script>

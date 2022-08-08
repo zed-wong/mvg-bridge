@@ -395,42 +395,6 @@ export default {
         console.log(error);
       }
     },
-    // async createTx(erc20, asset_address, to_address, value) {
-    //   const { connectedWallet } = useOnboard();
-    //   const provider = new ethers.providers.Web3Provider(
-    //     connectedWallet.value.provider,
-    //     "any"
-    //   );
-    //   let signer = provider.getSigner();
-
-    //   if (erc20) {
-    //     let tokenContract = new ethers.Contract(
-    //       asset_address,
-    //       ERC20ABI,
-    //       provider
-    //     );
-    //     let tokenContractSigner = tokenContract.connect(signer);
-    //     let tokenDecimal = await tokenContract.decimals();
-    //     let tx_value = ethers.utils.parseUnits(value, tokenDecimal);
-    //     let tx = await tokenContractSigner.transfer(asset_address, tx_value);
-    //     console.log(tx);
-    //     this.txExplorerURL = ExplorerBaseURL + "tx/" + txResult.hash;
-    //   } else {
-    //     let tx_value = ethers.utils.parseEther(value);
-    //     const transactionParameters = {
-    //       from: ethers.utils.getAddress(await signer.getAddress()),
-    //       to: to_address,
-    //       value: tx_value,
-    //       chainId: 0x1,
-    //     };
-
-    //     let tx = await provider
-    //       .getSigner()
-    //       .sendTransaction(transactionParameters);
-    //     console.log(tx);
-    //     this.txExplorerURL = ExplorerBaseURL + "tx/" + txResult.hash;
-    //   }
-    // },
   },
 };
 </script>

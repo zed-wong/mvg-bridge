@@ -50,20 +50,6 @@
             <v-col class="d-flex flex-grow-1" v-if="txLoaded">
               <span class="font-weight-light help-text">
                 {{ txQrHelpText }}
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-progress-circular
-                      indeterminate
-                      color="primary"
-                      size="14"
-                      width="2"
-                      class="ml-1"
-                      v-bind="attrs"
-                      v-on="on"
-                    />
-                  </template>
-                  <span> {{ $t("waiting_for_transaction") }} </span>
-                </v-tooltip>
               </span>
             </v-col>
             <v-col class="d-flex flex-grow-0" v-if="txLoaded">
@@ -71,6 +57,8 @@
                 :value="txQrUrl"
                 :options="{ margin: 0, width: 100 }"
                 class="mr-1"
+                v-bind="attrs"
+                v-on="on"
               />
             </v-col>
             <v-col class="d-flex justify-center" v-if="!txLoaded">
@@ -158,8 +146,8 @@ export default {
       },
       set(n) {
         this.$store.commit("nft/setNFTs", n);
-      }
-    }
+      },
+    },
   },
   watch: {
     depositDialog(o, n) {

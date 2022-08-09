@@ -42,6 +42,8 @@
   "please_transfer_to_this_address_from_your_wallet": "請通過使用交易所或您的錢包向該地址轉賬，操作完成後，大約需要5~10分鐘到帳，請耐心等待。",
   "please_enter_recipient_user_id": "請輸入接收者的 MixinID 或 UserID",
   "please_enter_your_wallet_address": "請輸入您的錢包地址",
+  "mixin_oauth_title": "請掃碼連接",
+  "mixin_oauth_text": "請在您的手機上打開 Mixin Messenger，並掃碼授權鏈接您的錢包。",
   "optional":"選填",
   "show_qrcode": "使用二維碼",
   "hide_qrcode": "隱藏二維碼",

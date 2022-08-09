@@ -7,7 +7,7 @@
     >
       <v-img
         :src="nft.token_info.meta.media_url"
-        class="nft-item-radius nft-item-image"
+        class="nft-item-radius"
       />
     </v-sheet>
     <span class="font-weight-bold mx-2 mt-1 text-truncate">
@@ -30,16 +30,13 @@ export default {
 
 <style scoped>
 .nft-item {
-  border: 0.8px solid;
+  border: 0.1px solid #90A4AE;
   border-radius: 12px;
 }
 .nft-item-radius {
   border-radius: 12px 12px 0px 0px;
 }
-.nft-item-image {
-  background-color: #4d5558;
-}
 .nft-item-image-bottom {
-  border-bottom: 0.8px solid;
+  border-bottom: 0.1px solid;
 }
 </style>

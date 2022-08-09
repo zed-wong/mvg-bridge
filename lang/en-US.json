@@ -42,6 +42,8 @@
   "please_transfer_to_this_address_from_your_wallet": "Please transfer to this address from exchange or your wallet, it may take 5~10 mintues to wait, please be patient.",
   "please_enter_recipient_user_id": "Please enter recipient Mixin ID or User ID",
   "please_enter_your_wallet_address": "Please enter your wallet address",
+  "mixin_oauth_title": "Scan to connect",
+  "mixin_oauth_text": "Open Mixin Messenger on your mobile phone and scan the QR code, then confirm authorization to connect your wallet.",
   "optional":"Optional",
   "show_qrcode": "Show QR Code",
   "hide_qrcode": "Hide QR Code",

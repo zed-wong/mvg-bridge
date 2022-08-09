@@ -108,7 +108,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .nft-background{
   background-color: #f4f7fa;
 }

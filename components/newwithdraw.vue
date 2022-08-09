@@ -456,40 +456,9 @@ export default {
       this.$store.commit("setToNetwork", chain);
     },
     async mvmBydefault() {
-      if (window.ethereum == undefined) {
-        return;
-      }
-      let provider = new ethers.providers.Web3Provider(window.ethereum);
-      if ((await provider.getNetwork().chainId) == "73927") {
-        return;
-      }
-
-      try {
-        await window.ethereum.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: "0x120c7" }],
-        });
-      } catch (error) {
-        console.log(error);
-        if (error.code === 4902) {
-          const chain = [
-            {
-              chainId: `0x120c7`,
-              blockExplorerUrls: ["https://scan.mvm.dev/"],
-              rpcUrls: ["https://geth.mvm.dev"],
-              chainName: "Mixin Virtual Machine",
-              nativeCurrency: {
-                name: "Mixin",
-                symbol: "XIN",
-                decimals: 18,
-              },
-            },
-          ];
-          await window.ethereum.request({
-            method: "wallet_addEthereumChain",
-            params: chain,
-          });
-        }
+      const { connectedWallet, setChain } = useOnboard()
+      if (connectedWallet) {
+        setChain({ wallet:connectedWallet.value.label, chainId:'0x120c7'})
       }
     },
     async estimateTxFee() {

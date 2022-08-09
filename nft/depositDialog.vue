@@ -57,8 +57,6 @@
                 :value="txQrUrl"
                 :options="{ margin: 0, width: 100 }"
                 class="mr-1"
-                v-bind="attrs"
-                v-on="on"
               />
             </v-col>
             <v-col class="d-flex justify-center" v-if="!txLoaded">

@@ -39,7 +39,7 @@
   "transfer_with_current_wallet": "Pay with current wallet",
   "withdraw_to_current_wallet": "Withdraw to current wallet",
   "please_scan_qr_with_your_mixin_messenger": "Please scan this QR Code through your Mixin Messenger",
-  "please_transfer_to_this_address_from_your_wallet": "Please transfer to this address from exchange or your wallet, it may take 5~10 mintues to wait, please be patient.",
+  "please_transfer_to_this_address_from_your_wallet": "Please transfer to this address from exchange or your wallet, it may take 5~10 mintues to wait, please wait patiently.",
   "please_enter_recipient_user_id": "Please enter recipient Mixin ID or User ID",
   "please_enter_your_wallet_address": "Please enter your wallet address",
   "mixin_oauth_title": "Scan to connect",

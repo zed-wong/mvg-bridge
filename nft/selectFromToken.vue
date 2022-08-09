@@ -5,7 +5,7 @@
     max-width="500px"
     overlay-opacity="0.95"
   >
-    <v-sheet class="align-self-start px-9 py-8 nft-background">
+    <v-sheet class="align-self-start px-9 py-8">
       <v-row no-gutters>
         <h1 class="select-token-css">{{ $t("select_nft") }}</h1>
         <v-spacer />

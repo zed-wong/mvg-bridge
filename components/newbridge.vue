@@ -154,7 +154,7 @@ import bridge from "~/static/bridge.png";
 import { NewClient } from "@/helpers/mixin";
 import ERC20ABI from "../assets/erc20.json";
 import { useOnboard } from "@web3-onboard/vue";
-import { getEthBalance } from '../helpers/etherscan';
+import { getEthBalance } from "../helpers/etherscan";
 import selectFromToken from "~/components/selectFromToken.vue";
 import selectFromNetwork from "~/components/selectFromNetwork.vue";
 import ConnectWallet from "~/components/connectWallet.vue";
@@ -171,8 +171,8 @@ export default {
   },
   head() {
     return {
-      title: this.$t("deposit")
-    }
+      title: this.$t("deposit"),
+    };
   },
   data() {
     return {
@@ -261,16 +261,20 @@ export default {
     selectedToken(o, n) {
       this.getFromBalance();
     },
-    connected(o, n){
+    connected(o, n) {
       this.getFromBalance();
-    }
+    },
   },
   async mounted() {
     await this.getFromBalance();
+    this.ethBydefault();
   },
 
   methods: {
     async deposit() {
+      if (this.selectedToken.chain_id === ETHUUID) {
+        this.ethBydefault();
+      }
       this.depositing = true;
       let addr = await this.getDepositAddress(this.selectedToken.asset_id);
       this.depositing = false;
@@ -280,8 +284,8 @@ export default {
 
     async getFromBalance() {
       if (!this.connected) {
-        await this.sleep(500)
-      };
+        await this.sleep(500);
+      }
       if (!this.connected) {
         return;
       }
@@ -358,21 +362,10 @@ export default {
       return this.$store.state.supportMetamaskNetworks.includes(chain_symbol);
     },
     async ethBydefault() {
-      if (window.ethereum == undefined) {
-        return;
-      }
-      let provider = new ethers.providers.Web3Provider(window.ethereum);
-      if ((await provider.getNetwork().chainId) == "1") {
-        return;
-      }
-
-      try {
-        await window.ethereum.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: "0x1" }],
-        });
-      } catch (error) {
-        console.error(error);
+      let result;
+      const { connectedWallet, setChain } = useOnboard()
+      if (connectedWallet) {
+        setChain({ wallet:connectedWallet.value.label, chainId:'0x1'})
       }
     },
     sleep(ms) {

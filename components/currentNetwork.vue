@@ -10,7 +10,7 @@
     <v-avatar size="24" class="mr-2" v-if="networkIcon">
       <v-img :src="networkIcon" />
     </v-avatar>
-    <span class=""> {{ btnText }} </span>
+    <span> {{ btnText }} </span>
   </v-btn>
 </template>
 
@@ -25,48 +25,37 @@ export default {
     };
   },
   computed: {
-    fromNetwork() {
-      return this.$store.state.fromNetwork;
-    },
-    toNetwork() {
-      return this.$store.state.toNetwork;
-    },
-    fromToken() {
-      return this.$store.state.fromToken;
-    },
-    toToken() {
-      return this.$store.state.toToken;
-    },
     confirmDepositDialog(){
       return this.$store.state.confirmDepositDialog;
+    },
+    connectedChain(){
+      return this.$store.state.chainId
+    },
+    connected(){
+      return this.$store.state.connected
     }
   },
-  async mounted() {
-    await this.check();
-  },
   watch: {
-    fromNetwork(o, n) {
-      this.check();
-    },
-    toNetwork(o, n) {
-      this.check();
-    },
-    fromToken(o, n) {
-      this.check();
-    },
-    toToken(o, n) {
-      this.check();
-    },
     confirmDepositDialog(o, n) {
       this.check();
     },
+    connectedChain(){
+      this.check()
+    },
+    connected(){
+      this.check()
+    }
   },
   methods: {
     async check() {
-      await this.sleep(1000);
-      const { connectedChain } = useOnboard();
-      const network_id = connectedChain.value?.id;
-      this.$store.commit('updateChainId', network_id);
+      let network_id;
+      if (!this.connectedChain){
+        const { connectedChain } = useOnboard();
+        network_id = connectedChain.value?.id;
+        this.$store.commit('updateChainId', network_id);
+      } else {
+        network_id = this.connectedChain;
+      }
       switch (network_id) {
         case "0x1":
           this.btnText = this.$t('ethereum_mainnet');
@@ -82,12 +71,12 @@ export default {
       this.networkIcon = "";
       return false;
     },
-    loopCheck() {
-      setTimeout(this.check(), 3000);
-    },
-    sleep(ms) {
-      return new Promise((resolve) => setTimeout(resolve, ms));
-    },
+    // loopCheck() {
+    //   setTimeout(this.check(), 3000);
+    // },
+    // sleep(ms) {
+    //   return new Promise((resolve) => setTimeout(resolve, ms));
+    // },
   },
 };
 </script>

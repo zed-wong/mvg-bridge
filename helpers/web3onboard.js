@@ -65,7 +65,7 @@ export const web3Onboard = init({
           sidebar: {
             heading: "歡迎",
             subheading: "連接錢包",
-            paragraph: "通過連接您的錢包，以完成在MVM主網的充值與提現。\nMVG現已支持Mixin主網排名前100的幣種和所有網絡。"
+            paragraph: "通過連接您的錢包，以完成在MVM主網的充值與提現。"
           }
         },
         connectingWallet: {

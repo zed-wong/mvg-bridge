@@ -55,11 +55,16 @@ export default {
           const userChain = c[0].chains[0].id;
 
           this.$store.commit("connect", {
-            address: userAddress,
+            address: ethers.utils.getAddress(userAddress),
             name: c[0].label,
             id: userChain,
           });
           await this.register(userAddress);
+
+          c[0].provider.on("accountsChanged", () => this.$store.commit('disconnect'));
+          c[0].provider.on("chainChanged", (chainid) => {
+            this.$store.commit('updateChainId', chainid);
+          })
         }
       } catch (error) {
         console.log(error);

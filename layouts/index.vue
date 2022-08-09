@@ -116,20 +116,27 @@ export default {
           );
           if (previouslyConnectedWallet) {
             this.$store.commit("setConnected", true);
-            await web3Onboard.connectWallet({
+            const c = await web3Onboard.connectWallet({
               autoSelect: {
                 label: previouslyConnectedWallet.label,
                 disableModals: true,
               },
             });
-
             this.$store.commit("connect", {
               address: ethers.utils.getAddress(
-                previouslyConnectedWallet.accounts[0].address
+                c[0].accounts[0].address
               ),
-              name: "",
-              id: "0x1",
+              name: c[0].label,
+              id: c[0].chains[0].id,
             });
+            if (c.length > 0) {
+              c[0].provider.on("accountsChanged", () =>
+                this.$store.commit("disconnect")
+              );
+              c[0].provider.on("chainChanged", (chainid) => {
+                this.$store.commit("updateChainId", chainid);
+              });
+            }
           }
         }
       } catch (error) {

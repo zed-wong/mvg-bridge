@@ -37,7 +37,7 @@
             {{ $t("mixin_oauth_title") }}
           </span>
         </v-col>
-        <v-col class="d-flex justify-center">
+        <v-col class="d-flex justify-start">
           <span class="oauth-guide-text">
             {{ $t("mixin_oauth_text") }}
           </span>

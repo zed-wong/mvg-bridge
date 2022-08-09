@@ -5,6 +5,7 @@
     rounded
     color="#f4f7fa"
     class="ml-3 current-network-btn"
+    @click="check()"
   >
     <v-avatar size="24" class="mr-2" v-if="networkIcon">
       <v-img :src="networkIcon" />

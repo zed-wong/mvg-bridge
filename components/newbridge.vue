@@ -171,7 +171,7 @@ export default {
   },
   head() {
     return {
-      title: this.$t("deposit"),
+      title: this.$t("deposit_token"),
     };
   },
   data() {

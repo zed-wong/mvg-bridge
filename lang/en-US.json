@@ -21,6 +21,10 @@
   "transaction_fee": "Transaction Fee",
   "waiting_for_transaction": "Waiting for transaction",
 
+  "deposit_token": "Deposit Token",
+  "withdraw_token": "Withdraw Token",
+  "deposit_nft": "Deposit NFT",
+  "withdraw_nft": "Withdraw NFT",
   "select_nft": "Select NFT",
   "select_a_nft": "Select a NFT",
   "select_token": "Select Token",

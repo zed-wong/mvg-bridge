@@ -1,8 +1,10 @@
 export const state = () => ({
   mixinConnected: false,
   mode: 0,
-  selectNetworkDialog: false,
-  selectTokenDialog: false,
+  selectFromNetworkDialog: false,
+  selectFromTokenDialog: false,
+  selectToNetworkDialog: false,
+  selectToTokenDialog: false,
   connectMixinDialog: false,
   depositDialog: false,
   fromNetwork: {},
@@ -23,10 +25,10 @@ export const mutations = {
     state.depositDialog = open
   },
   toggleSelectNetwork(state: any, open: boolean) {
-    state.selectNetworkDialog = open
+    state.selectFromNetworkDialog = open
   },
   toggleSelectToken(state: any, open: boolean) {
-    state.selectTokenDialog = open
+    state.selectFromTokenDialog = open
   },
   toggleConnectMixin(state: any, open: boolean) {
     state.connectMixinDialog = open

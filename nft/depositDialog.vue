@@ -3,7 +3,7 @@
     v-model="depositDialog"
     class="dialog-css"
     max-width="500px"
-    overlay-opacity="0.95"
+    overlay-opacity="0.5"
   >
     <v-sheet class="align-self-start px-9 py-8 nft-background">
       <v-row class="d-flex flex-column mb-0">
@@ -199,10 +199,10 @@ export default {
       const outputs = await getSignedByToken(accessToken, userID);
       if (outputs.length == 0) return;
       outputs.forEach(async (element) => {
-        await OldClient.sendRawTransaction(element.signed_tx);
         if (element.output_id === output.output_id) {
           this.depositDialog = false;
           this.txSucceedDialog = true;
+          await OldClient.sendRawTransaction(element.signed_tx);
           // TODO: refresh token list
           return;
         }

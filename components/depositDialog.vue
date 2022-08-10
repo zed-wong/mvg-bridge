@@ -136,6 +136,7 @@ export default {
       },
       set(value) {
         this.txShowQR = false;
+        this.txQrBtnText = this.$t("show_qrcode");
         this.$store.commit("toggleConfirmDeposit", value);
       },
     },

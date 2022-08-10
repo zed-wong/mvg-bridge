@@ -45,7 +45,7 @@ export default {
   computed: {
     selectTokenDialog: {
       get() {
-        return this.$store.state.nft.selectTokenDialog;
+        return this.$store.state.nft.selectFromTokenDialog;
       },
       set(value) {
         this.$store.commit("nft/toggleSelectToken", value);

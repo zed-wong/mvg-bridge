@@ -21,6 +21,10 @@
   "transaction_fee": "轉賬費用",
   "waiting_for_transaction": "等待轉賬中...",
 
+  "deposit_token": "充值代幣",
+  "withdraw_token": "提現代幣",
+  "deposit_nft": "充值 NFT",
+  "withdraw_nft": "提現 NFT",
   "select_nft": "選擇 NFT",
   "select_a_nft": "選擇 NFT",
   "select_token": "選擇幣種",

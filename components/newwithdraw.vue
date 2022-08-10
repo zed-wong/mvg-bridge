@@ -205,7 +205,7 @@ export default {
   },
   head() {
     return {
-      title: this.$t("withdraw")
+      title: this.$t("withdraw_token")
     };
   },
   data() {

@@ -52,7 +52,7 @@ export default {
   computed: {
     selectNetworkDialog: {
       get() {
-        return this.$store.state.nft.selectNetworkDialog;
+        return this.$store.state.nft.selectFromNetworkDialog;
       },
       set(value) {
         this.$store.commit("nft/toggleSelectNetwork", value);

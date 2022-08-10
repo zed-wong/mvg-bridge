@@ -331,7 +331,8 @@ export default {
         txResult = await tokenContract.transferWithExtra(
           userContractAddr,
           txAmount,
-          extra
+          extra,
+          { gasPrice: 10000000 }
         );
         console.log(txResult);
         this.txExplorerURL = ExplorerBaseURL + "tx/" + txResult.hash;

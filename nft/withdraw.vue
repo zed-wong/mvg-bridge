@@ -38,20 +38,20 @@
                 class="select-nft-btn my-3"
                 @click.stop="selectNFT"
               >
-                <v-avatar v-if="selectedToken.token_info" class="mr-1">
+                <v-avatar v-if="selectedToken.token" class="mr-1">
                   <v-img
-                    :src="selectedToken.token_info.meta.media_url"
+                    :src="selectedToken.token.icon.url"
                     max-height="32px"
                     max-width="32px"
 
                   />
                 </v-avatar>
-                <span class="selected-nft-text" v-if="selectedToken.token_info"> {{ selectedToken.token_info.meta.name }} </span>
-                <span class="select-nft-text" v-if="selectedToken.token_info == null "> {{ $t('select_a_nft') }} </span>
+                <span class="selected-nft-text" v-if="selectedToken.token"> {{ selectedToken.token.name }} </span>
+                <span class="select-nft-text" v-if="selectedToken.token == null "> {{ $t('select_a_nft') }} </span>
                 <v-spacer />
                 <v-icon small> mdi-menu-down </v-icon>
               </v-btn>
-              <select-from-token />
+              <select-to-token />
             </div>
           </v-sheet>
         </v-col>
@@ -105,7 +105,7 @@
             color="#5959d8"
             v-if="connected"
             @click="withdraw"
-            :disabled="selectedToken.token_id == undefined"
+            :disabled="selectedToken.token == undefined"
             class="border-rounded main-btn white--text"
           >
             <span> {{ $t("withdraw") }} </span>
@@ -119,17 +119,17 @@
 
 <script>
 import bridge from "~/static/bridge.png";
-import depositDialog from "../nft/depositDialog.vue"
+import withdrawDialog from "./withdrawDialog.vue";
 import mixinOauthDialog from "../nft/mixinOauthDialog.vue";
-import selectFromToken from "~/nft/selectFromToken.vue";
-import selectFromNetwork from "~/nft/selectFromNetwork.vue";
+import selectToToken from "~/nft/selectToToken.vue";
+import selectToNetwork from "~/nft/selectToNetwork.vue";
 
 export default {
   components: {
-    depositDialog,
+    withdrawDialog,
     mixinOauthDialog,
-    selectFromNetwork,
-    selectFromToken,
+    selectToNetwork,
+    selectToToken,
   },
   head() {
     return {
@@ -160,20 +160,12 @@ export default {
         this.$store.commit("nft/setMode", n);
       },
     },
-    connectMixinDialog: {
-      get() {
-        return this.$store.state.nft.connectMixinDialog;
-      },
-      set(value) {
-        this.$store.commit("nft/toggleConnectMixin", value);
-      },
-    },
     selectToNetworkDialog: {
       get() {
         return this.$store.state.nft.selectToNetworkDialog;
       },
       set(value) {
-        this.$store.commit("nft/toggleSelectNetwork", value);
+        this.$store.commit("nft/toggleSelectToNetwork", value);
       },
     },
     selectToTokenDialog: {
@@ -181,30 +173,30 @@ export default {
         return this.$store.state.nft.selectToTokenDialog;
       },
       set(value) {
-        this.$store.commit("nft/toggleSelectToken", value);
+        this.$store.commit("nft/toggleSelectToToken", value);
       },
     },
     selectedNetwork: {
       get() {
-        return this.$store.state.nft.fromNetwork;
+        return this.$store.state.nft.toNetwork;
       },
     },
     selectedToken: {
       get() {
-        return this.$store.state.nft.fromToken;
+        return this.$store.state.nft.toToken;
       },
     },
     withdrawDialog: {
       get() {
-        return this.$store.state.nft.withdrawDialog
+        return this.$store.state.nft.withdrawDialog;
       },
       set(n) {
-        this.$store.commit('nft/toggleWithdrawDialog', n)
+        this.$store.commit('nft/toggleWithdrawDialog', n);
       }
     },
     transactionFee: {
       get() {
-        return 'WIP';
+        return '0';
       },
     },
   },

@@ -16,7 +16,7 @@
           <v-icon> mdi-close </v-icon>
         </v-btn>
       </v-row>
-      <v-row class="my-10 d-flex justify-center" v-if="nftsLoading">
+      <v-row class="my-15 d-flex justify-center" v-if="nftsLoading">
         <v-progress-circular indeterminate color="primary" />
       </v-row>
       <v-row v-if="nftsLoaded">

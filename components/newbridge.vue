@@ -221,6 +221,9 @@ export default {
         return this.$store.state.connected;
       },
     },
+    connectedChain() {
+      return this.$store.state.chainId;
+    },
     selectedNetwork: {
       get() {
         return this.$store.state.fromNetwork;
@@ -258,12 +261,15 @@ export default {
   },
 
   watch: {
-    selectedToken(o, n) {
+    selectedToken() {
       this.getFromBalance();
     },
-    connected(o, n) {
+    connected() {
       this.getFromBalance();
     },
+    connectedChain(){
+      this.getFromBalance();
+    }
   },
   async mounted() {
     await this.getFromBalance();
@@ -313,7 +319,7 @@ export default {
       let userAddr = await signer.getAddress();
       if (this.selectedToken.asset_id === ETHUUID) {
         let addr = ethers.utils.getAddress(userAddr);
-        let balance = await getEthBalance(addr);
+        let balance = ethers.utils.formatEther(await provider.getBalance(addr));
         this.fromBalance = balance;
         this.fetchingBalance = false;
         this.fromBalanceVisble = true;

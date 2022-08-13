@@ -273,7 +273,7 @@ export default {
     connected() {
       return this.$store.state.connected;
     },
-    network_id() {
+    connectedChain() {
       return this.$store.state.chainId;
     },
     selectedNetwork() {
@@ -383,6 +383,9 @@ export default {
     txGettingFee(o, n) {
       n == true ? (this.valueValid = false) : (this.valueValid = false);
     },
+    connectedChain(){
+      this.getMvmtoBalance();
+    }
   },
 
   mounted() {

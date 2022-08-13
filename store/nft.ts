@@ -72,6 +72,6 @@ export const mutations = {
     state.nftsLoaded = open
   },
   setWithdrawNftsLoaded(state: any, open: boolean) {
-    state.nftsLoaded = open
+    state.withdrawNftsLoaded = open
   },
 }

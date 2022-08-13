@@ -119,6 +119,7 @@
 
 <script>
 import bridge from "~/static/bridge.png";
+import { useOnboard } from "@web3-onboard/vue";
 import withdrawDialog from "./withdrawDialog.vue";
 import mixinOauthDialog from "../nft/mixinOauthDialog.vue";
 import selectToToken from "~/nft/selectToToken.vue";
@@ -200,6 +201,9 @@ export default {
       },
     },
   },
+  mounted(){
+    this.mvmBydefault()
+  },
   methods: {
     selectNFT() {
       if (this.connected) {
@@ -207,7 +211,14 @@ export default {
       }
     },
     withdraw() {
+      this.mvmBydefault();
       this.withdrawDialog = true;
+    },
+    async mvmBydefault() {
+      const { connectedWallet, setChain } = useOnboard()
+      if (connectedWallet) {
+        setChain({ wallet:connectedWallet.value.label, chainId:'0x120c7'})
+      }
     },
   },
 };

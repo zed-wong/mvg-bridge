@@ -35,15 +35,19 @@
           <div class="py-0">
             <div>
               <span class="subtitle-css"> {{ $t("token") }} </span>
-              <div class="d-flex flex-row align-center pt-1 mb-5">
-                <v-img
-                  :src="selectedToken"
-                  max-height="20px"
-                  max-width="20px"
-                  class="mr-2"
-                />
+              <div
+                class="d-flex flex-row align-center pt-1 mb-5"
+                v-if="selectedToken.token"
+              >
+                <v-avatar size="20" class="mr-2">
+                  <img
+                    :src="selectedToken.token.icon.url"
+                    max-height="20px"
+                    max-width="20px"
+                  />
+                </v-avatar>
                 <span class="main-title-css">
-                  {{ selectedToken }}
+                  {{ selectedToken.token.name }}
                 </span>
               </div>
             </div>
@@ -94,13 +98,15 @@
 </template>
 
 <script>
-import { OldClient } from "../helpers/mixin";
-import { getSignedByToken, getUserID } from "../helpers/nft";
-import { createCollectibleRequest } from "mixin-node-sdk";
+import { ethers } from "ethers";
+import ERC721ABI from "../assets/erc721.json";
+import { MixinClient } from "../helpers/mixin";
+import { useOnboard } from "@web3-onboard/vue";
 import VueQrcode from "@chenfengyuan/vue-qrcode";
+import { validate as validateUUID } from "uuid";
+import { mirrorAddress, getUserProxyContract } from "../helpers/registry";
 
 const XINUUID = "c94ac88f-4671-3976-b60a-09064f1811e8";
-const ExplorerBaseURL = process.env.EXPLORER_BASEURL;
 
 export default {
   components: {
@@ -112,6 +118,7 @@ export default {
       txSent: false,
       txQrUrl: "",
       txAddress: "",
+      txExplorerURL: "",
     };
   },
   computed: {
@@ -136,13 +143,6 @@ export default {
     userAddress: {
       get() {
         return this.$store.state.userAddress;
-      },
-    },
-    txExplorerURL: {
-      get() {
-        return (
-          ExplorerBaseURL + "address/" + this.userAddress + "/token-transfers"
-        );
       },
     },
     txSucceedDialog: {
@@ -172,56 +172,92 @@ export default {
         this.$t("optional"),
       ];
     },
+    txSucceedDialog: {
+      get() {
+        return this.$store.state.txSucceedDialog;
+      },
+      set(value) {
+        this.$store.commit("toggleTxSucceedDialog", value);
+      },
+    },
+    txFailedDialog: {
+      get() {
+        return this.$store.state.txFailedDialog;
+      },
+      set(value) {
+        this.$store.commit("toggleTxFailedDialog", value);
+      },
+    },
   },
   methods: {
     async withdraw() {
+      try{
+        this.txSent = true;
+        this.txSucceedDialog = false;
+        this.txFailedDialog = false;
+        await this.mixinWithdraw();
+        this.txSucceedDialog = true;
+        this.withdrawDialog = false;
+        this.txSent = false;
+      } catch (error){
+        console.log(error);
+        this.txSucceedDialog = false;
+        this.txFailedDialog = true;
+        this.withdrawDialog = false;
+        this.txSent = false;
+      }
+    },
+
+    async mixinWithdraw() {
       const { connectedWallet } = useOnboard();
       const provider = new ethers.providers.Web3Provider(
         connectedWallet.value.provider,
         "any"
       );
-      let signer = provider.getSigner();
-
-      let mixinExtra = await this.getMixinExtra(this.txAddress, this.txMemo);
+      const signer = provider.getSigner();
+      const mixinExtra = await this.getMixinExtra(this.txAddress, this.txMemo);
       if (mixinExtra === undefined) {
         console.error("[403] Get Mixin User Failed");
         return;
       }
-
-      let txValue = formatAmount(this.toAmount, this.selectedToken.asset_id);
-
-      let userContractAddr = await this.getUserProxyContract(this.userAddress);
-
-      let txResult;
-      if (this.selectedToken.asset_id === ETHUUID) {
-        let tokenContract = new ethers.Contract(
-          bridgeAddress,
-          BRIDGEABI,
-          signer
-        );
-        txResult = await tokenContract.release(userContractAddr, mixinExtra, {
-          value: txValue,
-          gasPrice: 10000000, // 0.01 Gwei
+      const contract = new ethers.Contract(
+        this.selectedToken.address,
+        ERC721ABI,
+        signer
+      );
+      const proxyAddress = await getUserProxyContract(this.userAddress);
+      const txResult = await contract['safeTransferFrom(address,address,uint256,bytes)'](
+        this.userAddress,
+        mirrorAddress,
+        this.selectedToken.tokenId,
+        proxyAddress+mixinExtra,
+        { 
+          gasPrice: 10000000,
           gasLimit: 350000,
-        });
-      } else {
-        let assetContractAddr = await getContractByAssetID(
-          this.selectedToken.asset_id
-        );
-        let tokenContract = new ethers.Contract(
-          assetContractAddr,
-          ASSETABI,
-          signer
-        );
+        }
+      );
 
-        txResult = await tokenContract.transferWithExtra(
-          userContractAddr,
-          txValue,
-          mixinExtra,
-          { gasPrice: 10000000 }
-        );
+      this.txExplorerURL = process.env.EXPLORER_BASEURL + "tx/" + txResult.hash;
+    },
+    async getMixinExtra(user_id, memo) {
+      let userID = String(user_id).trim();
+
+      if (!validateUUID(userID)) {
+        let user = await MixinClient.user.fetch(userID);
+        userID = user.user_id;
       }
-      this.txExplorerURL = ExplorerBaseURL + "tx/" + txResult.hash;
+      if (userID === undefined) return undefined;
+      let payloads = {
+        receivers: [userID],
+        threshold: 1,
+        extra: memo,
+      };
+      let mixinExtra = await this.$axios.post(
+        "https://bridge.mvm.dev/extra",
+        payloads
+      );
+      // without 0x prefix !!!
+      return mixinExtra.data.extra;
     },
   },
 };
@@ -231,5 +267,48 @@ export default {
 .subtitle-css {
   font-size: 14px;
   font-weight: 400;
+}
+.dialog-css {
+  width: 400px;
+  max-width: 400px;
+  min-height: 64px;
+}
+.title-css {
+  font-size: 24px;
+  font-weight: 600;
+  font-style: italic;
+}
+.subtitle-css {
+  font-size: 14px;
+  font-weight: 400;
+}
+.main-title-css {
+  font-size: 18px;
+  font-weight: 500;
+  word-break: break-all;
+}
+.deposit-btn {
+  color: white !important;
+  font-weight: 600;
+  border-radius: 10px !important;
+  background-color: #5959d8 !important;
+}
+.qr-area {
+  background-color: #f4f7fa;
+  border-radius: 10px !important;
+}
+.help-text {
+  overflow-wrap: break-word;
+}
+.withdraw-addr {
+  height: 55px;
+  border-radius: 10px;
+  background-color: #f4f7fa;
+}
+.metamask-pay-btn {
+  color: white;
+  font-weight: 600;
+  background-color: #2979ff !important;
+  border-radius: 10px;
 }
 </style>

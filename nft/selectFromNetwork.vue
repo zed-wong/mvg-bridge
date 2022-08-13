@@ -83,7 +83,7 @@ export default {
     },
   },
   mounted(){
-    this.selectedNetwork = this.filteredItems[1]
+    this.selectedNetwork = this.filteredItems[0]
   }
 };
 </script>

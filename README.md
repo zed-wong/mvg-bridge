@@ -6,13 +6,15 @@ A bridge for MVM Mainnet.
 
 ## Features
 
-- Deposit from any network supported by Mixin Mainnet
+- Asset bridge
 
-- Withdrawal to any network supported by Mixin Mainnet
+- NFT bridge
 
 ## How it works
 
-### Deposit 
+### For Tokens
+
+#### Deposit 
 
 1. from Mixin Mainnet
 
@@ -22,7 +24,7 @@ Transfer to proxy mainnet user.
 
 Deposit to proxy mainnet user. 
 
-### Withdrawal
+#### Withdrawal
 
 1. to Mixin Mainnet
 
@@ -34,6 +36,23 @@ For ETH, Call the `bridge` contract's `release` method.
 
 Used a proxy service that automatically swaps the user's withdrawal asset to the fee asset. And do the withdrawal process when the swap is completed.
 
+### For NFTs
+
+#### Deposit
+
+1. from Mixin Mainnet
+
+OAuth user first, filter UTXO through [Mixin API](https://developers.mixin.one/docs/api/collectibles/outputs) with user's token, get each token information by [API](https://developers.mixin.one/docs/api/collectibles/outputs#get-collectiblestokensuuid).
+
+When depositing, selected token is an object contains [token](https://developers.mixin.one/docs/api/collectibles/outputs#get-collectiblestokensuuid) and [output](https://developers.mixin.one/docs/api/collectibles/outputs), these two will be used for creating a collectible request. After calling the `createCollectibleRequest` function, a `code_id` would be generated for user to pay. Then loop output with parameter `state=signed`, when `output_id` found, send raw tx to mainnet. The deposit is complete.
+
+#### Withdrawal
+
+1. to Mixin Mainnet
+
+Get user tokens from https://scan.mvm.dev API, filter ERC721 tokens, get tokenURI from contract, display token image. 
+
+When withdrawing, selected token is an object contains `tokenId`, `contractAddress` and token info fetched from tokenURI. `contractAddress` will be used to initialize contract instance. call `safeTransferFrom(address,address,uint256,bytes)` to withdraw NFT. The fourth argument `_data` is constructed by user's mixin proxy contract address + mixinExtra generated through `/extra` API.
 
 ## Structure
 

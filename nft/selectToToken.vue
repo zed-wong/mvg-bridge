@@ -109,15 +109,9 @@ export default {
           connectedWallet.value.provider,
           "any"
         );
-        const tokenURIs = await getNFTsFromExplorer(this.userAddress, provider);
-        console.log(tokenURIs);
-        this.tokens = [
-          {collection: {id:'4aa4c030-a293-4979-8252-9fa776134cdb', name: 'OneNightinHamburg'}, token: {id:'1', name: 'Night', icon: {url:'https://trident.ap-south-1.linodeobjects.com/r6rhqicn14nn2gc9h5iudyzt1yz2'}}},
-          {collection: {id:'4aa4c030-a293-4979-8252-9fa776134cdb', name: 'OneNightinHamburg'}, token: {id:'2', name: 'Light', icon: {url:'https://trident.ap-south-1.linodeobjects.com/ml341rfcpi6g18eje53gokmli39l'}}},
-          {collection: {id:'4aa4c030-a293-4979-8252-9fa776134cdb', name: 'OneNightinHamburg'}, token: {id:'3', name: 'fight', icon: {url:'https://trident.ap-south-1.linodeobjects.com/2urbhjliu2of7hfmm1q1we7jxga8'}}},
-          {collection: {id:'4aa4c030-a293-4979-8252-9fa776134cdb', name: 'OneNightinHamburg'}, token: {id:'3', name: 'flight', icon: {url:'https://trident.ap-south-1.linodeobjects.com/qonfdli26imb8jhc821h0z7pr39u'}}},
-        ];
-        console.log(this.tokens);
+        const tokens = await getNFTsFromExplorer(this.userAddress, provider);
+
+        this.tokens = tokens;
       } catch (error) {
         console.log(error);
         this.withdrawNftsLoaded = true;

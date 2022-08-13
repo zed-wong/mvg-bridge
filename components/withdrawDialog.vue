@@ -121,6 +121,7 @@ import {
   DECIMAL,
   bridgeAddress,
   getContractByAssetID,
+  getUserProxyContract,
 } from "../helpers/registry";
 import txConfirmed from "./txConfirmed.vue";
 
@@ -250,7 +251,7 @@ export default {
 
       let txValue = formatAmount(this.toAmount, this.selectedToken.asset_id);
 
-      let userContractAddr = await this.getUserProxyContract(this.userAddress);
+      let userContractAddr = await getUserProxyContract(this.userAddress);
 
       let txResult;
       if (this.selectedToken.asset_id === ETHUUID) {
@@ -302,7 +303,7 @@ export default {
         this.totalAmount,
         this.selectedToken.asset_id
       );
-      let userContractAddr = await this.getUserProxyContract(this.userAddress);
+      let userContractAddr = await getUserProxyContract(this.userAddress);
       let txResult;
 
       if (this.selectedToken.asset_id === ETHUUID) {
@@ -372,12 +373,6 @@ export default {
         payloads
       );
       return "0x" + externalExtra.data.extra;
-    },
-    async getUserProxyContract(userAddr) {
-      const result = await this.$axios.post("https://bridge.mvm.dev/users", {
-        public_key: ethers.utils.getAddress(userAddr),
-      });
-      return result.data.user.contract ? result.data.user.contract : "";
     },
   },
 };

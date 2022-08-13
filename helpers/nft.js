@@ -11,7 +11,7 @@ export async function getOutputs(token, ids) {
     },
   };
   let resp = await axios.get(`${process.env.MIXIN_API_BASEURL}collectibles/outputs?members=${hashMembers(ids)}&threshold=1&state=unspent`, config)
-  if (resp.data){
+  if (resp.data) {
     return resp.data.data
   }
 }
@@ -23,12 +23,12 @@ export async function getSignedOutputs(token, ids) {
     },
   };
   let resp = await axios.get(`${process.env.MIXIN_API_BASEURL}collectibles/outputs?members=${hashMembers(ids)}&threshold=1&state=signed`, config)
-  if (resp.data){
+  if (resp.data) {
     return resp.data.data
   }
 }
 
-export async function getUserID(token){
+export async function getUserID(token) {
   let config = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -40,7 +40,7 @@ export async function getUserID(token){
   }
 };
 
-export async function getNFTToken(token, id){
+export async function getNFTToken(token, id) {
   let config = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -74,7 +74,7 @@ export async function getSignedByToken(token, userID) {
   return await getSignedOutputs(token, [userID]);
 }
 
-export async function signTx(token, id){
+export async function signTx(token, id) {
   let config = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -95,21 +95,30 @@ export const hashMembers = (ids) => {
 
 
 // Withdrawal
-export async function getNFTsFromExplorer(userAddr, provider){
+export async function getNFTsFromExplorer(userAddr, provider) {
   if (!userAddr) throw new Error('UserAddr is required');
   if (!provider) throw new Error('Provider is required');
   const fetchTokens = await getTokensFromExplorer(userAddr);
   const filteredTokens = filterTokens(fetchTokens);
-  
+
   var nfts = [];
-  for (let i=0; i<filteredTokens.length; i++){
+  for (let i = 0; i < filteredTokens.length; i++) {
     const contract = new ethers.Contract(filteredTokens[i].contractAddress, ERC721ABI, provider);
-    for (let j=0; j<filteredTokens[i].balance; j++){
-      console.log(filteredTokens[i].contractAddress, userAddr, j);
-      const tokenId = await contract.tokenOfOwnerByIndex(userAddr, j.toString());
-      const tokenURI = await contract.tokenURI(tokenId);
-      // nfts.push(await getNFTByTokenURI(tokenURI));
-      nfts.push(tokenURI);
+    for (let j = 0; j < filteredTokens[i].balance; j++) {
+
+      try {
+        const tokenId = await contract.tokenOfOwnerByIndex(userAddr, j);
+        const tokenURI = await contract.tokenURI(tokenId);
+
+        // WIP
+        // nfts.push(await getNFTByTokenURI(tokenURI));
+        // return { contractAddress, tokenId, infoFromTokenUri }
+
+        nfts.push({ address: filteredTokens[i].contractAddress, tokenId:tokenId._hex, collection: { id: '4aa4c030-a293-4979-8252-9fa776134cdb', name: 'CyberCoolApe赛博酷猿' }, token: { id: '1', name: '赛博酷猿96', icon: { url: 'https://trident.ap-south-1.linodeobjects.com/r6rhqicn14nn2gc9h5iudyzt1yz2' } } });
+      }catch(error) {
+        console.log(error)
+        continue;
+      }
     }
   }
   return nfts;
@@ -132,7 +141,7 @@ async function getTokensFromExplorer(userAddr) {
 
 function filterTokens(tokens) {
   var ERC721 = [];
-  tokens.forEach(function(element){
+  tokens.forEach(function (element) {
     if (element.type === 'ERC-721') {
       ERC721.push(element);
     }

@@ -1,4 +1,5 @@
-import { ethers,Contract } from "ethers";
+import { ethers } from "ethers";
+import axios from 'axios';
 import { parse } from 'uuid';
 import Web3Modal from "web3modal"
 
@@ -11,6 +12,7 @@ export const RPCURL = "https://geth.mvm.dev/";
 export const registryAddress = "0x3c84B6C98FBeB813e05a7A7813F0442883450B1F";
 export const bridgeAddress = "0x0915EaE769D68128EEd9711A0bc4097831BE57F3";
 export const withdrawalAddress = "0xb27C8e0665D2Afa10F50A7CF4D2B9B6B461FD438";
+export const mirrorAddress = "0xE8b994d931483AC74587449bFA1be15Eae306abB";
 
 export const getSigner = async () => {
   const web3Modal = new Web3Modal()
@@ -59,4 +61,11 @@ export async function execBridgeContract(address, method, args, value) {
     gasPrice: 10000000,  // 0.01 Gwei
     value: value,
   })
+}
+
+export async function getUserProxyContract(userAddr) {
+  const result = await axios.post("https://bridge.mvm.dev/users", {
+    public_key: ethers.utils.getAddress(userAddr),
+  });
+  return result.data.user.contract ? result.data.user.contract : "";
 }

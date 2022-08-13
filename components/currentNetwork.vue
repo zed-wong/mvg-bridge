@@ -5,9 +5,10 @@
     rounded
     color="#f4f7fa"
     class="ml-3 current-network-btn"
+    v-if="networkIcon"
     @click="check()"
   >
-    <v-avatar size="24" class="mr-2" v-if="networkIcon">
+    <v-avatar size="24" class="mr-2">
       <v-img :src="networkIcon" />
     </v-avatar>
     <span> {{ btnText }} </span>

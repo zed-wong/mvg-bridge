@@ -52,7 +52,7 @@ When depositing, selected token is an object contains [token](https://developers
 
 Get user tokens from https://scan.mvm.dev API, filter ERC721 tokens, get tokenURI from contract, display token image. 
 
-When withdrawing, selected token is an object contains `tokenId`, `contractAddress` and token info fetched from tokenURI. `contractAddress` will be used to initialize contract instance. call `safeTransferFrom(address,address,uint256,bytes)` to withdraw NFT. The fourth argument `_data` is constructed by user's mixin proxy contract address + mixinExtra generated through `/extra` API.
+When withdrawing, selected token is an object contains `tokenId`, `contractAddress` and token info fetched from tokenURI. `contractAddress` will be used to initialize contract instance. call `safeTransferFrom(address,address,uint256,bytes)` to withdraw NFT. Those arguments are (from:User Metamask Address，to:Mirror Contract Address，tokenId:Fetched from tokenOfOwnerByIndex of collectible contract，data: Metamask proxy user address + extra generated from /extra API).
 
 ## Structure
 

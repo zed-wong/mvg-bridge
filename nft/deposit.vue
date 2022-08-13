@@ -55,7 +55,7 @@
                   />
                 </v-avatar>
                 <span class="selected-nft-text" v-if="selectedToken.token_info"> {{ selectedToken.token_info.meta.name }} </span>
-                <span class="select-nft-text" v-if="selectedToken.token_info == null "> {{ $t('select_a_nft') }} </span>
+                <span class="select-nft-text" v-else> {{ $t('select_a_nft') }} </span>
                 <v-spacer />
                 <v-icon small> mdi-menu-down </v-icon>
               </v-btn>

@@ -82,6 +82,11 @@ export default {
       set(n) {
         this.$store.commit("nft/setNFTs", n);
       }
+    },
+    depositDialog: {
+      get() {
+        return this.$store.state.nft.depositDialog;
+      },
     }
   },
   methods: {
@@ -105,6 +110,11 @@ export default {
       this.nftsLoading = false;
     },
   },
+  watch: {
+    depositDialog(n,o){
+      this.refresh();
+    }
+  }
 };
 </script>
 

@@ -63,7 +63,18 @@ File: /pages/index.vue
 Route: /
 
 Main page of the bridge.
+
 ```
+
+### nft
+```
+File: /pages/nft.vue
+
+Route: /nft
+
+NFT bridge.
+```
+
 ### toolbox
 ```
 File: /pages/toolbox.vue
@@ -73,6 +84,6 @@ Route: /toolbox
 Toolbox for developers.
 ```
 
-## WIP
+WIP
 
-1. mvg.finance/nft
+When the tokenURI is complete, replace nft withdrawal display with image fetched from tokenURI.

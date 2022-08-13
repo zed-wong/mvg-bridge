@@ -88,10 +88,18 @@ export default {
     userAddress() {
       return this.$store.state.userAddress;
     },
+    withdrawDialog: {
+      get() {
+        return this.$store.state.nft.withdrawDialog;
+      },
+    }
   },
   watch: {
     selectTokenDialog(n,o){
       if (n && !this.withdrawNftsLoaded) this.refresh();
+    },
+    withdrawDialog(n,o){
+      this.refresh();
     }
   },
   methods: {

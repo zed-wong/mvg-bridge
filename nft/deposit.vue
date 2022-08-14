@@ -51,11 +51,22 @@
                     :src="selectedToken.token_info.meta.media_url"
                     max-height="32px"
                     max-width="32px"
-
                   />
                 </v-avatar>
-                <span class="selected-nft-text" v-if="selectedToken.token_info"> {{ selectedToken.token_info.meta.name }} </span>
-                <span class="select-nft-text" v-if="!selectedToken.token_info"> {{ $t('select_a_nft') }} </span>
+                <span
+                  :class="
+                    selectedToken.token_info
+                      ? 'selected-nft-text'
+                      : 'select-nft-text'
+                  "
+                >
+                  {{
+                    selectedToken.token_info
+                      ? selectedToken.token_info.meta.name
+                      : $t("select_a_nft")
+                  }}
+                </span>
+
                 <v-spacer />
                 <v-icon small> mdi-menu-down </v-icon>
               </v-btn>
@@ -89,7 +100,9 @@
               </span>
             </div>
             <div class="d-flex flex-column font-weight-light">
-              <span class="mb-1"> {{ $t('transaction_fee') }}: {{ transactionFee }} </span>
+              <span class="mb-1">
+                {{ $t("transaction_fee") }}: {{ transactionFee }}
+              </span>
             </div>
           </v-sheet>
         </v-col>
@@ -133,7 +146,7 @@
 
 <script>
 import bridge from "~/static/bridge.png";
-import depositDialog from "../nft/depositDialog.vue"
+import depositDialog from "../nft/depositDialog.vue";
 import mixinOauthDialog from "../nft/mixinOauthDialog.vue";
 import selectFromToken from "~/nft/selectFromToken.vue";
 import selectFromNetwork from "~/nft/selectFromNetwork.vue";
@@ -148,7 +161,7 @@ export default {
   head() {
     return {
       title: this.$t("deposit_nft"),
-    }
+    };
   },
   layout: "index",
   data() {
@@ -218,11 +231,11 @@ export default {
     },
     depositDialog: {
       get() {
-        return this.$store.state.nft.depositDialog
+        return this.$store.state.nft.depositDialog;
       },
       set(n) {
-        this.$store.commit('nft/toggleDepositDialog', n)
-      }
+        this.$store.commit("nft/toggleDepositDialog", n);
+      },
     },
     isFromMixin: {
       get() {

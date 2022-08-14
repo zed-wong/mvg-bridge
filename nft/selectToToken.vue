@@ -100,6 +100,12 @@ export default {
     },
     withdrawDialog(n,o){
       this.refresh();
+    },
+    selectedToken(){
+      console.log("Address:",this.selectedToken.address);
+      console.log("Collection:",this.selectedToken.collection);
+      console.log("Token:",this.selectedToken.token);
+      console.log("tokenId:",this.selectedToken.tokenId);
     }
   },
   methods: {

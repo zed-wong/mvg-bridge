@@ -18,7 +18,7 @@
         <span> {{ btnText }} </span>
       </v-btn>
     </template>
-    <span v-if="matters"> {{ $t("make_sure_mvm_when_withdrawing") }} </span>
+    <span v-if="alertRed"> {{ $t("make_sure_mvm_when_withdrawing") }} </span>
     <span v-else> {{ $t("current_connected_network") }} </span>
   </v-tooltip>
 </template>

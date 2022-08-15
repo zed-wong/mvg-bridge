@@ -1,6 +1,7 @@
 import axios from 'axios';
 import JsSHA from 'jssha';
 import { ethers } from 'ethers';
+import uuidParse from 'uuid-parse';
 import ERC721ABI from '../assets/erc721.json';
 
 // Deposit
@@ -107,15 +108,15 @@ export async function getNFTsFromExplorer(userAddr, provider) {
     for (let j = 0; j < filteredTokens[i].balance; j++) {
 
       try {
+        const collectionId = await contract.collection();
+        if (collectionId._hex.length != 34) continue;
         const tokenId = await contract.tokenOfOwnerByIndex(userAddr, j);
         const tokenURI = await contract.tokenURI(tokenId);
-
-        // WIP
-        // nfts.push(await getNFTByTokenURI(tokenURI));
-        // return { contractAddress, tokenId, infoFromTokenUri }
-
-        nfts.push({ address: filteredTokens[i].contractAddress, tokenId:tokenId._hex, collection: { id: '4aa4c030-a293-4979-8252-9fa776134cdb', name: 'CyberCoolApe赛博酷猿' }, token: { id: '1', name: '赛博酷猿96', icon: { url: 'https://trident.ap-south-1.linodeobjects.com/r6rhqicn14nn2gc9h5iudyzt1yz2' } } });
-      }catch(error) {
+        const NFTinfo = await getNFTByTokenURI(tokenURI);
+        NFTinfo.address = filteredTokens[i].contractAddress;
+        NFTinfo.tokenId = tokenId._hex;
+        nfts.push(NFTinfo);
+      } catch (error) {
         console.log(error)
         continue;
       }
@@ -129,9 +130,13 @@ async function getNFTByTokenURI(tokenURI) {
   return resp.data;
 }
 
+async function getNFTFromTrident(collectionId, tokenId) {
+  const resp = await axios.get(`https://thetrident.one/api/${collectionId}/${tokenId}`);
+  return resp.data;
+}
+
 async function getTokensFromExplorer(userAddr) {
-  const uri = `https://scan.mvm.dev/api?module=account&action=tokenlist&address=${userAddr}`;
-  const resp = await axios.get(uri);
+  const resp = await axios.get(`https://scan.mvm.dev/api?module=account&action=tokenlist&address=${userAddr}`);
   if (resp.data.message === "OK") {
     return resp.data.result
   } else {
@@ -147,4 +152,11 @@ function filterTokens(tokens) {
     }
   })
   return ERC721;
+};
+
+function hexToUUID(hexString) {
+  const parsedHexString = hexString.replace(new RegExp('^0x'), '');
+  let hexBuffer = Buffer.from(parsedHexString, 'hex');
+  const uuidResultBuffer = uuidParse.unparse(hexBuffer);
+  return uuidResultBuffer.toString('utf8');
 };

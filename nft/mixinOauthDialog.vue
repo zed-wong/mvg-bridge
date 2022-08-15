@@ -128,15 +128,14 @@ export default {
         onSuccess: async (data) => {
           this.accessToken = data;
           this.mixinConnected = true;
-
           this.qrAfterSuccess()
-
           this.nftsLoading = true;
+          localStorage.setItem("access_token", data);
+          localStorage.setItem("tokens", JSON.stringify(this.tokens));
+
           this.tokens = await getNFTsByToken(data);
           this.nftsLoading = false;
           this.nftsLoaded = true;
-          localStorage.setItem("access_token", data);
-          localStorage.setItem("tokens", JSON.stringify(this.tokens));
           return;
         },
       }

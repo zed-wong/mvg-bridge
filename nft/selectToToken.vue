@@ -2,7 +2,7 @@
   <v-dialog
     v-model="selectTokenDialog"
     class="dialog-css"
-    max-width="500px"
+    max-width="1000px"
     overlay-opacity="0.95"
   >
     <v-sheet class="align-self-start px-9 py-8">
@@ -10,16 +10,16 @@
         <h1 class="select-token-css">{{ $t("select_nft") }}</h1>
         <v-spacer />
         <v-btn icon @click="refresh" class="mr-2">
-            <v-icon> mdi-refresh </v-icon>
-          </v-btn>
+          <v-icon> mdi-refresh </v-icon>
+        </v-btn>
         <v-btn icon @click="selectTokenDialog = false">
           <v-icon> mdi-close </v-icon>
         </v-btn>
       </v-row>
-      <v-row class="my-15 d-flex justify-center" v-if="nftsLoading">
+      <v-row class="my-15 py-15 d-flex justify-center" v-if="nftsLoading">
         <v-progress-circular indeterminate color="primary" />
       </v-row>
-      <v-row v-if="withdrawNftsLoaded">
+      <v-row v-if="withdrawNftsLoaded && tokens.length > 0">
         <v-col
           xs="6"
           sm="4"
@@ -29,7 +29,12 @@
           class="py-3"
           @click="selectNFT(nft)"
         >
-          <nft :nft="nft" type="withdraw"/>
+          <nft :nft="nft" type="withdraw" />
+        </v-col>
+      </v-row>
+      <v-row v-if="withdrawNftsLoaded && tokens.length === 0" class="text-center my-10">
+        <v-col>
+          <span class="text-subtitle-1"> {{ $t('no_nft_yet') }} </span>
         </v-col>
       </v-row>
     </v-sheet>
@@ -38,7 +43,7 @@
 
 <script>
 import nft from "../nft/nft.vue";
-import { ethers } from 'ethers';
+import { ethers } from "ethers";
 import { useOnboard } from "@web3-onboard/vue";
 import { getNFTsFromExplorer } from "../helpers/nft";
 
@@ -83,7 +88,7 @@ export default {
       },
       set(n) {
         this.$store.commit("nft/setWithdrawNFTs", n);
-      }
+      },
     },
     userAddress() {
       return this.$store.state.userAddress;
@@ -92,21 +97,21 @@ export default {
       get() {
         return this.$store.state.nft.withdrawDialog;
       },
-    }
+    },
   },
   watch: {
-    selectTokenDialog(n,o){
+    selectTokenDialog(n, o) {
       if (n && !this.withdrawNftsLoaded) this.refresh();
     },
-    withdrawDialog(n,o){
+    withdrawDialog(n, o) {
       this.refresh();
     },
-    selectedToken(){
-      console.log("Address:",this.selectedToken.address);
-      console.log("Collection:",this.selectedToken.collection);
-      console.log("Token:",this.selectedToken.token);
-      console.log("tokenId:",this.selectedToken.tokenId);
-    }
+    selectedToken() {
+      console.log("Address:", this.selectedToken.address);
+      console.log("Collection:", this.selectedToken.collection);
+      console.log("Token:", this.selectedToken.token);
+      console.log("tokenId:", this.selectedToken.tokenId);
+    },
   },
   methods: {
     selectNFT(nft) {
@@ -116,8 +121,8 @@ export default {
     async refresh() {
       this.withdrawNftsLoaded = false;
       this.nftsLoading = true;
-      
-      try{
+
+      try {
         const { connectedWallet } = useOnboard();
         const provider = new ethers.providers.Web3Provider(
           connectedWallet.value.provider,
@@ -140,7 +145,7 @@ export default {
 </script>
 
 <style scoped>
-.nft-background{
+.nft-background {
   background-color: #f4f7fa;
 }
 </style>

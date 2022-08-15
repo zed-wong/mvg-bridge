@@ -43,7 +43,6 @@
                     :src="selectedToken.token.icon.url"
                     max-height="32px"
                     max-width="32px"
-
                   />
                 </v-avatar>
                 <span class="selected-nft-text" v-if="selectedToken.token"> {{ selectedToken.token.name }} </span>

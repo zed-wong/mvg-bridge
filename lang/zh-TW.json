@@ -54,6 +54,7 @@
   "show_qrcode": "使用二維碼",
   "hide_qrcode": "隱藏二維碼",
 
+  "no_nft_yet":"您尚未擁有NFT",
   "insufficient_balance": "餘額不足",
   "invalid_amount": "無效金額",
   "minimum_amount": "最小數量: 0.0001",

@@ -54,6 +54,7 @@
   "show_qrcode": "Show QR Code",
   "hide_qrcode": "Hide QR Code",
 
+  "no_nft_yet":"You don't have a NFT yet.",
   "insufficient_balance": "Insufficient Balance",
   "invalid_amount": "Invalid Amount",
   "minimum_amount": "Minimum Amount: 0.0001",

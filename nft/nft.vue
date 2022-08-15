@@ -7,10 +7,11 @@
         d-flex
         justify-center
         align-center
+        flex-grow-1
         nft-item-radius nft-item-image-bottom
       "
     >
-      <v-img :src="nft.token.icon.url" class="nft-item-radius" />
+      <v-img contain height="100%" :src="nft.token.icon.url" class="nft-item-radius" />
     </v-sheet>
     <span class="font-weight-bold mx-2 mt-1 text-truncate">
       {{ nft.token.name }}
@@ -29,10 +30,11 @@
         d-flex
         justify-center
         align-center
+        flex-grow-1
         nft-item-radius nft-item-image-bottom
       "
     >
-      <v-img :src="nft.token_info.meta.media_url" class="nft-item-radius" />
+      <v-img contain :src="nft.token_info.meta.media_url" class="nft-item-radius" />
     </v-sheet>
     <span class="font-weight-bold mx-2 mt-1 text-truncate">
       {{ nft.token_info.meta.name }}
@@ -56,6 +58,7 @@ export default {
 .nft-item {
   border: 0.1px solid #90a4ae;
   border-radius: 12px;
+  height: 100%;
 }
 .nft-item-radius {
   border-radius: 12px 12px 0px 0px;

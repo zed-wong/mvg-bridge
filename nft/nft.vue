@@ -18,9 +18,17 @@
             <v-img
               contain
               height="100%"
+              @load="log(nft.token.icon.url)"
               :src="nft.token.icon.url"
               class="nft-item-radius"
-            />
+              ><v-skeleton-loader
+                v-if="!loaded"
+                class="mx-auto"
+                max-width="100%"
+                height="100%"
+                type="card"
+              ></v-skeleton-loader>
+            </v-img>
             <v-fade-transition>
               <v-overlay v-if="hover" absolute opacity="0.2">
                 <v-card
@@ -61,10 +69,18 @@
           >
             <v-img
               contain
+              @load="log(nft.token_info.meta.media_url)"
               height="100%"
               :src="nft.token_info.meta.media_url"
               class="nft-item-radius"
-            />
+              ><v-skeleton-loader
+                v-if="!loaded"
+                class="mx-auto"
+                max-width="100%"
+                height="100%"
+                type="card"
+              ></v-skeleton-loader>
+            </v-img>
             <v-fade-transition>
               <v-overlay v-if="hover" absolute opacity="0.2">
                 <v-card
@@ -105,7 +121,18 @@
 
 <script>
 export default {
+  data() {
+    return {
+      loading: false,
+      loaded: false,
+    };
+  },
   props: ["nft", "type"],
+  methods: {
+    log(url) {
+      this.loaded = true;
+    },
+  },
 };
 </script>
 

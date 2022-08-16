@@ -2,7 +2,7 @@
   <v-dialog
     v-model="selectTokenDialog"
     class="dialog-css"
-    max-width="500px"
+    max-width="800px"
     overlay-opacity="0.95"
   >
     <v-sheet class="align-self-start px-9 py-8">
@@ -10,8 +10,8 @@
         <h1 class="select-token-css">{{ $t("select_nft") }}</h1>
         <v-spacer />
         <v-btn icon @click="refresh" class="mr-2">
-            <v-icon> mdi-refresh </v-icon>
-          </v-btn>
+          <v-icon> mdi-refresh </v-icon>
+        </v-btn>
         <v-btn icon @click="selectTokenDialog = false">
           <v-icon> mdi-close </v-icon>
         </v-btn>
@@ -81,13 +81,13 @@ export default {
       },
       set(n) {
         this.$store.commit("nft/setNFTs", n);
-      }
+      },
     },
     depositDialog: {
       get() {
         return this.$store.state.nft.depositDialog;
       },
-    }
+    },
   },
   methods: {
     selectNFT(nft) {
@@ -97,10 +97,12 @@ export default {
     async refresh() {
       this.nftsLoaded = false;
       this.nftsLoading = true;
-      
+
       const token = localStorage.getItem("access_token");
-      try{
-        if (token) { this.tokens = await getNFTsByToken(token); }
+      try {
+        if (token) {
+          this.tokens = await getNFTsByToken(token);
+        }
       } catch (error) {
         this.nftsLoaded = true;
         this.nftsLoading = false;
@@ -111,15 +113,15 @@ export default {
     },
   },
   watch: {
-    depositDialog(n,o){
+    depositDialog(n, o) {
       this.refresh();
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style scoped>
-.nft-background{
+.nft-background {
   background-color: #f4f7fa;
 }
 </style>

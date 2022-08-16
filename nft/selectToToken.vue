@@ -2,7 +2,7 @@
   <v-dialog
     v-model="selectTokenDialog"
     class="dialog-css"
-    max-width="1000px"
+    max-width="800px"
     overlay-opacity="0.95"
   >
     <v-sheet class="align-self-start px-9 py-8">
@@ -26,7 +26,6 @@
           md="4"
           v-for="(nft, i) in tokens"
           :key="i"
-          class="py-3"
           @click="selectNFT(nft)"
         >
           <nft :nft="nft" type="withdraw" />
@@ -106,15 +105,10 @@ export default {
     withdrawDialog(n, o) {
       this.refresh();
     },
-    selectedToken() {
-      console.log("Address:", this.selectedToken.address);
-      console.log("Collection:", this.selectedToken.collection);
-      console.log("Token:", this.selectedToken.token);
-      console.log("tokenId:", this.selectedToken.tokenId);
-    },
   },
   methods: {
     selectNFT(nft) {
+      console.log(nft)
       this.selectedToken = nft;
       this.selectTokenDialog = false;
     },

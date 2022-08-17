@@ -1,6 +1,8 @@
 {
   "connect_wallet": "Connect Wallet",
   "connect_to_mixin": "Connect to Mixin",
+  "menu": "Menu",
+  "account": "Account",
   "nft": "NFT",
   "deposit": "Deposit",
   "withdraw": "Withdraw",
@@ -9,6 +11,7 @@
   "amount":"Amount",
   "max": "Max",
   "add": "Add",
+  "network": "Network",
   "mainnet": "Mainnet",
   "balance": "Balance",
   "loading_balance": "Loading Balance",
@@ -65,6 +68,6 @@
   "close": "Close",
 
   "copy_address": "Copy Address",
-  "copied": "✔️ copied!",
+  "copied": "copied",
   "disconnect": "Disconnect"
 }

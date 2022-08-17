@@ -1,6 +1,8 @@
 {
   "connect_wallet": "連接錢包",
   "connect_to_mixin": "連接到 Mixin",
+  "menu": "菜單",
+  "account": "賬戶",
   "nft": "NFT",
   "deposit": "充值",
   "withdraw": "提現",
@@ -9,6 +11,7 @@
   "amount":"數量",
   "max": "最大",
   "add": "添加",
+  "network": "網絡",
   "mainnet": "主網",
   "balance": "餘額",
   "loading_balance": "正在加載餘額...",
@@ -65,6 +68,6 @@
   "close": "關閉",
 
   "copy_address": "複製地址",
-  "copied": "✔️ 已複製!",
+  "copied": "已複製",
   "disconnect": "斷開鏈接"
 }

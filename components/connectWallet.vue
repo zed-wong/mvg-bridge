@@ -22,6 +22,17 @@
     >
       <span> {{ $t("connect_wallet") }} </span>
     </v-btn>
+    <v-btn
+      block
+      depressed
+      elevation="0"
+      color="#5959d8"
+      v-if="mobile"
+      @click="connect"
+      class="border-rounded main-btn white--text"
+    >
+      <span> {{ $t("connect_wallet") }} </span>
+    </v-btn>
   </div>
 </template>
 
@@ -44,7 +55,7 @@ function fmt(wallet) {
 }
 
 export default {
-  props: ["small", "huge"],
+  props: ["small", "huge", "mobile"],
   methods: {
     async connect() {
       try {

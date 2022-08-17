@@ -6,6 +6,7 @@
         color="#ffffff"
         class="px-6 bar-css"
         height="72px"
+        v-if="!$vuetify.breakpoint.mobile"
       >
         <a href="/">
           <v-img
@@ -16,11 +17,7 @@
           />
         </a>
         <span class="font-weight-bold ml-2 logo-text"> MVG </span>
-        <div
-          v-if="!isMobile"
-          class="ml-10 d-flex align-center"
-          style="height: 100%"
-        >
+        <div class="ml-10 d-flex align-center" style="height: 100%">
           <nuxt-link to="/">
             <v-btn
               elevation="0"
@@ -46,12 +43,42 @@
         </div>
         <v-spacer />
         <connect-wallet :small="true" v-if="!connected" />
-        <current-network v-if="connected && !isMobile" />
+        <current-network v-if="connected" />
         <connected-wallet v-if="connected" />
       </v-app-bar>
+      <v-app-bar
+        elevation="0"
+        color="#ffffff"
+        class="mobile-bar-css"
+        height="64px"
+        v-else
+      >
+        <v-row>
+          <v-col cols="2">
+            <v-app-bar-nav-icon @click="drawer = !drawer" />
+          </v-col>
+          <v-col class="d-flex flex-row align-center justify-center">
+            <a href="/">
+              <v-img
+                :src="bridge"
+                max-width="18px"
+                max-height="20px"
+                class="ml-3"
+              />
+            </a>
+            <span class="font-weight-bold ml-2 mobile-logo-text"> MVG </span>
+          </v-col>
+          <v-col cols="2" />
+        </v-row>
+      </v-app-bar>
+      <mobile-drawer />
       <v-container
         fluid
-        class="fill-height content py-0"
+        :class="
+          !$vuetify.breakpoint.mobile
+            ? 'fill-height py-0 content'
+            : 'fill-height py-0 mobile-content'
+        "
         style="background-color: #f4f7fa"
       >
         <Nuxt />
@@ -67,17 +94,18 @@ import bridge from "../static/bridge.png";
 import connectWallet from "../components/connectWallet.vue";
 import currentNetwork from "../components/currentNetwork.vue";
 import connectedWallet from "../components/connectedWallet.vue";
+import mobileDrawer from '~/components/mobileDrawer.vue';
 
 export default {
   components: {
     connectWallet,
     currentNetwork,
     connectedWallet,
+    mobileDrawer,
   },
   data() {
     return {
       bridge,
-      isMobile: false,
     };
   },
   computed: {
@@ -101,10 +129,16 @@ export default {
     currentRoute() {
       return this.$route.path;
     },
+    drawer: {
+      get(){
+        return this.$store.state.mobileDrawer
+      },
+      set(n){
+        this.$store.commit("toggleMobileDrawer", n)
+      }
+    }
   },
   async mounted() {
-    this.isMobile = this.checkMobile();
-    window.addEventListener("resize", this.checkMobile, { passive: true });
     await this.autoConnectWallet();
   },
   methods: {
@@ -123,9 +157,7 @@ export default {
               },
             });
             this.$store.commit("connect", {
-              address: ethers.utils.getAddress(
-                c[0].accounts[0].address
-              ),
+              address: ethers.utils.getAddress(c[0].accounts[0].address),
               name: c[0].label,
               id: c[0].chains[0].id,
             });
@@ -142,9 +174,6 @@ export default {
       } catch (error) {
         console.log(error);
       }
-    },
-    checkMobile() {
-      return window.innerWidth < 600;
     },
   },
 };
@@ -168,6 +197,10 @@ a {
   font-size: 20px;
   font-family: "Maven Pro", sans-serif;
 }
+.mobile-logo-text {
+  font-size: 18px;
+  font-family: "Maven Pro", sans-serif;
+}
 .v-btn {
   text-transform: none !important;
 }
@@ -178,5 +211,11 @@ a {
 }
 .content {
   height: calc(100vh - 72px);
+}
+.mobile-content {
+  height: calc(100vh - 64px);
+}
+.mobile-menu-list-item {
+  font-size: 16px;
 }
 </style>

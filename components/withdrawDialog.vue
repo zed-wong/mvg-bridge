@@ -95,9 +95,6 @@
             @click="withdraw('metamask')"
             v-if="txSupportMetamask"
           >
-            <v-avatar size="24px">
-              <v-img :src="MetamaskLogo" />
-            </v-avatar>
             <span class="ml-1"> {{ $t("withdraw_to_current_wallet") }}</span>
           </v-btn>
         </v-col>

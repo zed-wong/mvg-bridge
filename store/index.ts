@@ -27,6 +27,8 @@ export const state = () => ({
   confirmWithdrawDialog: false,
   confirmNetworkDialog: false,
   withdrawAddr:[],
+
+  mobileDrawer: false,
 })
 
 export const mutations = {
@@ -54,6 +56,9 @@ export const mutations = {
   },
   toggleAccount(state: any, open: boolean) {
     state.accountDialog = open
+  },
+  toggleMobileDrawer(state: any, open: boolean) {
+    state.mobileDrawer = open
   },
   toggleSelectNetwork(state: any, open: boolean) {
     state.selectNetworkDialog = open

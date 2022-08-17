@@ -45,6 +45,7 @@
                 outlined
                 elevation="0"
                 min-height="56px"
+                v-if="!$vuetify.breakpoint.mobile"
                 class="select-token-btn border-width"
                 @click.stop="selectTokenDialog = true"
               >
@@ -55,6 +56,26 @@
                   class="mr-3"
                 />
                 <span class="mr-2" style="font-size: 18px">
+                  {{ selectedToken.symbol }}
+                </span>
+                <v-icon small> mdi-menu-down </v-icon>
+              </v-btn>
+
+              <v-btn
+                v-else
+                outlined
+                elevation="0"
+                min-height="56px"
+                class="select-token-btn border-width px-1"
+                @click.stop="selectTokenDialog = true"
+              >
+                <v-img
+                  :src="selectedToken.icon_url"
+                  max-height="24px"
+                  max-width="24px"
+                  class="mr-1 ml-1"
+                />
+                <span style="font-size: 18px">
                   {{ selectedToken.symbol }}
                 </span>
                 <v-icon small> mdi-menu-down </v-icon>

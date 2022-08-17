@@ -49,7 +49,7 @@
           <span style="color: #68778d"> {{ networkText }} </span>
         </v-list-item>
         
-        <div class="mx-3 mt-5" v-if="!connected">
+        <div class="mx-3 mt-10" v-if="!connected">
           <connect-wallet :mobile="true" @click="close"/>
         </div>
       </v-list-item-group>

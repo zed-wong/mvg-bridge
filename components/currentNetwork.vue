@@ -1,5 +1,5 @@
 <template>
-  <v-tooltip bottom v-if="networkIcon">
+  <v-tooltip bottom>
     <template v-slot:activator="{ on, attrs }">
       <v-btn
         height="40px"
@@ -12,7 +12,7 @@
         v-on="on"
       >
         <v-icon class="mr-2" v-if="alertRed" color="red"> mdi-alert </v-icon>
-        <v-avatar size="24" class="mr-2" v-else>
+        <v-avatar size="24" class="mr-2" v-if="networkIcon">
           <v-img :src="networkIcon" />
         </v-avatar>
         <span> {{ btnText }} </span>
@@ -33,6 +33,9 @@ export default {
       networkIcon: "",
       alertRed: false,
     };
+  },
+  mounted(){
+    this.loopDetectNetwork();
   },
   computed: {
     confirmDepositDialog() {
@@ -67,10 +70,10 @@ export default {
     confirmDepositDialog(o, n) {
       this.check();
     },
-    connectedChain() {
+    connectedChain(n) {
       this.check();
     },
-    connected() {
+    connected(n) {
       this.check();
     },
     tokenMode() {
@@ -93,6 +96,7 @@ export default {
       } else {
         network_id = this.connectedChain;
       }
+      
       this.alertWhenMatters(network_id);
       switch (network_id) {
         case "0x1":
@@ -133,6 +137,12 @@ export default {
         this.check();
       }
     },
+    async loopDetectNetwork() {
+      while (true) {
+        await this.check();
+        await new Promise(r => setTimeout(r, 2000));
+      }
+    }
   },
 };
 </script>

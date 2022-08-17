@@ -64,6 +64,7 @@ export default {
           localStorage.setItem("connectedWallet", fmt(c[0]));
           const userAddress = c[0].accounts[0].address;
           const userChain = c[0].chains[0].id;
+          console.log(userAddress, userChain);
 
           this.$store.commit("connect", {
             address: ethers.utils.getAddress(userAddress),

@@ -41,6 +41,7 @@
             <div class="d-flex flex-row align-center">
               <v-form v-model="valueValid">
                 <v-text-field
+                  flat
                   outlined
                   :rules="rules"
                   placeholder="0.0"
@@ -51,11 +52,10 @@
               </v-form>
 
               <v-btn
-                outlined
+                v-if="!$vuetify.breakpoint.mobile"
                 elevation="0"
                 min-height="56px"
-                v-if="!$vuetify.breakpoint.mobile"
-                class="select-token-btn border-width"
+                class="select-token-btn"
                 @click.stop="selectTokenDialog = true"
               >
                 <v-img
@@ -75,7 +75,7 @@
                 outlined
                 elevation="0"
                 min-height="56px"
-                class="select-token-btn border-width px-1"
+                class="select-token-btn px-1"
                 @click.stop="selectTokenDialog = true"
               >
                 <v-img
@@ -410,7 +410,9 @@ export default {
   font-weight: 500;
 }
 .from-form {
+  height: 56px;
   background-color: white;
+  border: 1px solid #cbd5e0;
   border-radius: 12px 0 0 12px;
 }
 .selected-network {
@@ -421,23 +423,17 @@ export default {
   color: #5959d8 !important;
 }
 .select-token-btn {
-  color: dark;
-  min-height: 56px;
-  background-color: white;
+  height: 56px;
+  color: white;
+  background-color: white !important;
+  border-bottom: 1px solid #cbd5e0;
+  border-right: 1px solid #cbd5e0;
+  border-top: 1px solid #cbd5e0;
   border-radius: 0 12px 12px 0;
-}
-.border-width {
-  border-style: solid;
-  border: 1px solid currentColor !important;
-  border-width: 0.1px !important;
-  border-left-width: 0px !important;
+  border-left: none !important;
 }
 .v-dialog {
   border-radius: 16px !important;
-}
-.v-text-field--outlined fieldset {
-  color: dark !important;
-  border: thin solid currentColor !important;
 }
 .v-btn {
   text-indent: 0;
@@ -446,6 +442,9 @@ export default {
 }
 .v-btn:before {
   opacity: 0 !important;
+}
+.v-text-field--outlined fieldset {
+  border: none;
 }
 .theme--light.v-btn.v-btn--disabled.v-btn--has-bg {
   background-color: #f1f4f9 !important;
@@ -458,4 +457,8 @@ export default {
   font-weight: 700;
   height: 60px !important;
 }
+</style>
+
+<style scoped>
+
 </style>

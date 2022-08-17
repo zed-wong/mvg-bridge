@@ -46,7 +46,7 @@
                 elevation="0"
                 min-height="56px"
                 v-if="!$vuetify.breakpoint.mobile"
-                class="select-token-btn border-width"
+                class="select-token-btn"
                 @click.stop="selectTokenDialog = true"
               >
                 <v-img
@@ -66,7 +66,7 @@
                 outlined
                 elevation="0"
                 min-height="56px"
-                class="select-token-btn border-width px-1"
+                class="select-token-btn px-1"
                 @click.stop="selectTokenDialog = true"
               >
                 <v-img
@@ -555,64 +555,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-/* .border-rounded {
-  border-radius: 12px;
-}
-.font-weight-500 {
-  font-weight: 500;
-}
-.from-form {
-  background-color: white;
-  border-radius: 12px 0 0 12px;
-}
-.selected-network {
-  font-size: 14px;
-  line-height: normal;
-}
-.arrow-down {
-  color: #5959d8 !important;
-}
-.select-token-btn {
-  color: dark;
-  min-height: 56px;
-  background-color: white;
-  border-radius: 0 12px 12px 0;
-}
-.border-width {
-  border-style: solid;
-  border: 1px solid currentColor !important;
-  border-width: 0.1px !important;
-  border-left-width: 0px !important;
-}
-.max-text {
-  color: #5959d8;
-}
-.v-dialog {
-  border-radius: 16px !important;
-}
-.v-text-field--outlined fieldset {
-  color: dark !important;
-  border: thin solid currentColor !important;
-}
-.v-btn {
-  text-indent: 0;
-  letter-spacing: 0;
-  text-transform: none !important;
-}
-.v-btn:before {
-  opacity: 0 !important;
-}
-.theme--light.v-btn.v-btn--disabled.v-btn--has-bg {
-  background-color: #f1f4f9 !important;
-}
-.v-ripple__container {
-  opacity: 0 !important;
-}
-.main-btn {
-  font-size: 18px;
-  font-weight: 700;
-  height: 60px !important;
-} */
-</style>

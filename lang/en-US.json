@@ -22,6 +22,7 @@
   "withdrawal_fee": "Withdrawal Fee",
   "will_receive": "You will receive",
   "transaction_fee": "Transaction Fee",
+  "pay_with_messenger": "Pay with Mixin Messenger",
   "waiting_for_transaction": "Waiting for transaction",
   "current_connected_network": "Current connected network",
   "make_sure_mvm_when_withdrawing": "Please click to switch to MVM Mainnet or you will lose your fund!",

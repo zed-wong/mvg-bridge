@@ -22,6 +22,7 @@
   "withdrawal_fee": "提現手續費",
   "will_receive": "您將收到",
   "transaction_fee": "轉賬費用",
+  "pay_with_messenger": "使用Mixin Messenger支付",
   "waiting_for_transaction": "等待轉賬中...",
   "current_connected_network": "当前连接网络",
   "make_sure_mvm_when_withdrawing": "請點擊切換至MVM主網，否則您將丟失您的資產！",

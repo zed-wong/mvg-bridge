@@ -53,6 +53,24 @@
         </v-col>
 
         <v-col>
+          <div
+            class="d-flex justify-center mt-5 pa-4 align-center qr-area"
+            v-if="txShowQR && !$vuetify.breakpoint.mobile"
+          >
+            <v-col class="d-flex flex-grow-1">
+              <span class="font-weight-light help-text">
+                {{ txQrHelpText }}
+              </span>
+            </v-col>
+            <v-col class="d-flex flex-grow-0">
+              <vue-qrcode
+                :value="txQrUrl"
+                :options="{ margin: 0, width: 100 }"
+                class="mr-1"
+              />
+            </v-col>
+          </div>
+          
           <v-btn
             block
             x-large
@@ -73,21 +91,33 @@
           >
             <span class="ml-1"> {{ $t("transfer_with_current_wallet") }}</span>
           </v-btn>
-          <div
-            class="d-flex justify-center mt-5 pa-4 align-center qr-area"
-            v-if="txShowQR"
+          
+          <v-btn
+            block
+            x-large
+            elevation="0"
+            class="deposit-btn mt-2"
+            v-if="$vuetify.breakpoint.mobile && selectedNetwork.symbol==='XIN'"
+            @click="redirect(createMixinPayment())"
           >
-            <v-col class="d-flex flex-grow-1">
-              <span class="font-weight-light help-text">
-                {{ txQrHelpText }}
-              </span>
-            </v-col>
-            <v-col class="d-flex flex-grow-0">
+            {{ $t('pay_with_messenger') }}
+          </v-btn>
+          
+          <div
+            class="d-flex flex-column justify-center mt-5 pa-4 align-center qr-area"
+            v-if="txShowQR && $vuetify.breakpoint.mobile"
+          >
+            <v-col class="d-flex justify-center">
               <vue-qrcode
                 :value="txQrUrl"
                 :options="{ margin: 0, width: 100 }"
                 class="mr-1"
               />
+            </v-col>
+            <v-col class="d-flex justify-center">
+              <span class="font-weight-light help-text">
+                {{ txQrHelpText }}
+              </span>
             </v-col>
           </div>
         </v-col>
@@ -266,7 +296,7 @@ export default {
   methods: {
     toggleQR() {
       this.txShowQR = !this.txShowQR;
-      if (this.selectedNetwork.asset_id == XINUUID) this.getPaymentState();
+      if (this.selectedNetwork.asset_id == XINUUID) this.getPaymentState(0);
       if (this.txShowQR == true) this.txQrBtnText = this.$t("hide_qrcode");
       if (this.txShowQR == false) this.txQrBtnText = this.$t("show_qrcode");
     },
@@ -275,9 +305,14 @@ export default {
       let link = `mixin://pay?recipient=${user.client_id}&asset=${this.selectedToken.asset_id}&amount=${this.fromAmount}&trace=${trace}`;
       return link;
     },
-    async getPaymentState() {
+    redirect(to){
+      location.href=to;
+      this.getPaymentState(1);
+    },
+    async getPaymentState(type) {
       while (true) {
-        if (this.txShowQR == false) return;
+        if (type === 0) { if (!this.txShowQR) return;}
+        if (this.confirmDepositDialog == false) return;
         if (this.txQrUrl == undefined) return;
         let user = JSON.parse(localStorage.getItem("user"));
         let client = NewClient(

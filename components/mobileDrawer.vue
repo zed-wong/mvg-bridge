@@ -23,7 +23,7 @@
 
         <v-list-item class="my-2" @click="to('/nft')">
           <v-icon size="28" color="#5959d8" class="mr-4 ml-2">
-            mdi-file-jpg-box
+            mdi-camera-image
           </v-icon>
           <span class="mobile-menu-list-item"> {{ $t("nft") }} </span>
           <v-spacer />
@@ -122,7 +122,6 @@ export default {
       return url;
     },
     toggleAccountDialog() {
-      this.close();
       this.$store.commit("toggleAccount", !this.$store.state.accountDialog);
     },
     initNetwork(id) {

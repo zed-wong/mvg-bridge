@@ -12,7 +12,7 @@
         v-on="on"
       >
         <v-icon class="mr-2" v-if="alertRed" color="red"> mdi-alert </v-icon>
-        <v-avatar size="24" class="mr-2" v-if="networkIcon">
+        <v-avatar size="24" class="mr-2" v-if="networkIcon && !alertRed">
           <v-img :src="networkIcon" />
         </v-avatar>
         <span> {{ btnText }} </span>
@@ -41,6 +41,11 @@ export default {
     confirmDepositDialog() {
       return this.$store.state.confirmDepositDialog;
     },
+    selectedNetwork: {
+      get() {
+        return this.$store.state.fromNetwork;
+      },
+    },
     connectedChain() {
       return this.$store.state.chainId;
     },
@@ -67,7 +72,7 @@ export default {
     },
   },
   watch: {
-    confirmDepositDialog(o, n) {
+    confirmDepositDialog(n) {
       this.check();
     },
     connectedChain(n) {

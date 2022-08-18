@@ -71,7 +71,7 @@
           <v-col cols="2" />
         </v-row>
       </v-app-bar>
-      <mobile-drawer />
+      <mobile-drawer v-if="drawer" />
       <v-container
         fluid
         :class="

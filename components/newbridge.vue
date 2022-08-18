@@ -299,7 +299,7 @@ export default {
 
   methods: {
     async deposit() {
-      if (this.selectedToken.chain_id === ETHUUID) {
+      if (this.selectedNetwork.asset_id === ETHUUID) {
         this.ethBydefault();
       }
       this.depositing = true;

@@ -53,24 +53,6 @@
         </v-col>
 
         <v-col>
-          <div
-            class="d-flex justify-center mt-5 pa-4 align-center qr-area"
-            v-if="txShowQR && !$vuetify.breakpoint.mobile"
-          >
-            <v-col class="d-flex flex-grow-1">
-              <span class="font-weight-light help-text">
-                {{ txQrHelpText }}
-              </span>
-            </v-col>
-            <v-col class="d-flex flex-grow-0">
-              <vue-qrcode
-                :value="txQrUrl"
-                :options="{ margin: 0, width: 100 }"
-                class="mr-1"
-              />
-            </v-col>
-          </div>
-          
           <v-btn
             block
             x-large
@@ -86,25 +68,34 @@
             elevation="0"
             v-if="supportsMetamask"
             :loading="txSent"
-            class="metamask-pay-btn mt-4"
+            class="metamask-pay-btn mt-3"
             @click="deposit"
           >
             <span class="ml-1"> {{ $t("transfer_with_current_wallet") }}</span>
           </v-btn>
-          
           <v-btn
             block
             x-large
             elevation="0"
-            class="deposit-btn mt-2"
-            v-if="$vuetify.breakpoint.mobile && selectedNetwork.symbol==='XIN'"
+            class="deposit-btn mt-3"
+            v-if="
+              $vuetify.breakpoint.mobile && selectedNetwork.symbol === 'XIN'
+            "
             @click="redirect(createMixinPayment())"
           >
-            {{ $t('pay_with_messenger') }}
+            {{ $t("pay_with_mixin_messenger") }}
           </v-btn>
-          
+
           <div
-            class="d-flex flex-column justify-center mt-5 pa-4 align-center qr-area"
+            class="
+              d-flex
+              flex-column
+              justify-center
+              mt-5
+              pa-4
+              align-center
+              qr-area
+            "
             v-if="txShowQR && $vuetify.breakpoint.mobile"
           >
             <v-col class="d-flex justify-center">
@@ -118,6 +109,24 @@
               <span class="font-weight-light help-text">
                 {{ txQrHelpText }}
               </span>
+            </v-col>
+          </div>
+
+          <div
+            class="d-flex justify-center mt-5 pa-4 align-center qr-area"
+            v-if="txShowQR && !$vuetify.breakpoint.mobile"
+          >
+            <v-col class="d-flex flex-grow-1">
+              <span class="font-weight-light help-text">
+                {{ txQrHelpText }}
+              </span>
+            </v-col>
+            <v-col class="d-flex flex-grow-0">
+              <vue-qrcode
+                :value="txQrUrl"
+                :options="{ margin: 0, width: 100 }"
+                class="mr-1"
+              />
             </v-col>
           </div>
         </v-col>
@@ -296,7 +305,7 @@ export default {
   methods: {
     toggleQR() {
       this.txShowQR = !this.txShowQR;
-      if (this.selectedNetwork.asset_id == XINUUID) this.getPaymentState(0);
+      if (this.selectedNetwork.asset_id == XINUUID) this.getPaymentState();
       if (this.txShowQR == true) this.txQrBtnText = this.$t("hide_qrcode");
       if (this.txShowQR == false) this.txQrBtnText = this.$t("show_qrcode");
     },

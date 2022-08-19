@@ -116,6 +116,7 @@ import MetamaskLogo from "../static/metamask.png";
 import { validate as validateUUID } from "uuid";
 import {
   DECIMAL,
+  getExtra,
   bridgeAddress,
   getContractByAssetID,
   getUserProxyContract,
@@ -346,16 +347,7 @@ export default {
         userID = user.user_id;
       }
       if (userID === undefined) return undefined;
-      let payloads = {
-        receivers: [userID],
-        threshold: 1,
-        extra: memo,
-      };
-      let mixinExtra = await this.$axios.post(
-        "https://bridge.mvm.dev/extra",
-        payloads
-      );
-      return "0x" + mixinExtra.data.extra;
+      return "0x" + getExtra(userID, memo);
     },
     async getExternalExtra(to, memo, amount) {
       let withdrawPayload = JSON.stringify({ t: to, m: memo, a: amount });

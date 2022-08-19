@@ -95,7 +95,12 @@ export default {
       return url;
     },
     copyAddr(value) {
-      navigator.clipboard.writeText(value);
+      try{
+        navigator.clipboard.writeText(value);
+      } catch(error){
+        console.log(error)
+        return;
+      }
       this.copySucceed = true;
       setTimeout(() => {
         this.copySucceed = false;

@@ -20,6 +20,7 @@
               height="100%"
               @load="log(nft.token.icon.url)"
               :src="nft.token.icon.url"
+              v-if="nft.token.icon"
               class="nft-item-radius"
               ><v-skeleton-loader
                 v-if="!loaded"

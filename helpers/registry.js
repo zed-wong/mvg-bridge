@@ -9,10 +9,12 @@ import BridgeABI from '../assets/bridgeABI.json';
 
 export const DECIMAL = 100000000
 export const RPCURL = "https://geth.mvm.dev/";
+export const registryID = 'bd670872-76ce-3263-b933-3aa337e212a4';
 export const registryAddress = "0x3c84B6C98FBeB813e05a7A7813F0442883450B1F";
 export const bridgeAddress = "0x0915EaE769D68128EEd9711A0bc4097831BE57F3";
+export const storageAddress = '0xef241988D19892fE4efF4935256087F4fdc5ecAa';
 export const withdrawalAddress = "0xb27C8e0665D2Afa10F50A7CF4D2B9B6B461FD438";
-export const mirrorAddress = "0xC193486e6Bf3E8461cb8fcdF178676a5D75c066A";
+export const mirrorAddress = "0x3a04D4BeDF76C176C09Ac1F66F583070Ba540DC7";
 
 export const getSigner = async () => {
   const web3Modal = new Web3Modal()
@@ -68,4 +70,21 @@ export async function getUserProxyContract(userAddr) {
     public_key: ethers.utils.getAddress(userAddr),
   });
   return result.data.user.contract ? result.data.user.contract : "";
+}
+
+export function getExtra(userid, memo) {
+  const action = {
+    receivers: [userid], threshold: 1, extra: memo,
+  };
+  const extra =
+    registryID.replaceAll('-', '') +
+    storageAddress.slice(2).toLowerCase() +
+    ethers.utils.id(JSON.stringify(action)).slice(2) +
+    JSON.stringify(action)
+      .split('')
+      .map((v) => {
+        return v.charCodeAt(0).toString(16);
+      })
+      .join('');
+  return extra;
 }

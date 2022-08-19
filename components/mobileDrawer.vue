@@ -135,6 +135,9 @@ export default {
           this.networkText = this.$t("mvm_mainnet");
           this.networkIcon = "https://mvm.dev/logo.svg";
           return;
+        default: 
+          this.networkText = this.$t("unsupported_network");
+          return;
       }
     },
     close() {

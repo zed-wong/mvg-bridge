@@ -182,7 +182,7 @@
             :disabled="!valueValid"
             class="border-rounded main-btn white--text"
           >
-            <span> {{ giantBtnText }} </span>
+            <span> {{ withdrawBtnText }} </span>
           </v-btn>
           <withdraw-dialog
             :to-amount="toAmount"
@@ -226,7 +226,7 @@ export default {
   },
   head() {
     return {
-      title: this.$t("withdraw_token")
+      title: this.$t("withdraw_token"),
     };
   },
   data() {
@@ -238,7 +238,6 @@ export default {
       toBalanceVisble: false,
       fetchingBalance: false,
 
-      // metamask tx
       withdrawing: false,
       txEstimatedFee: 0,
       txGettingFee: false,
@@ -247,30 +246,8 @@ export default {
 
       valueValid: false,
       rules: [
-        (value) => {
-          if (value <= 0) {
-            this.btnErrorMsg = this.$t("invalid_amount");
-            return false;
-          }
-
-          if (
-            Number(value) + Number(this.txEstimatedFee) >
-            Number(this.toBalance)
-          ) {
-            this.btnErrorMsg = this.$t("insufficient_balance");
-            return false;
-          }
-
-          if (this.selectedNetwork.asset_id != XINUUID) {
-            if (Number(value) * 10000 < 1) {
-              this.btnErrorMsg = this.$t("minimum_amount");
-              return false;
-            }
-          }
-          return true;
-        },
+        (value) => value >= 0 || "Invalid Amount",
       ],
-      btnErrorMsg: "",
     };
   },
   computed: {
@@ -284,12 +261,6 @@ export default {
     },
     assets() {
       return assets.assets;
-    },
-    giantBtnText: {
-      get() {
-        if (!this.valueValid) return this.btnErrorMsg;
-        return this.$t("withdraw");
-      },
     },
     connected() {
       return this.$store.state.connected;
@@ -375,10 +346,42 @@ export default {
         this.$store.commit("toggleConfirmWithdraw", value);
       },
     },
+    networkCorrect: {
+      get() {
+        if (this.connectedChain === "0x120c7") return true;
+        return false;
+      },
+    },
+    withdrawBtnText: {
+      get() {
+        try {
+          this.$refs.form.validate();
+        } catch (error) {}
+        this.valueValid = false;
+        if (!this.networkCorrect)
+          return `${this.$t("please_switch_to")} ${this.$t("mvm_mainnet")}`;
+
+        if (this.toAmount <= 0) return this.$t("invalid_amount");
+
+        if (
+          Number(this.toAmount) + Number(this.txEstimatedFee) >
+          Number(this.toBalance)
+        )
+          return this.$t("insufficient_balance");
+
+        if (this.selectedNetwork.asset_id != XINUUID) {
+          if (Number(this.toAmount) * 10000 < 1) {
+            return this.$t("minimum_amount");
+          }
+        }
+        this.valueValid = true;
+        return this.$t("withdraw");
+      },
+    },
   },
 
   watch: {
-    async selectedToken(o, n) {
+    async selectedToken() {
       this.getMvmtoBalance();
       await this.estimateTxFee();
       if (!this.connected) return;
@@ -390,7 +393,7 @@ export default {
         }
       });
     },
-    async selectedNetwork(o, n) {
+    async selectedNetwork() {
       await this.estimateTxFee();
       if (!this.connected) return;
       this.$nextTick(() => {
@@ -401,12 +404,12 @@ export default {
         }
       });
     },
-    txGettingFee(o, n) {
+    txGettingFee(n, o) {
       n == true ? (this.valueValid = false) : (this.valueValid = false);
     },
-    connectedChain(){
+    connectedChain() {
       this.getMvmtoBalance();
-    }
+    },
   },
 
   mounted() {
@@ -480,9 +483,9 @@ export default {
       this.$store.commit("setToNetwork", chain);
     },
     async mvmBydefault() {
-      const { connectedWallet, setChain } = useOnboard()
+      const { connectedWallet, setChain } = useOnboard();
       if (connectedWallet) {
-        setChain({ wallet:connectedWallet.value.label, chainId:'0x120c7'})
+        setChain({ wallet: connectedWallet.value.label, chainId: "0x120c7" });
       }
     },
     async estimateTxFee() {

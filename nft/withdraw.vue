@@ -38,8 +38,9 @@
                 class="select-nft-btn my-3"
                 @click.stop="selectNFT"
               >
-                <v-avatar v-if="selectedToken.token" class="mr-1">
+                <v-avatar class="mr-1" v-if="selectedToken.token">
                   <v-img
+                    v-if="selectedToken.token.icon"
                     :src="selectedToken.token.icon.url"
                     max-height="32px"
                     max-width="32px"
@@ -104,10 +105,10 @@
             color="#5959d8"
             v-if="connected"
             @click="withdraw"
-            :disabled="selectedToken.token == undefined"
+            :disabled="!withdrawAllowed"
             class="border-rounded main-btn white--text"
           >
-            <span> {{ $t("withdraw") }} </span>
+            <span> {{ withdrawBtnText }} </span>
           </v-btn>
           <withdraw-dialog />
         </v-col>
@@ -199,6 +200,21 @@ export default {
         return '0';
       },
     },
+    connectedChain() {
+      return this.$store.state.chainId;
+    },
+    withdrawAllowed: {
+      get() {
+        return this.selectedToken.token != undefined && this.connectedChain === "0x120c7"
+      }
+    },
+    withdrawBtnText: {
+      get() {
+        if (this.selectedToken.token == undefined) return this.$t('select_a_nft');
+        if (this.connectedChain != "0x120c7") return this.$t('switch_to_mvm_first');
+        return this.$t("withdraw");
+      }
+    }
   },
   mounted(){
     this.mvmBydefault()

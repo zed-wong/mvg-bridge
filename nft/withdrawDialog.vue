@@ -41,6 +41,7 @@
               >
                 <v-avatar size="20" class="mr-2">
                   <img
+                    v-if="selectedToken.token.icon"
                     :src="selectedToken.token.icon.url"
                     max-height="20px"
                     max-width="20px"
@@ -104,7 +105,7 @@ import { MixinClient } from "../helpers/mixin";
 import { useOnboard } from "@web3-onboard/vue";
 import VueQrcode from "@chenfengyuan/vue-qrcode";
 import { validate as validateUUID } from "uuid";
-import { mirrorAddress, getUserProxyContract } from "../helpers/registry";
+import { mirrorAddress, getUserProxyContract, getExtra } from "../helpers/registry";
 
 const XINUUID = "c94ac88f-4671-3976-b60a-09064f1811e8";
 
@@ -246,18 +247,9 @@ export default {
         let user = await MixinClient.user.fetch(userID);
         userID = user.user_id;
       }
-      if (userID === undefined) return undefined;
-      let payloads = {
-        receivers: [userID],
-        threshold: 1,
-        extra: memo,
-      };
-      let mixinExtra = await this.$axios.post(
-        "https://bridge.mvm.dev/extra",
-        payloads
-      );
+      if (userID === undefined) return undefined;  
       // without 0x prefix !!!
-      return mixinExtra.data.extra;
+      return getExtra(userID, memo);
     },
   },
 };

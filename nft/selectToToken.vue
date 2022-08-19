@@ -33,9 +33,10 @@
       </v-row>
       <v-row v-if="withdrawNftsLoaded && tokens.length === 0" class="text-center my-10">
         <v-col>
-          <span class="text-subtitle-1"> {{ $t('no_nft_yet') }} </span>
+          <span class="text-subtitle-1"> {{ NoNFT }} </span>
         </v-col>
       </v-row>
+      
     </v-sheet>
   </v-dialog>
 </template>
@@ -97,6 +98,13 @@ export default {
         return this.$store.state.nft.withdrawDialog;
       },
     },
+    connectedChain() {
+      return this.$store.state.chainId;
+    },
+    NoNFT(){
+      if (this.connectedChain != "0x120c7") return this.$t('switch_to_mvm_first');
+      return this.$t('no_nft_yet')
+    },
   },
   watch: {
     selectTokenDialog(n, o) {
@@ -108,7 +116,6 @@ export default {
   },
   methods: {
     selectNFT(nft) {
-      console.log(nft)
       this.selectedToken = nft;
       this.selectTokenDialog = false;
     },

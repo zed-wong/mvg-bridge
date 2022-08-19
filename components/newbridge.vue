@@ -39,11 +39,12 @@
             </div>
 
             <div class="d-flex flex-row align-center">
-              <v-form v-model="valueValid">
+              <v-form v-model="valueValid" ref="form">
                 <v-text-field
                   flat
                   outlined
                   :rules="rules"
+                  :error-messages="errorMsg"
                   placeholder="0.0"
                   hide-details="true"
                   v-model="fromAmount"
@@ -117,7 +118,7 @@
           </v-btn>
         </v-col>
 
-        <v-col style="font-size: 14px" class="pa-0">
+        <v-col style="font-size: 14px" class="pa-0 mb-4">
           <v-sheet
             style="background-color: #f4f7fa"
             class="px-5 py-4 border-rounded"
@@ -144,7 +145,7 @@
           </v-sheet>
         </v-col>
 
-        <v-col class="mt-8 px-0">
+        <v-col class="mt-4 px-0">
           <connect-wallet :huge="true" v-if="!connected" />
           <v-btn
             block
@@ -158,7 +159,7 @@
             :disabled="!valueValid"
             class="border-rounded main-btn white--text"
           >
-            <span> {{ $t("deposit") }} </span>
+            <span> {{ depositBtnText }} </span>
           </v-btn>
           <deposit-dialog
             :from-amount="fromAmount"
@@ -198,7 +199,7 @@ export default {
   data() {
     return {
       bridge,
-
+      errorMsg: "",
       fromAmount: "0",
       fromBalance: "",
       fromBalanceVisble: false,
@@ -208,6 +209,8 @@ export default {
       rules: [
         (value) => !!value || "Value is required",
         (value) => value > 0 || "Value must bigger than 0",
+        (value) =>
+          this.networkCorrect || "Incorrect network",
       ],
       valueValid: false,
     };
@@ -279,11 +282,54 @@ export default {
         });
       },
     },
+    connectedChain() {
+      return this.$store.state.chainId;
+    },
+    networkCorrect: {
+      get() {
+        if (this.selectedNetwork.evm_chain_id) {
+          return this.selectedNetwork.symbol == "XIN"
+            ? true
+            : this.selectedNetwork.evm_chain_id === this.connectedChain;
+        } else {
+          return true;
+        }
+      },
+    },
+    depositBtnText: {
+      get() {
+        try {
+          this.$refs.form.validate();
+        } catch (error) {}
+        if (!this.networkCorrect)
+          return `${this.$t("please_switch_to")} ${
+            this.selectedNetwork.name
+          } ${this.$t("mainnet")}`;
+
+        return this.$t("deposit");
+      },
+    },
   },
 
   watch: {
+    selectedNetwork() {
+      this.$nextTick(() => {
+        try {
+          this.$refs.form.validate();
+        } catch (error) {
+          console.log(error);
+        }
+      });
+    },
     selectedToken() {
       this.getFromBalance();
+      this.$nextTick(() => {
+        try {
+          this.$refs.form.validate();
+        } catch (error) {
+          console.log(error);
+        }
+      });
     },
     connected() {
       this.getFromBalance();
@@ -460,5 +506,4 @@ export default {
 </style>
 
 <style scoped>
-
 </style>

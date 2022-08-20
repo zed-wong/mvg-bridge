@@ -79,10 +79,22 @@
             ? 'fill-height py-0 content'
             : 'fill-height py-0 mobile-content'
         "
-        style="background-color: #f4f7fa"
+        class="background-cor"
       >
         <Nuxt />
       </v-container>
+      <v-card height="80px" elevation="0" class="background-cor"  v-if="!$vuetify.breakpoint.mobile">
+        <v-footer>
+          <v-col
+            cols="12"
+            class="pa-6 d-flex flex-row text-start"
+          >
+            <a :href="githubLink" target=”_blank”> <v-icon> mdi-github </v-icon> </a>
+            <v-spacer />
+            <a :href="issueLink" target=”_blank” style="color: black; opacity: 0.5"> <span> {{ $t('report_a_bug') }} </span></a>
+          </v-col>
+        </v-footer>
+      </v-card>
     </v-main>
   </v-app>
 </template>
@@ -94,7 +106,7 @@ import bridge from "../static/bridge.png";
 import connectWallet from "../components/connectWallet.vue";
 import currentNetwork from "../components/currentNetwork.vue";
 import connectedWallet from "../components/connectedWallet.vue";
-import mobileDrawer from '~/components/mobileDrawer.vue';
+import mobileDrawer from "~/components/mobileDrawer.vue";
 
 export default {
   components: {
@@ -106,6 +118,8 @@ export default {
   data() {
     return {
       bridge,
+      githubLink: "https://github.com/zed-wong/mvg.finance",
+      issueLink: "https://github.com/zed-wong/mvg.finance/issues"
     };
   },
   computed: {
@@ -130,13 +144,13 @@ export default {
       return this.$route.path;
     },
     drawer: {
-      get(){
-        return this.$store.state.mobileDrawer
+      get() {
+        return this.$store.state.mobileDrawer;
       },
-      set(n){
-        this.$store.commit("toggleMobileDrawer", n)
-      }
-    }
+      set(n) {
+        this.$store.commit("toggleMobileDrawer", n);
+      },
+    },
   },
   async mounted() {
     await this.autoConnectWallet();
@@ -210,12 +224,15 @@ a {
   border-bottom-color: rgba(0, 0, 0, 0.12) !important;
 }
 .content {
-  height: calc(100vh - 72px);
+  height: calc(100vh - 72px - 80px);
 }
 .mobile-content {
   height: calc(100vh - 64px);
 }
 .mobile-menu-list-item {
   font-size: 16px;
+}
+.background-cor {
+  background-color: #f4f7fa
 }
 </style>

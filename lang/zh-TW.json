@@ -24,7 +24,7 @@
   "transaction_fee": "轉賬費用",
   "waiting_for_transaction": "等待轉賬中...",
   "current_connected_network": "当前连接网络",
-  "make_sure_mvm_when_withdrawing": "請點擊切換至MVM主網，否則您將丟失您的資產！",
+  "make_sure_connected_to": "請確保您已連接至",
 
   "deposit_token": "充值代幣",
   "withdraw_token": "提現代幣",
@@ -59,6 +59,7 @@
   "optional":"選填",
   "show_qrcode": "使用二維碼",
   "hide_qrcode": "隱藏二維碼",
+  "report_a_bug": "報告Bug",
 
   "no_nft_yet":"您尚未擁有NFT，請重試或檢查網絡",
   "insufficient_balance": "餘額不足",

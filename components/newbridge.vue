@@ -39,7 +39,7 @@
             </div>
 
             <div class="d-flex flex-row align-center">
-              <v-form v-model="valueValid" ref="form">
+              <v-form v-model="valueValid">
                 <v-text-field
                   flat
                   outlined
@@ -137,8 +137,11 @@
               </span>
             </div>
             <div class="d-flex flex-column font-weight-light">
+              <!-- <span class="mb-1" v-if="fromGas">
+                Gas Fee: {{ fromGas }} {{ selectedToken.symbol }}
+              </span> -->
               <span class="mb-1">
-                {{ $t("will_receive") }}: {{ fromAmount != 0 ? fromAmount : 0 }}
+                {{ $t("will_receive") }}: {{ fromAmount }}
                 {{ selectedToken.symbol }}
               </span>
             </div>
@@ -171,7 +174,8 @@
   </v-row>
 </template>
 
-<script lang="">
+<script>
+import { floor, subtract } from "mathjs";
 import { ethers } from "ethers";
 import bridge from "~/static/bridge.png";
 import { NewClient } from "@/helpers/mixin";
@@ -200,6 +204,7 @@ export default {
     return {
       bridge,
       errorMsg: "",
+      fromGas: "",
       fromAmount: "0",
       fromBalance: "",
       fromBalanceVisble: false,
@@ -298,9 +303,6 @@ export default {
     },
     depositBtnText: {
       get() {
-        try {
-          this.$refs.form.validate();
-        } catch (error) {}
         if (!this.networkCorrect)
           return `${this.$t("please_switch_to")} ${
             this.selectedNetwork.name
@@ -309,27 +311,22 @@ export default {
         return this.$t("deposit");
       },
     },
+    estimatedReceive: {
+      get() {
+        if (this.fromAmount == 0) return 0;
+        try {
+          return floor(subtract(this.fromAmount,this.fromGas), 8).toString()
+        } catch (error){
+          console.log(error);
+          return 0;
+        }
+      }
+    }
   },
 
   watch: {
-    selectedNetwork() {
-      this.$nextTick(() => {
-        try {
-          this.$refs.form.validate();
-        } catch (error) {
-          console.log(error);
-        }
-      });
-    },
     selectedToken() {
       this.getFromBalance();
-      this.$nextTick(() => {
-        try {
-          this.$refs.form.validate();
-        } catch (error) {
-          console.log(error);
-        }
-      });
     },
     connected() {
       this.getFromBalance();
@@ -364,7 +361,6 @@ export default {
       }
 
       if (!this.checkNetwork(this.selectedNetwork.symbol)) {
-        // console.log("Chain balance is not supported");
         this.fetchingBalance = false;
         this.fromBalanceVisble = false;
         return;
@@ -387,6 +383,8 @@ export default {
       if (this.selectedToken.asset_id === ETHUUID) {
         let addr = ethers.utils.getAddress(userAddr);
         let balance = ethers.utils.formatEther(await provider.getBalance(addr));
+        // let gasETH = (parseFloat(ethers.utils.formatEther(await provider.getGasPrice())) * 1.1 * 21000).toFixed(8);
+        // this.fromGas = gasETH;
         this.fromBalance = balance;
         this.fetchingBalance = false;
         this.fromBalanceVisble = true;
@@ -503,7 +501,4 @@ export default {
   font-weight: 700;
   height: 60px !important;
 }
-</style>
-
-<style scoped>
 </style>

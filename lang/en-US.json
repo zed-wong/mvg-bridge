@@ -24,7 +24,7 @@
   "transaction_fee": "Transaction Fee",
   "waiting_for_transaction": "Waiting for transaction",
   "current_connected_network": "Current connected network",
-  "make_sure_mvm_when_withdrawing": "Please click to switch to MVM Mainnet or you will lose your fund!",
+  "make_sure_connected_to": "Make sure you've connected to",
 
   "deposit_token": "Deposit Token",
   "withdraw_token": "Withdraw Token",
@@ -50,7 +50,7 @@
   "pay_with_mixin_messenger": "Pay with Mixin Messenger",
   "withdraw_to_current_wallet": "Withdraw to current wallet",
   "please_scan_qr_with_your_mixin_messenger": "Please scan this QR Code through your Mixin Messenger",
-  "please_transfer_to_this_address_from_your_wallet": "Please transfer to this address from exchange or your wallet, it may take 5~10 mintues to wait, please wait patiently.",
+  "please_transfer_to_this_address_from_your_wallet": "Please transfer to this address from exchange or your wallet, it may take 5~10 mintues, please wait patiently.",
   "please_enter_recipient_user_id": "Please enter recipient Mixin ID or User ID",
   "please_enter_your_wallet_address": "Please enter your wallet address",
   "please_switch_to": "Please switch to",
@@ -59,6 +59,7 @@
   "optional":"Optional",
   "show_qrcode": "Show QR Code",
   "hide_qrcode": "Hide QR Code",
+  "report_a_bug": "Report a bug",
 
   "no_nft_yet":"You don't have a NFT yet. Please refresh or check your network.",
   "insufficient_balance": "Insufficient Balance",

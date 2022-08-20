@@ -4,12 +4,6 @@ https://mvg.finance
 
 A bridge for MVM Mainnet.
 
-## Features
-
-- Asset bridge
-
-- NFT bridge
-
 ## How it works
 
 ### For Tokens
@@ -62,8 +56,7 @@ File: /pages/index.vue
 
 Route: /
 
-Main page of the bridge.
-
+Main page of the asset bridge.
 ```
 
 ### nft
@@ -74,16 +67,3 @@ Route: /nft
 
 NFT bridge.
 ```
-
-### toolbox
-```
-File: /pages/toolbox.vue
-
-Route: /toolbox
-
-Toolbox for developers.
-```
-
-WIP
-
-When the tokenURI is complete, replace nft withdrawal display with image fetched from tokenURI.

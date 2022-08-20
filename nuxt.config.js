@@ -84,6 +84,7 @@ export default {
   },
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
+    breakpoint: { mobileBreakpoint: 'sm' },
     customVariables: ['~/assets/variables.scss'],
     theme: {
       dark: false,

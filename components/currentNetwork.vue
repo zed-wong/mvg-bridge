@@ -11,14 +11,14 @@
         v-bind="attrs"
         v-on="on"
       >
-        <v-icon class="mr-2" v-if="alertRed" color="red"> mdi-alert </v-icon>
+        <v-icon class="mr-2" v-if="alertRed" color="red"> mdi-alert-circle </v-icon>
         <v-avatar size="24" class="mr-2" v-if="networkIcon && !alertRed">
           <v-img :src="networkIcon" />
         </v-avatar>
         <span> {{ btnText }} </span>
       </v-btn>
     </template>
-    <span v-if="alertRed"> {{ $t("make_sure_mvm_when_withdrawing") }} </span>
+    <span v-if="alertRed"> {{ $t("make_sure_connected_to") }} {{ supposeNetworkName }} </span>
     <span v-else> {{ $t("current_connected_network") }} </span>
   </v-tooltip>
 </template>
@@ -34,7 +34,7 @@ export default {
       alertRed: false,
     };
   },
-  mounted(){
+  mounted() {
     this.loopDetectNetwork();
   },
   computed: {
@@ -45,6 +45,11 @@ export default {
       get() {
         return this.$store.state.fromNetwork;
       },
+    },
+    nftNetwork: {
+      get() {
+        return this.$store.state.nft.fromNetwork;
+      }
     },
     connectedChain() {
       return this.$store.state.chainId;
@@ -61,15 +66,10 @@ export default {
     currentRoute() {
       return this.$route.path;
     },
-    matters() {
-      if (this.tokenMode === 1) {
-        if (this.currentRoute === "/") return true;
-      }
-      if (this.nftMode === 1) {
-        if (this.currentRoute === "/nft") return true;
-      }
-      return false;
-    },
+    supposeNetworkName() {
+      if (this.currentRoute === "/") return this.tokenMode === 0 ? this.selectedNetwork.name +" "+ this.$t('mainnet') : this.$t('mvm_mainnet');
+      if (this.currentRoute === "/nft") return this.nftMode === 0 ? this.nftNetwork.name +" "+ this.$t('mainnet') : this.$t('mvm_mainnet');
+    }
   },
   watch: {
     confirmDepositDialog(n) {
@@ -101,7 +101,7 @@ export default {
       } else {
         network_id = this.connectedChain;
       }
-      
+
       this.alertWhenMatters(network_id);
       switch (network_id) {
         case "0x1":
@@ -119,35 +119,68 @@ export default {
       return false;
     },
     alertWhenMatters(network_id) {
+      this.alertRed = false;
       if (network_id != "0x120c7") {
-        if (this.matters) {
+        if (this.tokenMode === 1 && this.currentRoute === "/") {
           this.alertRed = true;
-        } else {
-          this.alertRed = false;
+          return;
         }
-      } else {
-        this.alertRed = false;
+        if (this.nftMode === 1 && this.currentRoute === "/nft") {
+          this.alertRed = true;
+          return;
+        }
+      }
+      if (network_id != "0x1") {
+        if (this.tokenMode === 0 && this.currentRoute === "/") {
+          if (this.selectedNetwork.symbol === "ETH") {
+            this.alertRed = true;
+            return;
+          }
+        }
+        if (this.tokenMode === 0 && this.currentRoute === "/nft") {
+          if (this.nftNetwork.symbol === "ETH") {
+            this.alertRed = true;
+            return;
+          }
+        }
       }
     },
-    switchToMVM() {
+    switchTo(chainId) {
       const { connectedWallet, setChain } = useOnboard();
       if (connectedWallet) {
-        setChain({ wallet: connectedWallet.value.label, chainId: "0x120c7" });
+        setChain({ wallet: connectedWallet.value.label, chainId });
       }
     },
     detect() {
-      if (this.matters) {
-        this.switchToMVM();
-      } else {
-        this.check();
+      if (this.nftMode === 0 && this.currentRoute === "/") {
+        if (this.selectedNetwork.symbol === "ETH") {
+          this.switchTo("0x1");
+          return;
+        }
       }
+      if (this.nftMode === 0 && this.currentRoute === "/nft") {
+        if (this.selectedNetwork.symbol === "ETH") {
+          this.switchTo("0x1");
+          return;
+        }
+      }
+
+      if (this.nftMode === 1 && this.currentRoute === "/") {
+        this.switchTo("0x120c7");
+        return;
+      }
+      if (this.nftMode === 1 && this.currentRoute === "/nft") {
+        this.switchTo("0x120c7");
+        return;
+      }
+      this.check();
     },
     async loopDetectNetwork() {
       while (true) {
         await this.check();
-        await new Promise(r => setTimeout(r, 2000));
+        await new Promise((r) => setTimeout(r, 2000));
       }
-    }
+    },
   },
 };
 </script>

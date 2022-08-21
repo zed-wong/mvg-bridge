@@ -83,7 +83,7 @@
       >
         <Nuxt />
       </v-container>
-      <v-card height="80px" elevation="0" class="background-cor"  v-if="!$vuetify.breakpoint.mobile">
+      <v-card height="80px" elevation="0" class="background-cor" v-if="!$vuetify.breakpoint.mobile">
         <v-footer>
           <v-col
             cols="12"
@@ -91,10 +91,12 @@
           >
             <a :href="githubLink" target=”_blank”> <v-icon> mdi-github </v-icon> </a>
             <v-spacer />
+            <a @click="showApps"><span style="color: black; opacity: 0.5" class="mr-6"> {{ $t('applications') }} </span> </a>
             <a :href="issueLink" target=”_blank” style="color: black; opacity: 0.5"> <span> {{ $t('report_a_bug') }} </span></a>
           </v-col>
         </v-footer>
       </v-card>
+      <applications />
     </v-main>
   </v-app>
 </template>
@@ -107,6 +109,7 @@ import connectWallet from "../components/connectWallet.vue";
 import currentNetwork from "../components/currentNetwork.vue";
 import connectedWallet from "../components/connectedWallet.vue";
 import mobileDrawer from "~/components/mobileDrawer.vue";
+import applications from "~/components/applications.vue";
 
 export default {
   components: {
@@ -114,6 +117,7 @@ export default {
     currentNetwork,
     connectedWallet,
     mobileDrawer,
+    applications,
   },
   data() {
     return {
@@ -150,6 +154,14 @@ export default {
       set(n) {
         this.$store.commit("toggleMobileDrawer", n);
       },
+    },
+    appsDialog: {
+      get() {
+        return this.$store.state.appsDialog;
+      },
+      set(n) {
+        this.$store.commit('toggleAppsDialog', n);
+      }
     },
   },
   async mounted() {
@@ -189,6 +201,9 @@ export default {
         console.log(error);
       }
     },
+    showApps() {
+      this.appsDialog = true;
+    }
   },
 };
 </script>

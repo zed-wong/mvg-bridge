@@ -59,7 +59,9 @@
   "optional":"Optional",
   "show_qrcode": "Show QR Code",
   "hide_qrcode": "Hide QR Code",
+
   "report_a_bug": "Report a bug",
+  "applications": "Applications",
 
   "no_nft_yet":"You don't have a NFT yet. Please refresh or check your network.",
   "insufficient_balance": "Insufficient Balance",

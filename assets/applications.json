@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Quill",
+    "icon": "https://mixin-images.zeromesh.net/s6n-_fJ0z7qECht65-jIY2Zg7xShQA6CGig8pD8E-na-r8MXRMgeV0NbjQ8nLEjC7__TFXu6Ehms2N9l5GfszToZsiWxgZ2mIVQI=s256",
+    "link": "https://quill.im/",
+    "description": "Build your value net on Web3 with Quill."
+  },
+  {
+    "name": "4swap",
+    "icon": "https://4swap.org/logo.png",
+    "link": "https://4swap.org/",
+    "description": "A decentralized protocol implement for automated liquidity provision on Mixin Network."
+  },
+  {
+    "name": "Trident",
+    "icon": "https://docs.thetrident.one/img/logo.png",
+    "link": "https://thetrident.one/",
+    "description": "The best NFT marketplace for you."
+  }
+]

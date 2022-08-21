@@ -29,6 +29,7 @@ export const state = () => ({
   withdrawAddr:[],
 
   mobileDrawer: false,
+  appsDialog: false,
 })
 
 export const mutations = {
@@ -80,6 +81,9 @@ export const mutations = {
   },
   toggleTxFailedDialog(state: any, open: boolean) {
     state.txFailedDialog = open
+  },
+  toggleAppsDialog(state: any, open: boolean) {
+    state.appsDialog = open;
   },
   setConnected(state: any, connect: boolean){
     state.connected = connect

@@ -59,7 +59,9 @@
   "optional":"選填",
   "show_qrcode": "使用二維碼",
   "hide_qrcode": "隱藏二維碼",
+
   "report_a_bug": "報告Bug",
+  "applications": "MVM應用",
 
   "no_nft_yet":"您尚未擁有NFT，請重試或檢查網絡",
   "insufficient_balance": "餘額不足",

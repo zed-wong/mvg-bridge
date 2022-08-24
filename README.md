@@ -67,3 +67,16 @@ Route: /nft
 
 NFT bridge.
 ```
+
+## Submit your application
+
+Append your app in the following format to `assets/applications.json`, and create a pull request.
+
+```
+{
+    "name": "",           // Name of your app
+    "icon": "",           // Icon link of your app
+    "link": "",           // Link to your app
+    "description": ""     // One line description of your app
+},
+```

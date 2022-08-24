@@ -159,6 +159,13 @@
                 {{ selectedToken.symbol }}
               </span>
             </div>
+            <div
+              class="d-flex flex-column font-weight-light"
+            >
+              <span class="mb-2">
+                {{ $t('transaction_gas') }}:  {{ transactionGas }} ETH
+              </span>
+            </div>
             <div class="d-flex flex-column font-weight-light">
               <span class="mb-2">
                 {{ $t("will_receive") }}: {{ toAmount != 0 ? toAmount : 0 }}
@@ -377,6 +384,11 @@ export default {
         this.valueValid = true;
         return this.$t("withdraw");
       },
+    },
+    transactionGas: {
+      get() {
+        return this.selectedToken.asset_id === ETHUUID ? 0.0000035 : 0.0000016;
+      }
     },
   },
 

@@ -20,6 +20,7 @@
   "mvm_mainnet": "MVM 主網",
   "unsupported_network": "不支持的网络",
   "withdrawal_fee": "提現手續費",
+  "transaction_gas": "預估轉賬費",
   "will_receive": "您將收到",
   "transaction_fee": "轉賬費用",
   "waiting_for_transaction": "等待轉賬中...",

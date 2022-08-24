@@ -152,7 +152,7 @@ export default {
       }
     },
     detect() {
-      if (this.nftMode === 0 && this.currentRoute === "/") {
+      if (this.tokenMode === 0 && this.currentRoute === "/") {
         if (this.selectedNetwork.symbol === "ETH") {
           this.switchTo("0x1");
           return;
@@ -165,7 +165,7 @@ export default {
         }
       }
 
-      if (this.nftMode === 1 && this.currentRoute === "/") {
+      if (this.tokenMode === 1 && this.currentRoute === "/") {
         this.switchTo("0x120c7");
         return;
       }

@@ -2,7 +2,7 @@
 
 https://mvg.finance 
 
-A bridge for MVM Mainnet.
+A bridge interface for MVM Mainnet.
 
 ## How it works
 
@@ -22,13 +22,13 @@ Deposit to proxy mainnet user.
 
 1. to Mixin Mainnet
 
-For assets other than ETH, Call the `asset` contract's `transferWithExtra` method with extra constructed by MVM's `/extra` API.
+For assets other than ETH, Call the `asset` contract's `transferWithExtra` method with extra constructed by `getExtra` in ~/helpers/registry.js .
 
 For ETH, Call the `bridge` contract's `release` method.
 
 2. to Other Network
 
-Used a proxy service that automatically swaps the user's withdrawal asset to the fee asset. And do the withdrawal process when the swap is completed.
+Used a proxy service that automatically swaps the user's withdrawal asset to the fee asset. And do the withdrawal process when the swap is completed. The code is also [open source](https://github.com/zed-wong/mvg.finance-gateway).
 
 ### For NFTs
 

@@ -6,15 +6,21 @@
     "description": "Build your value net on Web3 with Quill."
   },
   {
-    "name": "4swap",
-    "icon": "https://4swap.org/logo.png",
-    "link": "https://4swap.org/",
-    "description": "A decentralized protocol implement for automated liquidity provision on Mixin Network."
-  },
-  {
     "name": "Trident",
     "icon": "https://docs.thetrident.one/img/logo.png",
     "link": "https://thetrident.one/",
     "description": "The best NFT marketplace for you."
+  },
+  {
+    "name": "4swap",
+    "icon": "https://4swap.org/logo.png",
+    "link": "https://4swap.org/",
+    "description": "A decentralized AMM protocol on Mixin Network."
+  },
+  {
+    "name": "BigONE Earn",
+    "icon": "https://mixin-images.zeromesh.net/u4YUVvcbWjpmMmCl65dgbKKDx07_U9-7OGQdZ2USLQD4fDrjZmOrMq-Vv0IeDDVZm1VQaPKDRnBZn_DlfGcZ0-2Q3iZjhU-ek-8rYg=s256",
+    "link": "https://pizza.b1.zone/cn",
+    "description": "Stake your coins to earn interests."
   }
 ]

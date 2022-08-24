@@ -20,6 +20,7 @@
   "mvm_mainnet": "MVM Mainnet",
   "unsupported_network": "Unsupported Network",
   "withdrawal_fee": "Withdrawal Fee",
+  "transaction_gas": "Estimated Gas",
   "will_receive": "You will receive",
   "transaction_fee": "Transaction Fee",
   "waiting_for_transaction": "Waiting for transaction",
@@ -38,8 +39,8 @@
   "search_network_name": "Search network name",
   "switch_to_mvm_first": "Switch your network to MVM Mainnet first",
 
-  "confirm_deposit": "Confirm Deposit",
-  "confirm_withdraw": "Confirm Withdraw",
+  "confirm_deposit": "Confirm deposit",
+  "confirm_withdraw": "Confirm withdrawal",
   "token": "Token",
   "user_id": "Mixin ID",
   "address": "Address",

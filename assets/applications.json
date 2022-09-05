@@ -7,7 +7,7 @@
   },
   {
     "name": "Trident",
-    "icon": "https://docs.thetrident.one/img/logo.png",
+    "icon": "https://mixin-images.zeromesh.net/UrECmX-_zO9twWDh8429lOUU9h7XgRapTM_McbovByNGWK9v-uPVKQw8ZbUvjRLJhEMKGGYs21VtKPNWXfujfVM_T49P4zY3XQgH=s256",
     "link": "https://thetrident.one/",
     "description": "The best NFT marketplace for you."
   },
@@ -22,5 +22,11 @@
     "icon": "https://mixin-images.zeromesh.net/u4YUVvcbWjpmMmCl65dgbKKDx07_U9-7OGQdZ2USLQD4fDrjZmOrMq-Vv0IeDDVZm1VQaPKDRnBZn_DlfGcZ0-2Q3iZjhU-ek-8rYg=s256",
     "link": "https://pizza.b1.zone/cn",
     "description": "Stake your coins to earn interest."
+  },
+  {
+    "name": "OptionDance",
+    "icon": "https://mixin-images.zeromesh.net/3H9XZLLfHeIW4ARQXN99nIgIQQuhEzqsv0iG7_gec3T82UylqQPyOoJEFIVvYHWSo8Z4AN7RSF03qMOZqbOwCJy7srXwhpvPMnU=s256",
+    "link": "https://option.dance/",
+    "description": "Everyone can trade options like the gurus."
   }
 ]

@@ -25,7 +25,7 @@
   "transaction_fee": "Transaction Fee",
   "waiting_for_transaction": "Waiting for transaction",
   "current_connected_network": "Current connected network",
-  "make_sure_connected_to": "Make sure you've connected to",
+  "click_to_switch_to": "Click to switch to",
 
   "deposit_token": "Deposit Token",
   "withdraw_token": "Withdraw Token",
@@ -52,7 +52,7 @@
   "withdraw_to_current_wallet": "Withdraw to current wallet",
   "please_scan_qr_with_your_mixin_messenger": "Please scan this QR Code through your Mixin Messenger",
   "please_transfer_to_this_address_from_your_wallet": "Please transfer to this address from exchange or your wallet, it may take 5~10 mintues, please wait patiently.",
-  "please_enter_recipient_user_id": "Please enter recipient Mixin ID or User ID",
+  "please_enter_recipient_user_id": "Please enter recipient Mixin ID",
   "please_enter_your_wallet_address": "Please enter your wallet address",
   "please_switch_to": "Please switch to",
   "mixin_oauth_title": "Scan to connect",
@@ -63,6 +63,8 @@
 
   "report_a_bug": "Report a bug",
   "applications": "Applications",
+  "add_a_token": "Add a token",
+  "add_a_token_intro": "Add a token to your wallet (MVM Mainnet)",
 
   "no_nft_yet":"You don't have a NFT yet. Please refresh or check your network.",
   "insufficient_balance": "Insufficient Balance",
@@ -76,5 +78,9 @@
 
   "copy_address": "Copy Address",
   "copied": "copied",
-  "disconnect": "Disconnect"
+  "disconnect": "Disconnect",
+
+  "transaction_rejected": "Transaction rejected",
+  "insufficient_eth_balance_for_gas":"Insufficient ETH balance for gas",
+  "failed_to_get_mixin_user":"Failed to get Mixin user"
 }

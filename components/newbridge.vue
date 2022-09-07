@@ -250,9 +250,6 @@ export default {
         return this.$store.state.connected;
       },
     },
-    connectedChain() {
-      return this.$store.state.chainId;
-    },
     selectedNetwork: {
       get() {
         return this.$store.state.fromNetwork;
@@ -262,6 +259,9 @@ export default {
       get() {
         return this.$store.state.fromToken;
       },
+    },
+    connectedChain() {
+      return this.$store.state.chainId;
     },
     connectWalletDialog: {
       get() {

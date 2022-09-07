@@ -25,7 +25,7 @@
   "transaction_fee": "轉賬費用",
   "waiting_for_transaction": "等待轉賬中...",
   "current_connected_network": "当前连接网络",
-  "make_sure_connected_to": "請確保您已連接至",
+  "click_to_switch_to": "點擊以切換至",
 
   "deposit_token": "充值代幣",
   "withdraw_token": "提現代幣",
@@ -52,7 +52,7 @@
   "withdraw_to_current_wallet": "提現到當前地址",
   "please_scan_qr_with_your_mixin_messenger": "請使用 Mixin Messenger 掃描二維碼，操作完成後，請稍作等待。",
   "please_transfer_to_this_address_from_your_wallet": "請通過使用交易所或您的錢包向該地址轉賬，操作完成後，大約需要5~10分鐘到帳，請耐心等待。",
-  "please_enter_recipient_user_id": "請輸入接收者的 MixinID 或 UserID",
+  "please_enter_recipient_user_id": "請輸入接收者的 MixinID",
   "please_enter_your_wallet_address": "請輸入您的錢包地址",
   "please_switch_to": "请切换到",
   "mixin_oauth_title": "請掃碼連接",
@@ -63,6 +63,8 @@
 
   "report_a_bug": "報告Bug",
   "applications": "MVM應用",
+  "add_a_token": "添加Token",
+  "add_a_token_intro": "添加Token到您的錢包 (MVM主網)",
 
   "no_nft_yet":"您尚未擁有NFT，請重試或檢查網絡",
   "insufficient_balance": "餘額不足",
@@ -76,5 +78,9 @@
 
   "copy_address": "複製地址",
   "copied": "已複製",
-  "disconnect": "斷開鏈接"
+  "disconnect": "斷開鏈接",
+  
+  "transaction_rejected": "已拒絕交易",
+  "insufficient_eth_balance_for_gas":"ETH餘額不足以支付Gas費",
+  "failed_to_get_mixin_user":"獲取Mixin用戶失敗"
 }

@@ -5,7 +5,7 @@
         height="40px"
         elevation="0"
         rounded
-        :color="alertRed ? 'red' : '#f4f7fa'"
+        :color="alertRed ? '#da2d2b' : '#f4f7fa'"
         class="ml-3 current-network-btn"
         @click="detect"
         v-bind="attrs"
@@ -19,7 +19,7 @@
         <span v-else> {{ btnText }} </span>
       </v-btn>
     </template>
-    <span v-if="alertRed"> {{ $t("make_sure_connected_to") }} {{ supposeNetworkName }} </span>
+    <span v-if="alertRed"> {{ $t("click_to_switch_to") }} {{ supposeNetworkName }} </span>
     <span v-else> {{ $t("current_connected_network") }} </span>
   </v-tooltip>
 </template>

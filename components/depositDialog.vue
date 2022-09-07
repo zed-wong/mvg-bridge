@@ -205,6 +205,9 @@ export default {
         return this.$store.state.fromToken;
       },
     },
+    connectedChain() {
+      return this.$store.state.chainId;
+    },
     depositAddr: {
       get() {
         return this.$store.state.depositAddr;
@@ -262,7 +265,7 @@ export default {
             subtitle: this.$t("token"),
             haveIcon: true,
             icon: this.selectedToken.icon_url,
-            addtoken: this.selectedToken.asset_id == ETHUUID ? false : true,
+            addtoken: this.connectedChain === "0x120C7" ? true : false,
             copyable: false,
             name: this.selectedToken.symbol,
           },
@@ -314,13 +317,15 @@ export default {
       let link = `mixin://pay?recipient=${user.client_id}&asset=${this.selectedToken.asset_id}&amount=${this.fromAmount}&trace=${trace}`;
       return link;
     },
-    redirect(to){
-      location.href=to;
+    redirect(to) {
+      location.href = to;
       this.getPaymentState(1);
     },
     async getPaymentState(type) {
       while (true) {
-        if (type === 0) { if (!this.txShowQR) return;}
+        if (type === 0) {
+          if (!this.txShowQR) return;
+        }
         if (this.confirmDepositDialog == false) return;
         if (this.txQrUrl == undefined) return;
         let user = JSON.parse(localStorage.getItem("user"));
@@ -352,10 +357,10 @@ export default {
       if (window.ethereum == undefined) return;
       let assetID = this.selectedToken.asset_id;
       if (assetID == ETHUUID) return;
-      let asset = await MixinClient.asset.fetch(assetID);
-      let contractAddr = await getContractByAssetID(assetID);
-      if (contractAddr === ethers.constants.AddressZero) return;
       try {
+        let asset = await MixinClient.asset.fetch(assetID);
+        let contractAddr = await getContractByAssetID(assetID);
+        if (contractAddr === ethers.constants.AddressZero) return;
         await window.ethereum.request({
           method: "wallet_watchAsset",
           params: {

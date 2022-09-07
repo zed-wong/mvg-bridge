@@ -87,16 +87,19 @@
         <v-footer>
           <v-col
             cols="12"
-            class="pa-6 d-flex flex-row text-start"
+            class="pa-6 pl-8 d-flex flex-row text-start align-center"
           >
-            <a :href="githubLink" target=”_blank”> <v-icon> mdi-github </v-icon> </a>
+            <a :href="githubLink" target=”_blank”> <v-icon class="mr-5" size="18"> mdi-github </v-icon> </a>
+            <a :href="mixinGroupLink" target=”_blank”> <v-icon class="mr-5" size="18"> mdi-chat </v-icon> </a>
             <v-spacer />
-            <a @click="showApps"><span style="color: black; opacity: 0.5" class="mr-6"> {{ $t('applications') }} </span> </a>
-            <a :href="issueLink" target=”_blank” style="color: black; opacity: 0.5"> <span> {{ $t('report_a_bug') }} </span></a>
+            <a @click="showApps"><span class="bottom-helper-text mr-8"> {{ $t('applications') }} </span> </a>
+            <a @click="addTokens"><span class="bottom-helper-text mr-8"> {{ $t('add_a_token') }} </span> </a>
+            <a :href="issueLink" target=”_blank” class="bottom-helper-text"> <span> {{ $t('report_a_bug') }} </span></a>
           </v-col>
         </v-footer>
       </v-card>
       <applications />
+      <add-a-token />
     </v-main>
   </v-app>
 </template>
@@ -110,6 +113,7 @@ import currentNetwork from "../components/currentNetwork.vue";
 import connectedWallet from "../components/connectedWallet.vue";
 import mobileDrawer from "~/components/mobileDrawer.vue";
 import applications from "~/components/applications.vue";
+import addAToken from "~/components/addAToken.vue";
 
 export default {
   components: {
@@ -118,12 +122,15 @@ export default {
     connectedWallet,
     mobileDrawer,
     applications,
+    addAToken
   },
   data() {
     return {
       bridge,
+      explorerLink: "https://scan.mvm.dev",
       githubLink: "https://github.com/zed-wong/mvg.finance",
-      issueLink: "https://github.com/zed-wong/mvg.finance/issues"
+      issueLink: "https://github.com/zed-wong/mvg.finance/issues",
+      mixinGroupLink: "https://mixin.one/codes/faa7f8d3-d1c3-473b-9f56-7ffbbb512cc0",
     };
   },
   computed: {
@@ -163,6 +170,14 @@ export default {
         this.$store.commit('toggleAppsDialog', n);
       }
     },
+    addTokenDialog: {
+      get() {
+        return this.$store.state.addTokenDialog;
+      },
+      set(n) {
+        this.$store.commit('toggleAddTokenDialog', n);
+      }
+    }
   },
   async mounted() {
     await this.autoConnectWallet();
@@ -203,6 +218,9 @@ export default {
     },
     showApps() {
       this.appsDialog = true;
+    },
+    addTokens() {
+      this.addTokenDialog = true;
     }
   },
 };
@@ -249,5 +267,9 @@ a {
 }
 .background-cor {
   background-color: #f4f7fa
+}
+.bottom-helper-text {
+  color: #68778d;
+  font-size: 14px;
 }
 </style>

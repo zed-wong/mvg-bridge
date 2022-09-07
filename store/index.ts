@@ -30,6 +30,7 @@ export const state = () => ({
 
   mobileDrawer: false,
   appsDialog: false,
+  addTokenDialog: false,
 })
 
 export const mutations = {
@@ -84,6 +85,9 @@ export const mutations = {
   },
   toggleAppsDialog(state: any, open: boolean) {
     state.appsDialog = open;
+  },
+  toggleAddTokenDialog(state: any, open: boolean) {
+    state.addTokenDialog = open;
   },
   setConnected(state: any, connect: boolean){
     state.connected = connect

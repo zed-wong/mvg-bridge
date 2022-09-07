@@ -49,9 +49,32 @@
             </div>
           </div>
 
-          <div class="d-flex flex-column mb-2">
+          <div class="d-flex flex-column mb-2" v-if="txToMixin">
             <span class="subtitle-css">
-              {{ this.txToMixin ? $t("user_id") : $t("address") }}
+              {{ $t("user_id") }}
+            </span>
+            <v-text-field
+              rounded
+              clearable
+              v-model="txAddress"
+              hide-details="true"
+              class="my-3 withdraw-addr"
+              :placeholder="inputPlaceHolder[0]"
+            />
+            <span class="subtitle-css"> {{ $t("memo") }} </span>
+            <v-text-field
+              rounded
+              clearable
+              v-model="txMemo"
+              hide-details="true"
+              class="my-3 withdraw-addr"
+              :placeholder="inputPlaceHolder[1]"
+            />
+          </div>
+
+          <div class="d-flex flex-column mb-2" v-else>
+            <span class="subtitle-css">
+              {{ $t("address") }}
             </span>
             <v-text-field
               rounded
@@ -100,7 +123,7 @@
         </v-col>
       </v-row>
       <tx-confirmed :link="txExplorerURL" />
-      <tx-failed />
+      <tx-failed :msg="txErrorText" />
     </v-sheet>
   </v-dialog>
 </template>
@@ -230,6 +253,7 @@ export default {
         this.txType1Sent = false;
         this.txType2Sent = false;
         this.confirmWithdrawDialog = false;
+        this.txErrorText = error;
         this.txFailedDialog = true;
       }
     },
@@ -243,8 +267,7 @@ export default {
 
       let mixinExtra = await this.getMixinExtra(this.txAddress, this.txMemo);
       if (mixinExtra === undefined) {
-        console.error("[403] Get Mixin User Failed");
-        return;
+        throw new Error("Failed to get Mixin user");
       }
 
       let txValue = formatAmount(this.toAmount, this.selectedToken.asset_id);
@@ -371,6 +394,24 @@ function formatAmount(amount, asset_id) {
     return ethers.utils.parseEther(Number(amount).toFixed(8));
   }
   return round(multiply(amount, DECIMAL));
+}
+
+function formatError(error) {
+  // TODO
+  try {
+    if (error.message) {
+      if (error.includes("User denied transaction signature"))
+        return this.$t("transaction_rejected");
+      if (error.includes("resolver or addr is not configured for ENS name"))
+        return this.$t("insufficient_eth_balance_for_gas");
+      if (error.includes("Failed to get Mixin user"))
+        return this.$t("failed_to_get_mixin_user");
+    }
+    return error.message;
+  } catch (err) {
+    console.log(err);
+    return error;
+  }
 }
 </script>
 

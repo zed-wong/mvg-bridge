@@ -15,7 +15,7 @@
             outlined
             v-model="search"
             hide-details="true"
-            class="search-border"
+            class="search-border search-bg"
             prepend-inner-icon="mdi-magnify"
             :placeholder="$t('search_network_name')"
           />
@@ -92,6 +92,9 @@ export default {
 <style>
 .search-border {
   border-radius: 10px !important;
+}
+.search-bg {
+  background-color: #ECEFF1;
 }
 .select-network-css {
   font-size: 20px;

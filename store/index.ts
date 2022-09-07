@@ -31,6 +31,10 @@ export const state = () => ({
   mobileDrawer: false,
   appsDialog: false,
   addTokenDialog: false,
+
+  connectMixinDialog: false,
+  mixinConnected: false,
+  oauthUser: {},
 })
 
 export const mutations = {
@@ -55,6 +59,12 @@ export const mutations = {
   },
   toggleConnectWallet(state: any, open: boolean) {
     state.connectWalletDialog = open
+  },
+  toggleConnectMixin(state: any, open: boolean) {
+    state.connectMixinDialog = open
+  },
+  connectMixin(state: any, open: boolean) {
+    state.mixinConnected = open
   },
   toggleAccount(state: any, open: boolean) {
     state.accountDialog = open
@@ -118,5 +128,8 @@ export const mutations = {
   },
   setWithdrawAddr(state: any, data: []) {
     state.withdrawAddr = data
+  },
+  setOauthUser(state: any, data: {}) {
+    state.oauthUser = data
   },
 }

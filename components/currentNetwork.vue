@@ -5,7 +5,7 @@
         height="40px"
         elevation="0"
         rounded
-        :color="alertRed ? '#da2d2b' : '#f4f7fa'"
+        :color="alertRed ? '#FF1744' : '#f4f7fa'"
         class="ml-3 current-network-btn"
         @click="detect"
         v-bind="attrs"

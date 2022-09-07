@@ -5,7 +5,7 @@
     max-width="450px"
     overlay-opacity="0.8"
   >
-    <v-sheet class="align-self-start px-9 py-8" max-height="450px">
+    <v-sheet class="align-self-start px-9 py-8" max-height="500px">
       <v-row class="d-flex flex-column mb-0">
         <v-col class="align-center d-flex flex-row pr-0 mb-2">
           <h1 class="title-css">{{$t('transaction_failed')}}</h1>

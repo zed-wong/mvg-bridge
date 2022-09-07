@@ -88,3 +88,14 @@ export function getExtra(userid, memo) {
       .join('');
   return extra;
 }
+
+export async function userMe(token) {
+  let config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  const result = await axios
+    .get(process.env.MIXIN_API_BASEURL + "me", config);
+  return result.data ? result.data.data : {};
+}

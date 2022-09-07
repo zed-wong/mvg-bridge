@@ -53,10 +53,22 @@
             <span class="subtitle-css">
               {{ $t("user_id") }}
             </span>
-            <v-text-field
+            <v-btn
               rounded
-              clearable
-              v-model="txAddress"
+              class="my-3 withdraw-addr"
+              elevation="0"
+              color="#f4f7fa"
+              height="55px"
+              @click="connectMixinDialog = true"
+              v-if="!mixinConnected"
+            >
+              <span> {{ $t("connect_to_mixin") }} </span>
+            </v-btn>
+            <v-text-field
+              v-else
+              rounded
+              disabled
+              :value="oauthUser.identity_number"
               hide-details="true"
               class="my-3 withdraw-addr"
               :placeholder="inputPlaceHolder[0]"
@@ -70,6 +82,7 @@
               class="my-3 withdraw-addr"
               :placeholder="inputPlaceHolder[1]"
             />
+            <mixin-oauth-dialog />
           </div>
 
           <div class="d-flex flex-column mb-2" v-else>
@@ -145,13 +158,14 @@ import {
   getUserProxyContract,
 } from "../helpers/registry";
 import txConfirmed from "./txConfirmed.vue";
+import mixinOauthDialog from "./mixinOauthDialog.vue";
 
 const XINUUID = "c94ac88f-4671-3976-b60a-09064f1811e8";
 const ETHUUID = "43d61dcd-e413-450d-80b8-101d5e903357";
 const ExplorerBaseURL = process.env.EXPLORER_BASEURL;
 
 export default {
-  components: { txConfirmed },
+  components: { txConfirmed, mixinOauthDialog },
   data() {
     return {
       MetamaskLogo,
@@ -169,6 +183,10 @@ export default {
     };
   },
   props: ["toAmount", "totalAmount", "fee"],
+  // mounted() {
+  //   TODO
+  //   localStorage.getItem("oauth_user")
+  // },
   computed: {
     confirmWithdrawDialog: {
       get() {
@@ -222,6 +240,32 @@ export default {
           : this.$t("please_enter_your_wallet_address"),
         this.$t("optional"),
       ];
+    },
+    connectMixinDialog: {
+      get() {
+        return this.$store.state.connectMixinDialog;
+      },
+      set(value) {
+        this.$store.commit("toggleConnectMixin", value);
+      },
+    },
+    mixinConnected: {
+      get() {
+        return this.$store.state.mixinConnected;
+      },
+      set(value) {
+        this.$store.commit("connectMixin", value);
+      },
+    },
+    oauthUser: {
+      get() {
+        return this.$store.state.oauthUser;
+      },
+    },
+  },
+  watch: {
+    oauthUser(n) {
+      if (n.user_id) this.txAddress = n.user_id;
     },
   },
   methods: {

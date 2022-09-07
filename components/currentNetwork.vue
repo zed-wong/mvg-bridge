@@ -5,17 +5,18 @@
         height="40px"
         elevation="0"
         rounded
-        color="#f4f7fa"
+        :color="alertRed ? 'red' : '#f4f7fa'"
         class="ml-3 current-network-btn"
         @click="detect"
         v-bind="attrs"
         v-on="on"
       >
-        <v-icon class="mr-2" v-if="alertRed" color="red"> mdi-alert-circle </v-icon>
+        <v-icon class="mr-2" v-if="alertRed" color="white" size="16px"> mdi-alert-outline </v-icon>
         <v-avatar size="24" class="mr-2" v-if="networkIcon && !alertRed">
           <v-img :src="networkIcon" />
         </v-avatar>
-        <span> {{ btnText }} </span>
+        <span v-if="alertRed" style="color:white; font-size:16px"> {{ btnText }} </span>
+        <span v-else> {{ btnText }} </span>
       </v-btn>
     </template>
     <span v-if="alertRed"> {{ $t("make_sure_connected_to") }} {{ supposeNetworkName }} </span>

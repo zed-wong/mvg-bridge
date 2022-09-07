@@ -18,7 +18,7 @@
   "loading_withdrawal_fee": "Loading Withdrawal Fee",
   "ethereum_mainnet": "Ethereum Mainnet",
   "mvm_mainnet": "MVM Mainnet",
-  "unsupported_network": "Unsupported Network",
+  "unsupported_network": "Switch Network",
   "withdrawal_fee": "Withdrawal Fee",
   "transaction_gas": "Estimated Gas",
   "will_receive": "You will receive",

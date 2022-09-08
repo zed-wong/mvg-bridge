@@ -86,10 +86,9 @@
       <v-card
         height="80px"
         elevation="0"
-        class="background-cor"
         v-if="!$vuetify.breakpoint.mobile"
       >
-        <v-footer>
+        <v-footer class="background-cor">
           <v-col
             cols="12"
             class="pa-6 pl-8 d-flex flex-row text-start align-center"
@@ -117,8 +116,8 @@
           </v-col>
         </v-footer>
       </v-card>
-      <v-card height="80px" elevation="0" class="background-cor" v-else>
-        <v-footer>
+      <v-card height="80px" elevation="0" v-else>
+        <v-footer  class="background-cor">
           <v-row class="pa-6 pl-8 d-flex flex-column text-start align-center">
             <v-col class="d-flex flex-row justify-center">
               <a :href="githubLink" target="”_blank”">
@@ -128,7 +127,7 @@
                 <v-icon class="mr-5" size="18"> mdi-chat </v-icon>
               </a>
             </v-col>
-            <v-col class="flex-row d-flex">
+            <v-col class="d-flex flex-row justify-center align-center">
               <a @click="showApps"
                 ><span class="bottom-helper-text mr-8">
                   {{ $t("applications") }}
@@ -320,5 +319,6 @@ a {
 .bottom-helper-text {
   color: #68778d;
   font-size: 14px;
+  white-space: nowrap;
 }
 </style>

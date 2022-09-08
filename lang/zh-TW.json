@@ -57,6 +57,7 @@
   "please_switch_to": "请切换到",
   "mixin_oauth_title": "請掃碼連接",
   "mixin_oauth_text": "請在您的手機上打開 Mixin Messenger，並掃碼授權鏈接您的錢包。",
+  "mixin_oauth_mobile_title": "Mixin Messenger",
   "optional":"選填",
   "show_qrcode": "使用二維碼",
   "hide_qrcode": "隱藏二維碼",

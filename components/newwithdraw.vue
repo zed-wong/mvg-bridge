@@ -299,6 +299,7 @@ export default {
       let a = formatBalance(
         Number(this.toBalance) - Number(this.txEstimatedFee)
       );
+      if (this.selectedToken.asset_id === ETHUUID) a = a - Number(this.transactionGas)
       if (a <= 0)
         return this.toBalance
           .toLocaleString("en-US", {
@@ -306,7 +307,7 @@ export default {
             minimumFractionDigits: 2,
           })
           .replaceAll(",", "");
-      return this.selectedNetwork.asset_id == XINUUID
+      return this.selectedNetwork.asset_id === XINUUID
         ? a
             .toLocaleString("en-US", {
               maximumFractionDigits: 8,

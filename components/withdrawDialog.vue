@@ -67,11 +67,13 @@
             <v-text-field
               v-else
               rounded
-              disabled
+              readonly
               :value="oauthUser.identity_number"
               hide-details="true"
               class="my-3 withdraw-addr"
               :placeholder="inputPlaceHolder[0]"
+              append-icon="mdi-close"
+              @click:append="resetOauth"
             />
             <span class="subtitle-css"> {{ $t("memo") }} </span>
             <v-text-field
@@ -183,10 +185,6 @@ export default {
     };
   },
   props: ["toAmount", "totalAmount", "fee"],
-  // mounted() {
-  //   TODO
-  //   localStorage.getItem("oauth_user")
-  // },
   computed: {
     confirmWithdrawDialog: {
       get() {
@@ -261,12 +259,22 @@ export default {
       get() {
         return this.$store.state.oauthUser;
       },
+      set(value) {
+        this.$store.commit("setOauthUser", value)
+      }
     },
   },
   watch: {
     oauthUser(n) {
       if (n.user_id) this.txAddress = n.user_id;
     },
+    confirmWithdrawDialog() {
+      if (localStorage.getItem('oauth_user')) {
+        let u = JSON.parse(localStorage.getItem('oauth_user'))
+        this.mixinConnected = true;
+        this.oauthUser = u;
+      }
+    }
   },
   methods: {
     async withdraw(type) {
@@ -430,6 +438,9 @@ export default {
       );
       return "0x" + externalExtra.data.extra;
     },
+    resetOauth() {
+      this.mixinConnected = false;
+    }
   },
 };
 

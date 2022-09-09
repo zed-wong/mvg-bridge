@@ -83,28 +83,22 @@
       >
         <Nuxt />
       </v-container>
-      <v-card
-        height="80px"
-        elevation="0"
-        v-if="!$vuetify.breakpoint.mobile"
-      >
+      <v-card height="80px" elevation="0" v-if="!$vuetify.breakpoint.mobile">
         <v-footer class="background-cor">
           <v-col
             cols="12"
             class="pa-6 pl-8 d-flex flex-row text-start align-center"
           >
             <a :href="githubLink" target="”_blank”">
-              <v-icon class="mr-5" size="18"> mdi-github </v-icon>
+              <v-icon class="mr-3" size="18"> mdi-github </v-icon>
             </a>
             <a :href="mixinGroupLink" target="”_blank”">
-              <v-icon class="mr-5" size="18"> mdi-chat </v-icon>
+              <v-icon class="mx-3" size="18"> mdi-chat </v-icon>
+            </a>
+            <a @click="showApps">
+              <v-icon class="mx-3" size="18"> mdi-infinity </v-icon>
             </a>
             <v-spacer />
-            <a @click="showApps"
-              ><span class="bottom-helper-text mr-8">
-                {{ $t("applications") }}
-              </span>
-            </a>
             <a @click="addTokens"
               ><span class="bottom-helper-text mr-8">
                 {{ $t("add_a_token") }}
@@ -117,22 +111,25 @@
         </v-footer>
       </v-card>
       <v-card height="80px" elevation="0" v-else>
-        <v-footer  class="background-cor">
+        <v-footer class="background-cor">
           <v-row class="pa-6 pl-8 d-flex flex-column text-start align-center">
             <v-col class="d-flex flex-row justify-center">
               <a :href="githubLink" target="”_blank”">
-                <v-icon class="mr-5" size="18"> mdi-github </v-icon>
+                <v-icon class="mx-3" size="18"> mdi-github </v-icon>
               </a>
               <a :href="mixinGroupLink" target="”_blank”">
-                <v-icon class="mr-5" size="18"> mdi-chat </v-icon>
+                <v-icon class="mx-3" size="18"> mdi-chat </v-icon>
+              </a>
+              <a @click="showApps">
+                <v-icon class="mx-3" size="18"> mdi-infinity </v-icon>
               </a>
             </v-col>
             <v-col class="d-flex flex-row justify-center align-center">
-              <a @click="showApps"
+              <!-- <a @click="showApps"
                 ><span class="bottom-helper-text mr-8">
                   {{ $t("applications") }}
                 </span>
-              </a>
+              </a> -->
               <a @click="addTokens"
                 ><span class="bottom-helper-text mr-8">
                   {{ $t("add_a_token") }}

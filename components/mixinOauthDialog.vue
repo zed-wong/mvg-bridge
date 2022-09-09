@@ -31,9 +31,9 @@
                 <v-img
                   :src="mixinMessengerLogo"
                   class="mixin-logo-overlay"
-                  v-if="!qrScaned"
+                  v-if="!mixinConnected"
                 />
-                <v-icon v-if="qrScaned" size="64px" class="oauth-qr-scanned">
+                <v-icon v-if="mixinConnected" size="64px" class="oauth-qr-scanned">
                   mdi-checkbox-marked-circle
                 </v-icon>
               </v-overlay>
@@ -67,13 +67,13 @@
           </v-btn>
         </v-col>
         <v-col
-          class="d-flex justify-center oauth-qr-background"
+          class="d-flex justify-center oauth-qr-mobile-background"
           v-if="qrLoaded"
         >
           <v-btn elevation="0" color="#ebf8ff" @click="redirect(qrUrl)">
-            <v-img :src="mixinMessengerLogo" class="mr-1" />
+            <v-img :src="mixinMessengerLogo" class="mr-2 mixin-logo-overlay" />
             <span> {{ $t("mixin_oauth_mobile_title") }} </span>
-            <v-icon v-if="qrScaned" size="16px" color="green" class="ml-1">
+            <v-icon v-if="mixinConnected" size="16px" color="green" class="ml-1">
               mdi-checkbox-marked-circle
             </v-icon>
           </v-btn>
@@ -99,7 +99,6 @@ export default {
       mixinMessengerLogo,
       qrUrl: "",
       qrLoaded: false,
-      qrScaned: false,
       accessToken: null,
       outputs: null,
       client: null,
@@ -133,7 +132,6 @@ export default {
   },
   methods: {
     qrAfterSuccess() {
-      this.qrScaned = true;
       setTimeout(() => {
         this.qrUrl = "";
         this.connectMixinDialog = false;
@@ -186,6 +184,10 @@ export default {
   color: #4caf50;
   background-color: #e8f5e9;
   border-radius: 50%;
+}
+.oauth-qr-mobile-background {
+  border-radius: 8px;
+  background-color: #ebf8ff;
 }
 .oauth-guide-title {
   font-size: 18px;

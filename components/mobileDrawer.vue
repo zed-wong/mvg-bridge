@@ -3,6 +3,7 @@
     absolute
     bottom
     temporary
+    style="border-radius:10px 10px 0 0"
     v-model="drawer"
     v-if="$vuetify.breakpoint.mobile"
   >

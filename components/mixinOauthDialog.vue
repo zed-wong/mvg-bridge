@@ -73,6 +73,9 @@
           <v-btn elevation="0" color="#ebf8ff" @click="redirect(qrUrl)">
             <v-img :src="mixinMessengerLogo" class="mr-1" />
             <span> {{ $t("mixin_oauth_mobile_title") }} </span>
+            <v-icon v-if="qrScaned" size="16px" color="green" class="ml-1">
+              mdi-checkbox-marked-circle
+            </v-icon>
           </v-btn>
         </v-col>
       </v-row>

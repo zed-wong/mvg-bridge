@@ -24,7 +24,7 @@ Deposit to proxy mainnet user.
 
 For assets other than ETH, Call the `asset` contract's `transferWithExtra` method with extra constructed by `getExtra` in ~/helpers/registry.js .
 
-For ETH, Call the `bridge` contract's `release` method.
+For ETH, Call the `bridge` contract's `release` method also with extra constructed by `getExtra` in ~/helpers/registry.js. 
 
 2. to Other Network
 

@@ -388,7 +388,7 @@ export default {
     },
     transactionGas: {
       get() {
-        return this.selectedToken.asset_id === ETHUUID ? 0.0000035 : 0.0000016;
+        return 0.0000035;
       }
     },
   },

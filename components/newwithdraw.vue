@@ -388,7 +388,7 @@ export default {
     },
     transactionGas: {
       get() {
-        return 0.0000035;
+        return this.selectedNetwork.asset_id != XINUUID ? 0.0000035 : 0;
       }
     },
   },

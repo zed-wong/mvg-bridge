@@ -2,7 +2,7 @@
   <v-dialog
     v-model="confirmDepositDialog"
     class="dialog-css"
-    max-width="510px"
+    max-width="520px"
     overlay-opacity="0.95"
   >
     <v-sheet class="align-self-start px-9 py-8">
@@ -451,8 +451,8 @@ export default {
 
 <style>
 .dialog-css {
-  width: 400px;
-  max-width: 400px;
+  width: 410px;
+  max-width: 410px;
   min-height: 64px;
 }
 .title-css {

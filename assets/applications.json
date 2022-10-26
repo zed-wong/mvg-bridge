@@ -3,7 +3,7 @@
     "name": "Quill",
     "icon": "https://mixin-images.zeromesh.net/s6n-_fJ0z7qECht65-jIY2Zg7xShQA6CGig8pD8E-na-r8MXRMgeV0NbjQ8nLEjC7__TFXu6Ehms2N9l5GfszToZsiWxgZ2mIVQI=s256",
     "link": "https://quill.im/",
-    "description": "Build your value net on Web3 with Quill."
+    "description": "Build your value on Web3 with Quill."
   },
   {
     "name": "Trident",
@@ -28,5 +28,17 @@
     "icon": "https://mixin-images.zeromesh.net/3H9XZLLfHeIW4ARQXN99nIgIQQuhEzqsv0iG7_gec3T82UylqQPyOoJEFIVvYHWSo8Z4AN7RSF03qMOZqbOwCJy7srXwhpvPMnU=s256",
     "link": "https://option.dance/",
     "description": "Everyone can trade options like the gurus."
+  },
+  {
+    "name": "Pando Leaf",
+    "icon": "https://mixin-images.zeromesh.net/DI3TNuXk4KziH5iIOpcmJ-nOfUsbRQLULHUnjQreLL9Lh3BmdwFq6mqu8DlTrTpeqywcsdnm_j5xJ2xoMhPY3P5Cd9l18ToOJeQr=s256",
+    "link": "https://leaf.pando.im",
+    "description": "A decentralized derivatives liquidity protocol."
+  },
+  {
+    "name": "Pando Rings",
+    "icon": "https://mixin-images.zeromesh.net/oOCZGyxFFw-E2pOCUnjgTcDtuWrEaicdYpCFnEqEYL4LgDfE7hoMUcfG5hUL3j1PIhOlbCzal94Y-rHMCTuExr18T_iacyxJPQuP=s256",
+    "link": "https://rings.pando.im",
+    "description": "An algorithmic, autonomous interest rate protocol."
   }
 ]

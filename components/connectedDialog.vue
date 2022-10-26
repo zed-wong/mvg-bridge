@@ -133,6 +133,7 @@ export default {
   text-overflow: ellipsis;
 }
 .disconnect-btn {
-
+  /* color: white; */
+  /* background-color: #5959d8 !important; */
 }
 </style>

@@ -83,8 +83,7 @@
       >
         <Nuxt />
       </v-container>
-      <v-card height="80px" elevation="0" v-if="!$vuetify.breakpoint.mobile">
-        <v-footer class="background-cor">
+      <v-card height="80px" elevation="0" v-if="!$vuetify.breakpoint.mobile" class="background-cor">
           <v-col
             cols="12"
             class="pa-6 pl-8 d-flex flex-row text-start align-center"
@@ -108,7 +107,6 @@
               <span> {{ $t("report_a_bug") }} </span></a
             >
           </v-col>
-        </v-footer>
       </v-card>
       <v-card height="80px" elevation="0" v-else>
         <v-footer class="background-cor">
@@ -300,7 +298,7 @@ a {
   height: calc(100vh - 72px - 80px);
 }
 .mobile-content {
-  height: calc(100vh - 64px);
+  height: calc(100vh - 64px - 80px);
 }
 .mobile-menu-list-item {
   font-size: 16px;

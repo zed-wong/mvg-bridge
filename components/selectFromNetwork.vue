@@ -96,6 +96,9 @@ export default {
 .search-bg {
   background-color: #ECEFF1;
 }
+.search-text {
+  color:#ECEFF1 !important;
+}
 .select-network-css {
   font-size: 20px;
   font-style: italic;

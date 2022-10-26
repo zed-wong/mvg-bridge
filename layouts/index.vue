@@ -125,11 +125,6 @@
               </a>
             </v-col>
             <v-col class="d-flex flex-row justify-center align-center">
-              <!-- <a @click="showApps"
-                ><span class="bottom-helper-text mr-8">
-                  {{ $t("applications") }}
-                </span>
-              </a> -->
               <a @click="addTokens"
                 ><span class="bottom-helper-text mr-8">
                   {{ $t("add_a_token") }}
@@ -287,11 +282,11 @@ a {
 }
 .logo-text {
   font-size: 20px;
-  font-family: "Maven Pro", sans-serif;
+  font-family: ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,"Apple Color Emoji","Segoe UI Emoji",Segoe UI Symbol,"Noto Color Emoji";
 }
 .mobile-logo-text {
   font-size: 18px;
-  font-family: "Maven Pro", sans-serif;
+  font-family: ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,"Apple Color Emoji","Segoe UI Emoji",Segoe UI Symbol,"Noto Color Emoji";
 }
 .v-btn {
   text-transform: none !important;

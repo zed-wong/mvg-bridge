@@ -1,8 +1,8 @@
-# MVG
+# MVG Bridge
 
-https://mvg.finance 
+https://mvg.fi
 
-A bridge interface for MVM Mainnet.
+A bridge interface for MVM Mainnet powered by MVG.
 
 ## How it works
 

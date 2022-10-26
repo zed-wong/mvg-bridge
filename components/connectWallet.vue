@@ -75,9 +75,13 @@ export default {
 
           c[0].provider.on("accountsChanged", (accounts) => {
             if (accounts[0] != c[0].accounts[0].address) this.$store.commit("disconnect")
+            console.log('accountsChanged')
+            console.log(accounts[0])
+            console.log(c[0].accounts[0].address)
           });
           c[0].provider.on("chainChanged", (chainid) => {
             this.$store.commit("updateChainId", chainid);
+            console.log("chainChanged")
           });
         }
       } catch (error) {

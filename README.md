@@ -1,6 +1,6 @@
 # MVG Bridge
 
-https://mvg.fi
+https://bridge.mvg.fi
 
 A bridge interface for MVM Mainnet powered by MVG.
 

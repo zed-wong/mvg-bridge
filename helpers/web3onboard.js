@@ -53,7 +53,7 @@ export const web3Onboard = init({
           sidebar: {
             heading: "Welcome",
             subheading: "Connect your wallet",
-            paragraph: "Connecting your wallet to MVG to bridge your asset from any network into MVM mainnet or withdraw from MVM mainnet to any network."
+            paragraph: "Connecting your wallet to MVG to bridge your asset"
           }
         }
       }

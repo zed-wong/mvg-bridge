@@ -51,7 +51,7 @@ function fmt(wallet) {
     }
     return val;
   });
-  return value
+  return value;
 }
 
 export default {
@@ -73,10 +73,14 @@ export default {
           });
           await this.register(userAddress);
 
-          c[0].provider.on("accountsChanged", () => this.$store.commit('disconnect'));
+          c[0].provider.on("accountsChanged", () => {
+            this.$store.commit("disconnect");
+            console.log("accountsChanged");
+          });
           c[0].provider.on("chainChanged", (chainid) => {
-            this.$store.commit('updateChainId', chainid);
-          })
+            this.$store.commit("updateChainId", chainid);
+            console.log("chainChanged");
+          });
         }
       } catch (error) {
         console.log(error);

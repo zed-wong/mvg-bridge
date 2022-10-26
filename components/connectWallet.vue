@@ -73,8 +73,8 @@ export default {
           });
           await this.register(userAddress);
 
-          c[0].provider.on("accountsChanged", () => {
-            this.$store.commit("disconnect");
+          c[0].provider.on("accountsChanged", (accounts) => {
+            if (accounts[0] != c[0]) this.$store.commit("disconnect")
             console.log("accountsChanged");
           });
           c[0].provider.on("chainChanged", (chainid) => {

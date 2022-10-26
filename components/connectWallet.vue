@@ -74,7 +74,9 @@ export default {
           await this.register(userAddress);
 
           c[0].provider.on("accountsChanged", (accounts) => {
-            if (accounts[0] != c[0].accounts[0].address) this.$store.commit("disconnect")
+            if (accounts.length == 0) return
+            if (c.length == 0) return
+            if (accounts[0] != ethers.utils.getAddress(c[0].accounts[0].address)) this.$store.commit("disconnect")
             console.log('accountsChanged')
             console.log(accounts[0])
             console.log(c[0].accounts[0].address)

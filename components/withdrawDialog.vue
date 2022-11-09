@@ -445,10 +445,11 @@ export default {
 };
 
 function formatAmount(amount, asset_id) {
+  let realAmount = amount.replaceAll(',','')
   if (asset_id === ETHUUID) {
-    return ethers.utils.parseEther(Number(amount).toFixed(8));
+    return ethers.utils.parseEther(Number(realAmount).toFixed(8));
   }
-  return round(multiply(amount, DECIMAL));
+  return round(multiply(realAmount, DECIMAL));
 }
 
 function formatError(error) {

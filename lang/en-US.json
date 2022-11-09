@@ -25,7 +25,7 @@
   "transaction_fee": "Transaction Fee",
   "waiting_for_transaction": "Waiting for transaction",
   "current_connected_network": "Current connected network",
-  "click_to_switch_to": "Click to switch to",
+  "click_to_switch_to": "Switch to",
 
   "deposit_token": "Deposit Token",
   "withdraw_token": "Withdraw Token",

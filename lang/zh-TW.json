@@ -25,7 +25,7 @@
   "transaction_fee": "轉賬費用",
   "waiting_for_transaction": "等待轉賬中...",
   "current_connected_network": "当前连接网络",
-  "click_to_switch_to": "點擊以切換至",
+  "click_to_switch_to": "切換至",
 
   "deposit_token": "充值代幣",
   "withdraw_token": "提現代幣",

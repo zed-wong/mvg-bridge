@@ -5,17 +5,17 @@
         height="40px"
         elevation="0"
         rounded
-        :color="alertRed ? '#FF1744' : '#f4f7fa'"
+        :color="'#f4f7fa'"
         class="ml-3 current-network-btn"
         @click="detect"
         v-bind="attrs"
         v-on="on"
       >
-        <v-icon class="mr-2" v-if="alertRed" color="white" size="16px"> mdi-alert-outline </v-icon>
+        <v-icon class="mr-2" v-if="alertRed" color="red" size="24px"> mdi-alert-circle-outline </v-icon>
         <v-avatar size="24" class="mr-2" v-if="networkIcon && !alertRed">
           <v-img :src="networkIcon" />
         </v-avatar>
-        <span v-if="alertRed" style="color:white; font-size:16px"> {{ btnText }} </span>
+        <span v-if="alertRed" style="font-size:16px"> {{ btnText }} </span>
         <span v-else> {{ btnText }} </span>
       </v-btn>
     </template>

@@ -1,27 +1,17 @@
-/*! *****************************************************************************
-Copyright (c) Microsoft Corporation. All rights reserved.
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-this file except in compliance with the License. You may obtain a copy of the
-License at http://www.apache.org/licenses/LICENSE-2.0
+/*
+object-assign
+(c) Sindre Sorhus
+@license MIT
+*/
 
-THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
-WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
-MERCHANTABLITY OR NON-INFRINGEMENT.
-
-See the Apache Version 2.0 License for specific language governing permissions
-and limitations under the License.
-***************************************************************************** */
-
-
-/**
- * [js-sha256]{@link https://github.com/emn178/js-sha256}
+/*!
+ * The buffer module from node.js, for the browser.
  *
- * @version 0.9.0
- * @author Chen, Yi-Cyuan [emn178@gmail.com]
- * @copyright Chen, Yi-Cyuan 2014-2017
- * @license MIT
+ * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
+ * @license  MIT
  */
+
+/*! crc32.js (C) 2014-present SheetJS -- http://sheetjs.com */
 
 
 /**
@@ -39,23 +29,6 @@ and limitations under the License.
  * Dual licensed under the MIT or GPL Version 2 licenses.
  **/
 
-
-/*!
- * vue-qrcode v1.0.2
- * https://fengyuanchen.github.io/vue-qrcode
- *
- * Copyright 2018-present Chen Fengyuan
- * Released under the MIT license
- *
- * Date: 2020-01-18T06:04:33.222Z
- */
-
-
-/*
-object-assign
-(c) Sindre Sorhus
-@license MIT
-*/
 
 /*!
  * The buffer module from node.js, for the browser.
@@ -153,6 +126,49 @@ PERFORMANCE OF THIS SOFTWARE.
 
 
 /*!
+ * vue-qrcode v1.0.2
+ * https://fengyuanchen.github.io/vue-qrcode
+ *
+ * Copyright 2018-present Chen Fengyuan
+ * Released under the MIT license
+ *
+ * Date: 2020-01-18T06:04:33.222Z
+ */
+
+
+/*! *****************************************************************************
+Copyright (c) Microsoft Corporation. All rights reserved.
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at http://www.apache.org/licenses/LICENSE-2.0
+
+THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+MERCHANTABLITY OR NON-INFRINGEMENT.
+
+See the Apache Version 2.0 License for specific language governing permissions
+and limitations under the License.
+***************************************************************************** */
+
+/** @preserve
+ * Counter block mode compatible with  Dr Brian Gladman fileenc.c
+ * derived from CryptoJS.mode.CTR
+ * Jan Hruby jhruby.web@gmail.com
+ */
+
+
+/**
+ * [js-sha256]{@link https://github.com/emn178/js-sha256}
+ *
+ * @version 0.9.0
+ * @author Chen, Yi-Cyuan [emn178@gmail.com]
+ * @copyright Chen, Yi-Cyuan 2014-2017
+ * @license MIT
+ */
+
+
+/*!
   * vue-router v3.5.4
   * (c) 2022 Evan You
   * @license MIT
@@ -186,19 +202,3 @@ LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
 OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
 ***************************************************************************** */
-
-/*!
- * The buffer module from node.js, for the browser.
- *
- * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
- * @license  MIT
- */
-
-/*! crc32.js (C) 2014-present SheetJS -- http://sheetjs.com */
-
-
-/** @preserve
- * Counter block mode compatible with  Dr Brian Gladman fileenc.c
- * derived from CryptoJS.mode.CTR
- * Jan Hruby jhruby.web@gmail.com
- */

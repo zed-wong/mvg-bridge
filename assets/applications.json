@@ -40,5 +40,11 @@
     "icon": "https://mixin-images.zeromesh.net/oOCZGyxFFw-E2pOCUnjgTcDtuWrEaicdYpCFnEqEYL4LgDfE7hoMUcfG5hUL3j1PIhOlbCzal94Y-rHMCTuExr18T_iacyxJPQuP=s256",
     "link": "https://rings.pando.im",
     "description": "An algorithmic, autonomous interest rate protocol."
+  },
+  {
+    "name": "MixPay",
+    "icon": "https://mixin-images.zeromesh.net/JcIAH_mxaLaoB4YoI8UcbEdmU1CJdxOrIBJ0YSu6cxkSHpeTdHvJZdRmbEFmBiFgHEOVtHrGO1B0n7dT9RK0AITtuXSy_5giztFK=s256",
+    "link": "https://mixpay.me",
+    "description": "Payment for Web3."
   }
 ]

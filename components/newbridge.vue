@@ -177,7 +177,7 @@
 <script>
 import { floor, subtract } from "mathjs";
 import { ethers } from "ethers";
-import bridge from "~/static/bridge.png";
+import bridge from "~/static/mvm.png";
 import { NewClient } from "@/helpers/mixin";
 import ERC20ABI from "../assets/erc20.json";
 import { useOnboard } from "@web3-onboard/vue";

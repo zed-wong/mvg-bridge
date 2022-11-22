@@ -204,7 +204,7 @@
 
 <script lang="">
 import { ethers } from "ethers";
-import bridge from "~/static/bridge.png";
+import bridge from "~/static/mvm.png";
 import assets from "~/assets/assets.json";
 import chains from "~/assets/chainlist.json";
 import ASSETABI from "~/assets/assetABI.json";

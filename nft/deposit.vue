@@ -145,7 +145,7 @@
 </template>
 
 <script>
-import bridge from "~/static/bridge.png";
+import bridge from "~/static/mvm.png";
 import depositDialog from "../nft/depositDialog.vue";
 import mixinOauthDialog from "../nft/mixinOauthDialog.vue";
 import selectFromToken from "~/nft/selectFromToken.vue";

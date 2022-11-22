@@ -118,7 +118,7 @@
 </template>
 
 <script>
-import bridge from "~/static/bridge.png";
+import bridge from "~/static/mvm.png";
 import { useOnboard } from "@web3-onboard/vue";
 import withdrawDialog from "./withdrawDialog.vue";
 import mixinOauthDialog from "../nft/mixinOauthDialog.vue";

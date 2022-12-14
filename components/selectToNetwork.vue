@@ -66,6 +66,7 @@ export default {
       set(value) {
         this.$store.commit("setToNetwork", value);
         this.selectNetworkDialog = false;
+        this.search = '';
       }
     },
     selectedToken: {
@@ -79,8 +80,16 @@ export default {
       }
     },
     filteredItems() {
+      // FIXME: Temporary hack for BSC assets, only show Mixin Mainnet when withdraw
+      if (this.selectedToken.asset_id?.match('cfcd55cd-9f76-3941-81d6-9e7616cc1b83')) {
+        return this.chains.filter((item)=> item.asset_id == XINUUID)
+      }
+      // FIXME: Temporary hack for BSC assets, only show Mixin Mainnet when withdraw
+
+
       return this.chains.filter((item) => {
         if (item.asset_id.match(this.selectedToken.chain_id) || item.asset_id == XINUUID)
+
         return (
           item.symbol.toLowerCase().match(this.search) ||
           item.name.toLowerCase().match(this.search) ||
@@ -89,9 +98,6 @@ export default {
       });
     },
   },
-  mounted(){
-    this.selectedNetwork = this.filteredItems[0]
-  }
 };
 </script>
 

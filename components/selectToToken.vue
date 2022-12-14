@@ -1,5 +1,10 @@
 <template>
-  <v-dialog v-model="selectTokenDialog" class="dialog-css" max-width="400px" overlay-opacity="0.95">
+  <v-dialog
+    v-model="selectTokenDialog"
+    class="dialog-css"
+    max-width="400px"
+    overlay-opacity="0.95"
+  >
     <v-sheet class="align-self-start px-9 pt-8">
       <v-row class="d-flex flex-column mb-0">
         <v-col class="align-center d-flex flex-row pr-0">
@@ -55,7 +60,8 @@
 
 <script>
 import assets from "../assets/assets.json";
-import chains from "../assets/chainlist.json"
+import chains from "../assets/chainlist.json";
+const XINUUID = "c94ac88f-4671-3976-b60a-09064f1811e8";
 
 export default {
   data() {
@@ -80,14 +86,23 @@ export default {
         this.$store.commit("setToToken", value);
 
         let chain = chains.filter((item) => {
-          return (item.asset_id.match(value.chain_id))
-        })[0]
+          return item.asset_id.match(value.chain_id);
+        })[0];
+
+        // FIXME: Temporary hack for BSC assets, only show Mixin Mainnet when withdraw
+        if (value.asset_id?.match("cfcd55cd-9f76-3941-81d6-9e7616cc1b83")) {
+          chain = chains.filter((item) => {
+            return item.asset_id.match(XINUUID);
+          })[0];
+        }
+        // FIXME: Temporary hack for BSC assets, only show Mixin Mainnet when withdraw
+
         this.$store.commit("setToNetwork", chain);
         this.selectTokenDialog = false;
       },
     },
     assets() {
-      return assets.assets
+      return assets.assets;
     },
     filteredItems() {
       return this.assets.filter((item) => {

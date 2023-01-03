@@ -16,6 +16,8 @@ export const storageAddress = '0xef241988D19892fE4efF4935256087F4fdc5ecAa';
 export const withdrawalAddress = "0xb27C8e0665D2Afa10F50A7CF4D2B9B6B461FD438";
 export const mirrorAddress = "0x3a04D4BeDF76C176C09Ac1F66F583070Ba540DC7";
 
+export const mvmProvider = ethers.getDefaultProvider(RPCURL);
+
 export const getSigner = async () => {
   const web3Modal = new Web3Modal()
   const connection = await web3Modal.connect()
@@ -52,7 +54,7 @@ export async function execAssetContract(address, method, args) {
   const t = await getContract(address, AssetABI)
   return t[method](...args, {
     gasLimit: 350000,
-    gasPrice: 10000000,  // 0.01 Gwei
+    gasPrice: await mvmProvider.getGasPrice(),
   })
 }
 
@@ -60,7 +62,7 @@ export async function execBridgeContract(address, method, args, value) {
   const t = await getContract(address, BridgeABI)
   return t[method](...args, {
     gasLimit: 350000,
-    gasPrice: 10000000,  // 0.01 Gwei
+    gasPrice: await mvmProvider.getGasPrice(),
     value: value,
   })
 }

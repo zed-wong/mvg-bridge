@@ -75,21 +75,46 @@
       <v-container
         fluid
         :class="
-          !$vuetify.breakpoint.mobile
-            ? 'fill-height py-0 content'
-            : 'fill-height py-0 mobile-content'
+          !$vuetify.breakpoint.mobile ? ' py-0 content' : ' py-0 mobile-content'
         "
         class="background-cor"
       >
         <Nuxt />
       </v-container>
-      <v-card height="80px" elevation="0" v-if="!$vuetify.breakpoint.mobile" class="background-cor">
-          <v-col
-            cols="12"
-            class="pa-6 pl-8 d-flex flex-row text-start align-center"
+      <v-footer
+        absolute
+        class="background-cor"
+        v-if="!$vuetify.breakpoint.mobile"
+      >
+        <v-col
+          cols="12"
+          class="pa-6 pl-8 d-flex flex-row text-start align-center"
+        >
+          <a :href="githubLink" target="”_blank”">
+            <v-icon class="mr-3" size="18"> mdi-github </v-icon>
+          </a>
+          <a :href="mixinGroupLink" target="”_blank”">
+            <v-icon class="mx-3" size="18"> mdi-chat </v-icon>
+          </a>
+          <a @click="showApps">
+            <v-icon class="mx-3" size="18"> mdi-infinity </v-icon>
+          </a>
+          <v-spacer />
+          <a @click="addTokens"
+            ><span class="bottom-helper-text mr-8">
+              {{ $t("add_a_token") }}
+            </span>
+          </a>
+          <a :href="issueLink" target="”_blank”" class="bottom-helper-text">
+            <span> {{ $t("report_a_bug") }} </span></a
           >
+        </v-col>
+      </v-footer>
+      <v-footer absolute class="background-cor" v-else>
+        <v-row class="pa-6 pl-8 d-flex flex-column text-start align-center">
+          <v-col class="d-flex flex-row justify-center">
             <a :href="githubLink" target="”_blank”">
-              <v-icon class="mr-3" size="18"> mdi-github </v-icon>
+              <v-icon class="mx-3" size="18"> mdi-github </v-icon>
             </a>
             <a :href="mixinGroupLink" target="”_blank”">
               <v-icon class="mx-3" size="18"> mdi-chat </v-icon>
@@ -97,7 +122,8 @@
             <a @click="showApps">
               <v-icon class="mx-3" size="18"> mdi-infinity </v-icon>
             </a>
-            <v-spacer />
+          </v-col>
+          <v-col class="d-flex flex-row justify-center align-center">
             <a @click="addTokens"
               ><span class="bottom-helper-text mr-8">
                 {{ $t("add_a_token") }}
@@ -107,34 +133,8 @@
               <span> {{ $t("report_a_bug") }} </span></a
             >
           </v-col>
-      </v-card>
-      <v-card height="80px" elevation="0" v-else>
-        <v-footer class="background-cor">
-          <v-row class="pa-6 pl-8 d-flex flex-column text-start align-center">
-            <v-col class="d-flex flex-row justify-center">
-              <a :href="githubLink" target="”_blank”">
-                <v-icon class="mx-3" size="18"> mdi-github </v-icon>
-              </a>
-              <a :href="mixinGroupLink" target="”_blank”">
-                <v-icon class="mx-3" size="18"> mdi-chat </v-icon>
-              </a>
-              <a @click="showApps">
-                <v-icon class="mx-3" size="18"> mdi-infinity </v-icon>
-              </a>
-            </v-col>
-            <v-col class="d-flex flex-row justify-center align-center">
-              <a @click="addTokens"
-                ><span class="bottom-helper-text mr-8">
-                  {{ $t("add_a_token") }}
-                </span>
-              </a>
-              <a :href="issueLink" target="”_blank”" class="bottom-helper-text">
-                <span> {{ $t("report_a_bug") }} </span></a
-              >
-            </v-col>
-          </v-row>
-        </v-footer>
-      </v-card>
+        </v-row>
+      </v-footer>
       <applications />
       <add-a-token />
     </v-main>
@@ -280,11 +280,15 @@ a {
 }
 .logo-text {
   font-size: 20px;
-  font-family: ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,"Apple Color Emoji","Segoe UI Emoji",Segoe UI Symbol,"Noto Color Emoji";
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol, "Noto Color Emoji";
 }
 .mobile-logo-text {
   font-size: 18px;
-  font-family: ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,"Apple Color Emoji","Segoe UI Emoji",Segoe UI Symbol,"Noto Color Emoji";
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol, "Noto Color Emoji";
 }
 .v-btn {
   text-transform: none !important;

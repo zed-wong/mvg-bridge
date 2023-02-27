@@ -175,11 +175,12 @@
 </template>
 
 <script>
-import { floor, subtract } from "mathjs";
 import { ethers } from "ethers";
 import bridge from "~/static/mvm.png";
-import { NewClient } from "@/helpers/mixin";
+import { floor, subtract } from "mathjs";
 import ERC20ABI from "../assets/erc20.json";
+import { NewClient } from "@/helpers/mixin";
+import { BTC_UUID } from "@/helpers/constants"
 import { useOnboard } from "@web3-onboard/vue";
 import selectFromToken from "~/components/selectFromToken.vue";
 import selectFromNetwork from "~/components/selectFromNetwork.vue";
@@ -421,7 +422,9 @@ export default {
             user.private_key
           );
           let asset = await client.asset.fetch(asset_id);
-          let dest = asset.deposit_entries[0].destination;
+          let dest = asset_id === BTC_UUID ? 
+            asset.deposit_entries.find((element) => element.properties.includes('P2WPKH_V0')).destination : 
+            asset.deposit_entries[0].destination || asset.deposit_entries[0].destination;
           let tag = asset.deposit_entries[0].tag;
           return [dest, tag];
         }

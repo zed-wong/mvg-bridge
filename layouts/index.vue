@@ -3,7 +3,7 @@
     <v-main>
       <v-app-bar
         elevation="0"
-        color="#ffffff"
+        color="#f4f7fa"
         class="px-6 bar-css"
         height="72px"
         v-if="!$vuetify.breakpoint.mobile"
@@ -296,7 +296,6 @@ a {
 .bar-css {
   border-width: 0 0 thin;
   border-style: solid;
-  border-bottom-color: rgba(0, 0, 0, 0.12) !important;
 }
 .content {
   height: calc(100vh - 72px - 80px);

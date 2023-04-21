@@ -19,8 +19,8 @@
             mdi-alert-circle-outline
           </v-icon>
         </v-col>
-        <v-col class="d-flex justify-center">
-          <span v-if="msg">  {{ msg }}  </span>
+        <v-col class="d-flex justify-center break-all">
+          <span v-if="msg">  {{ msg.message ? msg.message : msg }}  </span>
         </v-col>
         <v-col>
           <v-btn

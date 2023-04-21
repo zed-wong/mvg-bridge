@@ -54,9 +54,7 @@
 import { ethers } from "ethers";
 import { MixinClient } from "~/helpers/mixin";
 import { getContractByAssetID } from "../helpers/registry";
-
-const XINUUID = "c94ac88f-4671-3976-b60a-09064f1811e8";
-const ETHUUID = "43d61dcd-e413-450d-80b8-101d5e903357";
+import { XINUUID, ETHUUID } from '~/helpers/constants';
 
 export default {
   data(){

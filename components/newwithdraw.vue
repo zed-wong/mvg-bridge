@@ -155,7 +155,7 @@
               v-if="txEstimatedFeeVisible"
             >
               <span class="mb-2">
-                {{ $t("withdrawal_fee") }}: {{ txEstimatedFee }}
+                {{ $t("withdrawal_fee") }}: {{ totalFeeAmount }}
                 {{ selectedToken.symbol }}
               </span>
             </div>
@@ -194,7 +194,7 @@
           <withdraw-dialog
             :to-amount="toAmount"
             :total-amount="totalPayAmount"
-            :fee="txEstimatedFee"
+            :fee="totalFeeAmount"
           />
         </v-col>
       </v-row>
@@ -215,9 +215,7 @@ import selectToToken from "~/components/selectToToken.vue";
 import ConnectWallet from "~/components/connectWallet.vue";
 import withdrawDialog from "~/components/withdrawDialog.vue";
 import selectToNetowrk from "~/components/selectToNetwork.vue";
-
-const XINUUID = "c94ac88f-4671-3976-b60a-09064f1811e8";
-const ETHUUID = "43d61dcd-e413-450d-80b8-101d5e903357";
+import { XINUUID, ETHUUID, FEE_PERCENTAGE } from '~/helpers/constants';
 
 function formatBalance(balance) {
   if (balance <= 0) return balance;
@@ -289,15 +287,22 @@ export default {
     },
     totalPayAmount() {
       return (
-        Number(this.toAmount) + Number(this.txEstimatedFee)
+        Number(this.toAmount) + Number(this.totalFeeAmount)
       ).toLocaleString("en-US", {
         maximumFractionDigits: 8,
         minimumFractionDigits: 0,
       });
     },
+    totalFeeAmount() {
+      return (
+        this.selectedNetwork.asset_id === XINUUID ? 
+          this.txEstimatedFee :
+          Number(this.txEstimatedFee) + Number(this.toAmount) * FEE_PERCENTAGE
+      )
+    },
     maxPayAmount() {
       let a = formatBalance(
-        Number(this.toBalance) - Number(this.txEstimatedFee)
+        Number(this.toBalance) - Number(this.toBalance) * FEE_PERCENTAGE - Number(this.txEstimatedFee)
       );
       if (this.selectedToken.asset_id === ETHUUID) a = a - Number(this.transactionGas)
       if (a <= 0)
@@ -388,7 +393,7 @@ export default {
     },
     transactionGas: {
       get() {
-        return 0.0000035;
+        return 0.0000175;
       }
     },
   },

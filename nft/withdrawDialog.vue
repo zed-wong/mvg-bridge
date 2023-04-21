@@ -106,8 +106,7 @@ import { useOnboard } from "@web3-onboard/vue";
 import VueQrcode from "@chenfengyuan/vue-qrcode";
 import { validate as validateUUID } from "uuid";
 import { mirrorAddress, getUserProxyContract, getExtra, mvmProvider } from "../helpers/registry";
-
-const XINUUID = "c94ac88f-4671-3976-b60a-09064f1811e8";
+import { XINUUID } from '~/helpers/constants';
 
 export default {
   components: {

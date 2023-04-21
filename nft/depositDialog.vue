@@ -76,7 +76,7 @@ import { getSignedByToken, getUserID } from "../helpers/nft";
 import { createCollectibleRequest } from "mixin-node-sdk";
 import VueQrcode from "@chenfengyuan/vue-qrcode";
 
-const XINUUID = "c94ac88f-4671-3976-b60a-09064f1811e8";
+import { XINUUID } from '~/helpers/constants';
 const ExplorerBaseURL = process.env.EXPLORER_BASEURL;
 
 export default {

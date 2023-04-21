@@ -55,7 +55,7 @@
 
 <script>
 import assets from "../assets/assets.json";
-const XINUUID = 'c94ac88f-4671-3976-b60a-09064f1811e8'
+import { XINUUID } from '~/helpers/constants';
 
 export default {
   data() {

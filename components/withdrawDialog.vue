@@ -162,9 +162,8 @@ import {
 } from "../helpers/registry";
 import txConfirmed from "./txConfirmed.vue";
 import mixinOauthDialog from "./mixinOauthDialog.vue";
+import { XINUUID, ETHUUID } from '~/helpers/constants';
 
-const XINUUID = "c94ac88f-4671-3976-b60a-09064f1811e8";
-const ETHUUID = "43d61dcd-e413-450d-80b8-101d5e903357";
 const ExplorerBaseURL = process.env.EXPLORER_BASEURL;
 
 export default {

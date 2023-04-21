@@ -42,7 +42,7 @@
 
 <script>
 import chains from "../assets/nftNetwork.json"
-const XINUUID = "c94ac88f-4671-3976-b60a-09064f1811e8";
+import { XINUUID } from '~/helpers/constants';
 
 export default {
   data() {

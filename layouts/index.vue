@@ -88,16 +88,19 @@
       >
         <v-col
           cols="12"
-          class="pa-6 pl-8 d-flex flex-row text-start align-center"
+          class="pa-6 d-flex flex-row text-start align-center"
         >
           <a :href="githubLink" target="”_blank”">
-            <v-icon class="mr-3" size="18"> mdi-github </v-icon>
+            <github class="mx-3 d-flex align-center" />
+          </a>
+          <a :href="discordLink" target="”_blank”">
+            <discord class="mx-3 d-flex align-center" />
+          </a>
+          <a :href="telegramLink" target="”_blank”">
+            <telegram class="mx-3 d-flex align-center" />
           </a>
           <a :href="mixinGroupLink" target="”_blank”">
-            <v-icon class="mx-3" size="18"> mdi-chat </v-icon>
-          </a>
-          <a @click="showApps">
-            <v-icon class="mx-3" size="18"> mdi-infinity </v-icon>
+            <mm class="mx-3 d-flex align-center" />
           </a>
           <v-spacer />
           <a @click="addTokens"
@@ -105,33 +108,30 @@
               {{ $t("add_a_token") }}
             </span>
           </a>
-          <a :href="issueLink" target="”_blank”" class="bottom-helper-text">
-            <span> {{ $t("report_a_bug") }} </span></a
-          >
         </v-col>
       </v-footer>
       <v-footer absolute class="background-cor" v-else>
-        <v-row class="pa-6 pl-8 d-flex flex-column text-start align-center">
+        <v-row class="pa-6 d-flex flex-column text-start align-center">
           <v-col class="d-flex flex-row justify-center">
             <a :href="githubLink" target="”_blank”">
-              <v-icon class="mx-3" size="18"> mdi-github </v-icon>
+              <github class="mx-3 d-flex align-center" />
+            </a>
+            <a :href="discordLink" target="”_blank”">
+              <discord class="mx-3 d-flex align-center" />
+            </a>
+            <a :href="telegramLink" target="”_blank”">
+              <telegram class="mx-3 d-flex align-center" />
             </a>
             <a :href="mixinGroupLink" target="”_blank”">
-              <v-icon class="mx-3" size="18"> mdi-chat </v-icon>
-            </a>
-            <a @click="showApps">
-              <v-icon class="mx-3" size="18"> mdi-infinity </v-icon>
+              <mm class="mx-3 d-flex align-center" />
             </a>
           </v-col>
           <v-col class="d-flex flex-row justify-center align-center">
             <a @click="addTokens"
-              ><span class="bottom-helper-text mr-8">
+              ><span class="bottom-helper-text">
                 {{ $t("add_a_token") }}
               </span>
             </a>
-            <a :href="issueLink" target="”_blank”" class="bottom-helper-text">
-              <span> {{ $t("report_a_bug") }} </span></a
-            >
           </v-col>
         </v-row>
       </v-footer>
@@ -151,6 +151,10 @@ import connectedWallet from "../components/connectedWallet.vue";
 import mobileDrawer from "~/components/mobileDrawer.vue";
 import applications from "~/components/applications.vue";
 import addAToken from "~/components/addAToken.vue";
+import github from "~/components/icons/github.vue";
+import discord from "~/components/icons/discord.vue";
+import telegram from "~/components/icons/telegram.vue";
+import mm from "~/components/icons/mm.vue";
 
 export default {
   components: {
@@ -160,6 +164,10 @@ export default {
     mobileDrawer,
     applications,
     addAToken,
+    discord,
+    github,
+    telegram,
+    mm
   },
   data() {
     return {
@@ -167,8 +175,9 @@ export default {
       explorerLink: "https://scan.mvm.dev",
       githubLink: "https://github.com/zed-wong/mvg.finance",
       issueLink: "https://github.com/zed-wong/mvg.finance/issues",
-      mixinGroupLink:
-        "https://mixin.one/codes/faa7f8d3-d1c3-473b-9f56-7ffbbb512cc0",
+      discordLink: "https://discord.gg/49ehJCkBa5",
+      telegramLink: "https://t.me/mvgfinance",
+      mixinGroupLink: "https://mixin.one/codes/faa7f8d3-d1c3-473b-9f56-7ffbbb512cc0"
     };
   },
   computed: {

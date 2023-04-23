@@ -37,7 +37,7 @@
 </template>
 
 <script >
-import { web3Onboard } from "../helpers/web3onboard";
+import { HideOnboardLogo, web3Onboard } from "../helpers/web3onboard";
 import { ethers } from "ethers";
 
 function fmt(wallet) {
@@ -59,6 +59,7 @@ export default {
   methods: {
     async connect() {
       try {
+        HideOnboardLogo()
         const c = await web3Onboard.connectWallet();
         if (c.length > 0) {
           localStorage.setItem("connectedWallet", fmt(c[0]));

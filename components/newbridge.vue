@@ -180,14 +180,12 @@ import bridge from "~/static/mvm.png";
 import { floor, subtract } from "mathjs";
 import ERC20ABI from "../assets/erc20.json";
 import { NewClient } from "@/helpers/mixin";
-import { BTC_UUID } from "@/helpers/constants"
+import { BTC_UUID, ETHUUID } from "@/helpers/constants"
 import { useOnboard } from "@web3-onboard/vue";
 import selectFromToken from "~/components/selectFromToken.vue";
 import selectFromNetwork from "~/components/selectFromNetwork.vue";
 import ConnectWallet from "~/components/connectWallet.vue";
 import DepositDialog from "~/components/depositDialog.vue";
-
-const ETHUUID = "43d61dcd-e413-450d-80b8-101d5e903357";
 
 export default {
   components: {

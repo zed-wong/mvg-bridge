@@ -1,49 +1,11 @@
-/*! *****************************************************************************
-Copyright (c) Microsoft Corporation.
-
-Permission to use, copy, modify, and/or distribute this software for any
-purpose with or without fee is hereby granted.
-
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-PERFORMANCE OF THIS SOFTWARE.
-***************************************************************************** */
-
-
 /**
- * @license Complex.js v2.1.1 12/05/2020
+ * [js-sha256]{@link https://github.com/emn178/js-sha256}
  *
- * Copyright (c) 2020, Robert Eisele (robert@xarg.org)
- * Dual licensed under the MIT or GPL Version 2 licenses.
- **/
-
-/**
- * @license Fraction.js v4.2.0 05/03/2022
- * https://www.xarg.org/2014/03/rational-numbers-in-javascript/
- *
- * Copyright (c) 2021, Robert Eisele (robert@xarg.org)
- * Dual licensed under the MIT or GPL Version 2 licenses.
- **/
-
-
-/*
-object-assign
-(c) Sindre Sorhus
-@license MIT
-*/
-
-/*!
- * The buffer module from node.js, for the browser.
- *
- * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
- * @license  MIT
+ * @version 0.9.0
+ * @author Chen, Yi-Cyuan [emn178@gmail.com]
+ * @copyright Chen, Yi-Cyuan 2014-2017
+ * @license MIT
  */
-
-/*! crc32.js (C) 2014-present SheetJS -- http://sheetjs.com */
 
 
 /*! *****************************************************************************
@@ -60,6 +22,13 @@ MERCHANTABLITY OR NON-INFRINGEMENT.
 See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
+
+
+/*
+object-assign
+(c) Sindre Sorhus
+@license MIT
+*/
 
 /*!
  * The buffer module from node.js, for the browser.
@@ -79,6 +48,21 @@ and limitations under the License.
  * (c) 2018-present egoist <0x142857@gmail.com>
  * Released under the MIT License.
  */
+
+/*! *****************************************************************************
+Copyright (c) Microsoft Corporation.
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+***************************************************************************** */
 
 /*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
 
@@ -141,6 +125,42 @@ and limitations under the License.
  */
 
 
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+***************************************************************************** */
+
+
+/*!
+ * vue-qrcode v1.0.2
+ * https://fengyuanchen.github.io/vue-qrcode
+ *
+ * Copyright 2018-present Chen Fengyuan
+ * Released under the MIT license
+ *
+ * Date: 2020-01-18T06:04:33.222Z
+ */
+
+/*!
+ * The buffer module from node.js, for the browser.
+ *
+ * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
+ * @license  MIT
+ */
+
+/*! crc32.js (C) 2014-present SheetJS -- http://sheetjs.com */
+
+/** @preserve
+ * Counter block mode compatible with  Dr Brian Gladman fileenc.c
+ * derived from CryptoJS.mode.CTR
+ * Jan Hruby jhruby.web@gmail.com
+ */
+
+
 /*!
   * vue-router v3.5.4
   * (c) 2022 Evan You
@@ -167,35 +187,17 @@ and limitations under the License.
  */
 
 
-/*!
- * vue-qrcode v1.0.2
- * https://fengyuanchen.github.io/vue-qrcode
+/**
+ * @license Complex.js v2.1.1 12/05/2020
  *
- * Copyright 2018-present Chen Fengyuan
- * Released under the MIT license
- *
- * Date: 2020-01-18T06:04:33.222Z
- */
-
+ * Copyright (c) 2020, Robert Eisele (robert@xarg.org)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ **/
 
 /**
- * [js-sha256]{@link https://github.com/emn178/js-sha256}
+ * @license Fraction.js v4.2.0 05/03/2022
+ * https://www.xarg.org/2014/03/rational-numbers-in-javascript/
  *
- * @version 0.9.0
- * @author Chen, Yi-Cyuan [emn178@gmail.com]
- * @copyright Chen, Yi-Cyuan 2014-2017
- * @license MIT
- */
-
-
-/*! *****************************************************************************
-Copyright (c) Microsoft Corporation. All rights reserved.
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-this file except in compliance with the License. You may obtain a copy of the
-License at http://www.apache.org/licenses/LICENSE-2.0
-
-/** @preserve
- * Counter block mode compatible with  Dr Brian Gladman fileenc.c
- * derived from CryptoJS.mode.CTR
- * Jan Hruby jhruby.web@gmail.com
- */
+ * Copyright (c) 2021, Robert Eisele (robert@xarg.org)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ **/

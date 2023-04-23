@@ -48,8 +48,7 @@
       </v-app-bar>
       <v-app-bar
         elevation="0"
-        color="#ffffff"
-        class="mobile-bar-css"
+        color="#f4f7fa"
         height="64px"
         v-else
       >
@@ -112,6 +111,13 @@
       </v-footer>
       <v-footer absolute class="background-cor" v-else>
         <v-row class="pa-6 d-flex flex-column text-start align-center">
+          <v-col class="d-flex flex-row justify-center align-center">
+            <!-- <a @click="addTokens"
+              ><span class="bottom-helper-text">
+                {{ $t("add_a_token") }}
+              </span>
+            </a> -->
+          </v-col>
           <v-col class="d-flex flex-row justify-center">
             <a :href="githubLink" target="”_blank”">
               <github class="mx-3 d-flex align-center" />
@@ -124,13 +130,6 @@
             </a>
             <a :href="mixinGroupLink" target="”_blank”">
               <mm class="mx-3 d-flex align-center" />
-            </a>
-          </v-col>
-          <v-col class="d-flex flex-row justify-center align-center">
-            <a @click="addTokens"
-              ><span class="bottom-helper-text">
-                {{ $t("add_a_token") }}
-              </span>
             </a>
           </v-col>
         </v-row>

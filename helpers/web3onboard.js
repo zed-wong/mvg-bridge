@@ -1,4 +1,5 @@
 import { init } from '@web3-onboard/vue'
+import logo from "../static/favicon.svg"
 import injectedModule from '@web3-onboard/injected-wallets'
 import coinbaseWalletModule from "@web3-onboard/coinbase";
 import walletConnectModule from "@web3-onboard/walletconnect";
@@ -36,28 +37,16 @@ export const web3Onboard = init({
     }
   ],
   appMetadata: {
-    name: 'MVG',
-    description: 'Mixin Virtual Machine Bridge',
-    icon: "https://mvm.dev/logo.svg",
-    logo: "https://mvm.dev/logo.svg",
+    name: 'MVG Bridge',
+    description: 'Bridge your asset to MVM',
+    icon: logo,
+    logo: logo,
     recommendedInjectedWallets: [
       { name: "MetaMask", url: "https://metamask.io" },
       { name: "Coinbase", url: "https://wallet.coinbase.com/" }
     ]
   },
   i18n: {
-    en: {
-      connect: {
-        selectingWallet: {
-          header: "Available Wallets",
-          sidebar: {
-            heading: "Welcome",
-            subheading: "Connect your wallet",
-            paragraph: "Connecting your wallet to MVG to bridge your asset"
-          }
-        }
-      }
-    },
     zh: {
       connect: {
         selectingWallet: {
@@ -134,3 +123,13 @@ export const web3Onboard = init({
     }
   },
 })
+
+export const HideOnboardLogo = () => {
+  // hide logo
+  const onboardDom = document.querySelector('onboard-v2');
+  if (onboardDom) {
+    const styleDom = document.createElement('style');
+    styleDom.innerHTML = 'div.sidebar > div:nth-child(2) > svg { display: none; }';
+    onboardDom.shadowRoot?.appendChild(styleDom);
+  }
+}

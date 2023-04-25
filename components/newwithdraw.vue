@@ -168,7 +168,7 @@
             </div>
             <div class="d-flex flex-column font-weight-light">
               <span class="mb-2">
-                {{ $t("will_receive") }}: {{ toAmount != 0 ? toAmount : 0 }}
+                {{ $t("will_receive") }}: {{ toAmount != 0 ? fixedToAmount : 0 }}
                 {{ selectedToken.symbol }}
               </span>
             </div>
@@ -216,6 +216,7 @@ import ConnectWallet from "~/components/connectWallet.vue";
 import withdrawDialog from "~/components/withdrawDialog.vue";
 import selectToNetowrk from "~/components/selectToNetwork.vue";
 import { XINUUID, ETHUUID, FEE_PERCENTAGE } from '~/helpers/constants';
+import { BN } from '~/helpers/utils';
 
 function formatBalance(balance) {
   if (balance <= 0) return balance;
@@ -285,9 +286,12 @@ export default {
         minimumFractionDigits: 2,
       });
     },
+    fixedToAmount() {
+      return formatBalance(this.toAmount)
+    },
     totalPayAmount() {
       return (
-        Number(this.toAmount) + Number(this.totalFeeAmount)
+        BN(Number(this.toAmount)).plus(this.totalFeeAmount).toNumber()
       ).toLocaleString("en-US", {
         maximumFractionDigits: 8,
         minimumFractionDigits: 0,
@@ -297,14 +301,16 @@ export default {
       return (
         this.selectedNetwork.asset_id === XINUUID ? 
           this.txEstimatedFee :
-          Number(this.txEstimatedFee) + Number(this.toAmount) * FEE_PERCENTAGE
+          formatBalance(BN(this.txEstimatedFee).plus(BN(this.toAmount).multipliedBy(BN(FEE_PERCENTAGE))).toNumber()) || this.txEstimatedFee
       )
     },
     maxPayAmount() {
-      let a = formatBalance(
-        Number(this.toBalance) - Number(this.toBalance) * FEE_PERCENTAGE - Number(this.txEstimatedFee)
+      let a = this.selectedNetwork.asset_id === XINUUID ? 
+      formatBalance(BN(this.toBalance).minus(BN(this.txEstimatedFee)).toNumber())
+      : formatBalance(
+        BN(this.toBalance).minus(BN(this.toBalance).multipliedBy(BN(FEE_PERCENTAGE))).minus(BN(this.txEstimatedFee)).toNumber()
       );
-      if (this.selectedToken.asset_id === ETHUUID) a = a - Number(this.transactionGas)
+      if (this.selectedToken.asset_id === ETHUUID) a = BN(a).minus(BN(this.transactionGas))
       if (a <= 0)
         return this.toBalance
           .toLocaleString("en-US", {

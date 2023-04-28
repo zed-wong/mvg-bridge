@@ -1,6 +1,9 @@
 import colors from 'vuetify/es5/util/colors'
 import i18n from './i18n'
 
+const INFURA_KEY = '9aa3d95b3bc440fa88ea12eaa4456161'
+const WITHDRAWAL_GATEWAY_BOT_ID = 'a13f4c77-5cfc-4368-a2d6-33f07037ae9e'
+
 export default {
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
   ssr: false,
@@ -114,9 +117,9 @@ export default {
     }
   },
   env: {
-    INFURA_KEY: process.env.INFURA_KEY,
-    WITHDRAWAL_GATEWAY_BOT_ID: process.env.WITHDRAWAL_GATEWAY_BOT_ID,
-    NFT_OAUTH_BOT_ID: process.env.WITHDRAWAL_GATEWAY_BOT_ID,
+    INFURA_KEY: INFURA_KEY,
+    WITHDRAWAL_GATEWAY_BOT_ID: WITHDRAWAL_GATEWAY_BOT_ID,
+    NFT_OAUTH_BOT_ID: WITHDRAWAL_GATEWAY_BOT_ID,
     EXPLORER_BASEURL: "https://scan.mvm.dev/",
     BLAZE_BASEURL: "wss://blaze.mixin.one/",
     MIXIN_API_BASEURL: "https://api.mixin.one/",

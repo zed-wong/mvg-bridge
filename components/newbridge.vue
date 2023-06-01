@@ -436,7 +436,7 @@ export default {
     async ethBydefault() {
       let result;
       const { connectedWallet, setChain } = useOnboard();
-      if (connectedWallet) {
+      if (connectedWallet.value) {
         setChain({ wallet: connectedWallet.value.label, chainId: "0x1" });
       }
     },

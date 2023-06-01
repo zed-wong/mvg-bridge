@@ -231,15 +231,13 @@ export default {
   methods: {
     async autoConnectWallet() {
       try {
-        if (localStorage.getItem("connectedWallet")) {
-          const previouslyConnectedWallet = JSON.parse(
-            localStorage.getItem("connectedWallet")
-          );
+        if (localStorage.getItem("lastConnected")) {
+          const previouslyConnectedWallet = localStorage.getItem("lastConnected");
           if (previouslyConnectedWallet) {
             this.$store.commit("setConnected", true);
             const c = await web3Onboard.connectWallet({
               autoSelect: {
-                label: previouslyConnectedWallet.label,
+                label: previouslyConnectedWallet,
                 disableModals: true,
               },
             });
@@ -248,14 +246,12 @@ export default {
               name: c[0].label,
               id: c[0].chains[0].id,
             });
-            if (c.length > 0) {
-              c[0].provider.on("accountsChanged", () =>
-                this.$store.commit("disconnect")
-              );
-              c[0].provider.on("chainChanged", (chainid) => {
-                this.$store.commit("updateChainId", chainid);
-              });
-            }
+            c[0].provider.on("accountsChanged", () =>
+              this.$store.commit("disconnect")
+            );
+            c[0].provider.on("chainChanged", (chainid) => {
+              this.$store.commit("updateChainId", chainid);
+            });
           }
         }
       } catch (error) {

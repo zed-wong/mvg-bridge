@@ -37,32 +37,18 @@
 </template>
 
 <script >
-import { HideOnboardLogo, web3Onboard } from "../helpers/web3onboard";
+import { web3Onboard } from "../helpers/web3onboard";
 import { ethers } from "ethers";
-
-function fmt(wallet) {
-  var seen = [];
-  let value = JSON.stringify(wallet, function (key, val) {
-    if (val != null && typeof val == "object") {
-      if (seen.indexOf(val) >= 0) {
-        return;
-      }
-      seen.push(val);
-    }
-    return val;
-  });
-  return value;
-}
 
 export default {
   props: ["small", "huge", "mobile"],
   methods: {
     async connect() {
       try {
-        HideOnboardLogo()
         const c = await web3Onboard.connectWallet();
+        console.log(c[0])
         if (c.length > 0) {
-          localStorage.setItem("connectedWallet", fmt(c[0]));
+          localStorage.setItem("lastConnected", c[0].label);
           const userAddress = c[0].accounts[0].address;
           const userChain = c[0].chains[0].id;
           console.log(userAddress, userChain);
